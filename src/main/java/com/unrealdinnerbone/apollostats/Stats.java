@@ -74,6 +74,7 @@ public class Stats {
 
     public static List<Match> getAllMatchesForHost(String name, Optional<Integer> before) throws Exception {
         String json = HttpUtils.get("https://hosts.uhc.gg/api/hosts/" + name.replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse("")).body();
+        LOGGER.info("Json: {}", json);
         List<Match> matches = Arrays.stream(JsonUtil.DEFAULT.parse(Match[].class, json)).collect(Collectors.toList());
         if (matches.size() == 50) {
             matches.addAll(getAllMatchesForHost(name, Optional.of(matches.get(49).id())));
