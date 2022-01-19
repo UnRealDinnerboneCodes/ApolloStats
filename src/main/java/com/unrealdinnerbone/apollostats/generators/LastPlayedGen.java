@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class LastPlayedGen implements IWebPage {
 
@@ -19,6 +20,8 @@ public class LastPlayedGen implements IWebPage {
         Map<String, List<Pair<Instant, String>>> plays = new HashMap<>();
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
+                .filter(Match::isApolloGame)
+                .filter(Predicate.not(Match::removed))
                 .forEach(match -> Scenarios.fixScenarios(match.scenarios())
                         .forEach(scenario -> Maps.putIfAbsent(plays, scenario, new ArrayList<>()).add(Pair.of(Instant.parse(match.opens()), match.hostingName()))));
 
