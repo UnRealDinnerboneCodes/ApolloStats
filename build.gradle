@@ -9,6 +9,9 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 
 
+
+version = "1.0.0"
+
 dependencies {
     shade 'com.unrealdinnerbone:UnRealLib:3.2.0+build.96'
     shade 'com.google.guava:guava:31.0.1-jre'
