@@ -5,48 +5,16 @@ plugins {
     id 'java-library'
 }
 
-group = 'com.unrealdinnerbone'
-archivesBaseName = project.getProperty("name")
+project.setProperty("mainClass", "com.unrealdinnerbone.apollostats.Stats")
+project.setProperty("name", "Apollo")
+project.setProperty("version", "1.0.0")
 
-def ENV = System.getenv()
-def buildNumber = ENV.GITHUB_RUN_NUMBER ? "${ENV.GITHUB_RUN_NUMBER}" : "0"
-version = project.getProperty("version") + ("+build." + buildNumber).replace("\\", "")
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println("Project: " + archivesBaseName + "@" + version + " (Java" + java.toolchain.languageVersion.get().toString() + ")")
-
-repositories {
-    mavenCentral()
-    maven { url "https://maven.unreal.codes/releases"}
-}
-
-
-configurations {
-    shade
-    implementation.extendsFrom shade
-    shadow.extendsFrom shade
-}
-
-shadowJar {
-    manifest {
-        inheritFrom project.tasks.jar.manifest
-    }
-}
+apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/base.gradle'
+apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 
 
 dependencies {
     shade 'com.unrealdinnerbone:UnRealLib:3.2.0+build.96'
     shade 'com.google.guava:guava:31.0.1-jre'
     shade('io.javalin:javalin:4.2.0')
-    testImplementation 'junit:junit:4.13.2'
-}
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': project.property("mainClass"),
-                "Implementation-Version": version
-        )
-    }
 }
