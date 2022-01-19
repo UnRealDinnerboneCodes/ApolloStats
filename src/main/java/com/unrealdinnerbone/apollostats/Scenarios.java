@@ -55,7 +55,7 @@ public class Scenarios
         LOGGER.info("Loading disk data...");
         unknownScenarios.clear();
         String s = Stats.getResourceAsString("scens.json");
-        unknownScenarios.addAll(Arrays.asList(Arrays.stream(JsonUtil.DEFAULT.parse(String[].class, s)).map(Util::formalize).toArray(String[]::new)));
+        unknownScenarios.addAll(Arrays.asList(Arrays.stream(Util.parser().parse(String[].class, s)).map(Util::formalize).toArray(String[]::new)));
 
         unknownScenarios.add(Util.formalize("Secret Teams"));
         unknownScenarios.add(Util.formalize("Double Dates"));
@@ -67,7 +67,7 @@ public class Scenarios
         unknownScenarios.add(Util.formalize("Love at First Lake"));
         unknownScenarios.add(Util.formalize("Love at First Sight"));
 
-        Map<String, List<String>> theMap = JsonUtil.DEFAULT.parse(Map.class, Stats.getResourceAsString("scenfixes.json"));
+        Map<String, List<String>> theMap = Util.parser().parse(Map.class, Stats.getResourceAsString("scenfixes.json"));
         theMap.forEach((key, value) -> value.forEach(s1 -> scenariosRemaps.put(s1, key)));
         LOGGER.info("Loaded {} unknown scenarios", unknownScenarios.size());
         LOGGER.info("Loaded {} remaps", scenariosRemaps.size());

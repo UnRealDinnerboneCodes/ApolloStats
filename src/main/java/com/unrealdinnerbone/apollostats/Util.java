@@ -1,5 +1,12 @@
 package com.unrealdinnerbone.apollostats;
 
+import com.squareup.moshi.Moshi;
+import com.unrealdinnerbone.apollostats.temp.temp.RecordsJsonAdapterFactory;
+import com.unrealdinnerbone.unreallib.json.IJsonParser;
+import com.unrealdinnerbone.unreallib.json.MoshiParser;
+import org.eclipse.jetty.util.IO;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,5 +59,12 @@ public class Util
 
     public static boolean isNewLine(String s) {
         return s.equals("\n");
+    }
+
+    private static final IJsonParser<IOException> JSON_PARSER = new MoshiParser(new Moshi.Builder().add(new RecordsJsonAdapterFactory()).build());
+
+
+    public static IJsonParser<IOException> parser() {
+        return JSON_PARSER;
     }
 }
