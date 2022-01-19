@@ -1,4 +1,4 @@
-FROM gradle:7.0.0-jdk16 as builder
+FROM gradle:7.3.3-jdk17 as builder
 
 WORKDIR /build
 
@@ -7,7 +7,7 @@ COPY src /build/src
 
 RUN gradle shadowJar
 
-FROM openjdk:16
+FROM openjdk:17
 COPY --from=builder /build/build/libs/ApolloStats-1.0.0-all.jar ApolloStats-1.0.0-all.jar
 
 CMD ["java", "-jar", "ApolloStats-1.0.0-all.jar"]
