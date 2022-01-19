@@ -5,10 +5,6 @@ plugins {
     id 'java-library'
 }
 
-project.setProperty("mainClass", "com.unrealdinnerbone.apollostats.Stats")
-project.setProperty("name", "Apollo")
-project.setProperty("version", "1.0.0")
-
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/base.gradle'
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 

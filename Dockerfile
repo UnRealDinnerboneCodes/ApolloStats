@@ -3,6 +3,7 @@ FROM gradle:7.3.3-jdk17 as builder
 WORKDIR /build
 
 COPY build.gradle /build
+COPY gradle.properties /build
 COPY src /build/src
 
 RUN gradle shadowJar
