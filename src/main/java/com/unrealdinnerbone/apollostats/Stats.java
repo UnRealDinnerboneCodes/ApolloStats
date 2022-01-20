@@ -61,7 +61,6 @@ public class Stats {
         app.get("js/fixed.js", ctx -> ctx.result(getResourceAsString("js/fixed.js")));
         app.get("js/sorttable.txt", ctx -> ctx.result(getResourceAsString("js/sorttable.js")));
 
-
         for(IWebPage generator : generators) {
             app.get(generator.getName(), ctx -> {
                 LOGGER.info("Received request for {}", generator.getName());
