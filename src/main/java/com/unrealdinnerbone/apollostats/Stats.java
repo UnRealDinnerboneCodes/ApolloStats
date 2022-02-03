@@ -35,6 +35,7 @@ public class Stats {
         generators.add(new LongTimeGames());
         generators.add(new TeamTypesGames());
         generators.add(new TeamSizeGames());
+        generators.add(new TimeBetweenGames());
     }
 
 

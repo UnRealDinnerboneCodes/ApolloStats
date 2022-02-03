@@ -186,7 +186,8 @@
     "Random Starter Items": [
         "Random Starting Items",
         "Random Start Items",
-        "Random starter item"
+        "Random starter item",
+        "starteritem3xmap"
     ],
     "Battle Siren": [
         "Rigged Double Dates",
@@ -213,7 +214,8 @@
         "Presents x2",
         "Boxing Day Presents",
         "Presents(x30)",
-        "Presents 3x"
+        "Presents 3x",
+        "present"
     ],
     "Grave Robbers": [
         "Grave Robber",
