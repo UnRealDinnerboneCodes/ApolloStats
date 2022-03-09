@@ -15,5 +15,5 @@ version = "1.0.0"
 dependencies {
     shade 'com.unrealdinnerbone:UnRealLib:3.2.0+build.96'
     shade 'com.google.guava:guava:31.0.1-jre'
-    shade('io.javalin:javalin:4.2.0')
+    shade('io.javalin:javalin:4.3.0')
 }

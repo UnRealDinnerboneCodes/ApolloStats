@@ -7,9 +7,8 @@ COPY gradle.properties /build
 COPY src /build/src
 
 RUN gradle shadowJar
-RUN ls -al /build/build/libs
 
-FROM openjdk:17
+FROM openjdk:17-alpine
 COPY --from=builder "/build/build/libs/build-1.0.0-all.jar" "ApolloStats-1.0.0-all.jar"
 
 CMD ["java", "-jar", "ApolloStats-1.0.0-all.jar"]
