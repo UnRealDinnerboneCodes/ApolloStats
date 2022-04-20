@@ -92,9 +92,7 @@ public class Stats {
         for(IWebPage generator : generators) {
             app.get(generator.getName(), ctx -> {
                 LOGGER.info("Received request for {}", generator.getName());
-                ctx.html(pages.get(generator.getName(), () -> {
-                   return generator.generateStats(hostMatchMap);
-                }));
+                ctx.html(pages.get(generator.getName(), () -> generator.generateStats(hostMatchMap, ctx::queryParam)));
             });
         }
     }

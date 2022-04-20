@@ -1,25 +1,25 @@
 package com.unrealdinnerbone.apollostats.generators.test;
 
+import com.google.common.collect.Lists;
 import com.unrealdinnerbone.apollostats.IWebPage;
 import com.unrealdinnerbone.apollostats.Match;
 import com.unrealdinnerbone.apollostats.Scenarios;
 import com.unrealdinnerbone.apollostats.Util;
 import com.unrealdinnerbone.unreallib.ArrayUtil;
+import com.unrealdinnerbone.unreallib.MathHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class TestRandomScen implements IWebPage {
 
 
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestRandomScen.class);
-
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<String, List<Match>> hostMatchMap, Function<String, String> query) {
         List<String> random = new ArrayList<>(Scenarios.getValues(Scenarios.Type.SCENARIO));
         random.remove("Rush");
         random.remove("Unknown");
@@ -29,17 +29,43 @@ public class TestRandomScen implements IWebPage {
         random.remove("Farm Gang");
         random.remove("Permanent Invisibility");
         List<String> randomSelect = new ArrayList<>();
-        String page = getPage();
-        for(int i = 1; i <= 6; i++) {
+//        String page = getPage();
+        String minS = query.apply("min");
+        String maxS = query.apply("max");
+        int min = minS == null ? 3 : Integer.parseInt(minS);
+        int max = maxS == null ? 9 : Math.min(random.size(), Integer.parseInt(maxS));
+        for(int i = 0; i <= MathHelper.randomInt(min -1, max + 1); i++) {
             String type = ArrayUtil.getRandomValueAndRemove(random);
-            page = page.replace("{img_0" + i + "}", Util.formalize(type));
             randomSelect.add(type);
+        }
+        StringBuilder builder = new StringBuilder();
+        for(List<String> strings : Lists.partition(randomSelect, 3)) {
+            String row = getLine();
+            int used = 0;
+            for(int i = 0; i < strings.size(); i++) {
+                row = row.replace("{img_0" + (i + 1) + "}", Util.formalize(strings.get(i)));
+                used = i;
+            }
+            if(used < 3) {
+                for(int i = used; i <= 3; i++) {
+                    String toReplace = "<img src = \"/img/scens/{img_0x}.png\" class=\"img\">".replace("x", i + "");
+                    row = row.replace(toReplace, "");
+                }
+            }
+            builder.append(row);
         }
         List<String> teams = new ArrayList<>(Scenarios.getValues(Scenarios.Type.TEAM));
         teams.remove("Love at First Lake");
-        page = page.replace("{team}", Util.formalize(ArrayUtil.getRandomValue(teams)));
+        String page  = getPage().replace("{data}", builder.toString()).replace("{team}", Util.formalize(ArrayUtil.getRandomValue(teams)));
         LOGGER.info("Random Scenarios: {}", randomSelect);
         return page;
+    }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestRandomScen.class);
+
+    @Override
+    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+       return null;
     }
 
     @Override
@@ -57,16 +83,7 @@ public class TestRandomScen implements IWebPage {
                     <td><img src = "/img/teams/{team}.png" class="img"></td>
                     <td></td>
                 </tr>
-                <tr>
-                  <td><img src = "/img/scens/{img_01}.png" class="img"></td>
-                  <td><img src = "/img/scens/{img_02}.png" class="img"></td>
-                  <td><img src = "/img/scens/{img_03}.png" class="img"></td>
-                </tr>
-                <tr>
-                  <td><img src = "/img/scens/{img_04}.png" class="img"></td>
-                  <td><img src = "/img/scens/{img_05}.png" class="img"></td>
-                  <td><img src = "/img/scens/{img_06}.png" class="img"></td>
-                </tr>
+                {data}
               </table>
                        
               <style>
@@ -75,6 +92,16 @@ public class TestRandomScen implements IWebPage {
                     margin-right: auto;
                   }
             </style>
+                """;
+    }
+
+    public static String getLine() {
+        return """
+                   <tr>
+                  <td><img src = "/img/scens/{img_01}.png" class="img"></td>
+                  <td><img src = "/img/scens/{img_02}.png" class="img"></td>
+                  <td><img src = "/img/scens/{img_03}.png" class="img"></td>
+                </tr>
                 """;
     }
 }
