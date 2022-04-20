@@ -54,11 +54,11 @@ public class Stats {
                 try {
                     Scenarios.loadDiskData();
                     hostMatchMap.clear();
-                    for(String staff : Util.STAFF) {
-                        List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
-                        LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
-                        hostMatchMap.put(staff, matches);
-                    }
+//                    for(String staff : Util.STAFF) {
+//                        List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
+//                        LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
+//                        hostMatchMap.put(staff, matches);
+//                    }
                 }catch(Exception e) {
                     LOGGER.error("Error while updating data", e);
                 }
@@ -95,6 +95,10 @@ public class Stats {
                 ctx.html(pages.get(generator.getName(), () -> generator.generateStats(hostMatchMap, ctx::queryParam)));
             });
         }
+
+        app.get("random_game/{id}", ctx -> {
+            ctx.html(TestRandomScen.generatePage(UUID.fromString(ctx.pathParam("id")), TestRandomScen.getScenList(), ctx.queryParam("min") == null ? 3 : Integer.parseInt(ctx.queryParam("min")), ctx.queryParam("max") == null ? 9 : Integer.parseInt(ctx.queryParam("max"))));
+        });
     }
 
     public static List<Match> getAllMatchesForHost(String name, Optional<Integer> before) throws Exception {
