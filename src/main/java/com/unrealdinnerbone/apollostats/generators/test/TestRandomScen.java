@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TestRandomScen implements IWebPage {
 
@@ -56,7 +57,9 @@ public class TestRandomScen implements IWebPage {
         }
         List<String> teams = new ArrayList<>(Scenarios.getValues(Scenarios.Type.TEAM));
         teams.remove("Love at First Lake");
-        String page  = getPage().replace("{data}", builder.toString()).replace("{team}", Util.formalize(ArrayUtil.getRandomValue(teams)));
+        String teamType = ArrayUtil.getRandomValue(teams);
+        String scens = teamType + ", " + randomSelect.stream().collect(Collectors.joining(", "));
+        String page  = getPage().replace("{STUFF}", scens).replace("{data}", builder.toString()).replace("{team}", Util.formalize(teamType));
         LOGGER.info("Random Scenarios: {}", randomSelect);
         return page;
     }
@@ -76,23 +79,36 @@ public class TestRandomScen implements IWebPage {
 
     public static String getPage() {
         return """
-                         <link rel="stylesheet" type="text/css" href="css/stats.css">
-            <table class="center">
-                <tr>
-                    <td></td>
-                    <td><img src = "/img/teams/{team}.png" class="img"></td>
-                    <td></td>
-                </tr>
-                {data}
-              </table>
-                       
-              <style>
-                  .center {
-                    margin-left: auto;
-                    margin-right: auto;
-                  }
-            </style>
-                """;
+                             <link rel="stylesheet" type="text/css" href="css/stats.css">
+                <table class="center">
+                    <tr>
+                        <td></td>
+                        <td><img src = "/img/teams/{team}.png" class="img"></td>
+                        <td></td>
+                    </tr>
+                    {data}
+                  </table>
+                           
+                  <style>
+                      .center {
+                        margin-left: auto;
+                        margin-right: auto;
+                      }
+                      .center_table {
+                          display: flex;
+                          justify-content: center;
+                          align-items: center;
+                      }
+                </style>
+                <div class="center_table">
+                <button onclick="copyText()">Click Here to copy scenes to clipboard</button></div>
+                      <script>
+                            function copyText() {
+                                navigator.clipboard.writeText("{STUFF}");
+                            }
+                        </script>
+                        
+                    """;
     }
 
     public static String getLine() {
