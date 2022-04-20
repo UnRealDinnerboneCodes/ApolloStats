@@ -67,7 +67,7 @@ public class TestRandomScen implements IWebPage {
         List<String> teams = new ArrayList<>(Scenarios.getValues(Scenarios.Type.TEAM));
         teams.remove("Love at First Lake");
         String teamType = ArrayUtil.getRandomValue(theRandom, teams);
-        String theScens = teamType + ", " + String.join(", ", randomSelect) + " (https://apollo.unreal.codes/random_game/" + uuid + ")";
+        String theScens = teamType + ", " + String.join(", ", randomSelect) + " (https://apollo.unreal.codes/random_game/" + uuid + "?=min=" + min + "&=max=" + max + ")";
         String page  = getPage().replace("{STUFF}", theScens).replace("{data}", builder.toString()).replace("{team}", Util.formalize(teamType));
         LOGGER.info("Random Scenarios: {} {}", uuid, randomSelect);
         return page;

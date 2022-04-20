@@ -13,7 +13,7 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 version = "1.0.0"
 
 dependencies {
-    shade 'com.unrealdinnerbone:UnRealLib:3.2.1+build.99'
+    shade 'com.unrealdinnerbone:UnRealLib:3.2.1+build.100'
     shade 'com.google.guava:guava:31.0.1-jre'
     shade('io.javalin:javalin:4.3.0')
 }
