@@ -54,11 +54,11 @@ public class Stats {
                 try {
                     Scenarios.loadDiskData();
                     hostMatchMap.clear();
-//                    for(String staff : Util.STAFF) {
-//                        List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
-//                        LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
-//                        hostMatchMap.put(staff, matches);
-//                    }
+                    for(String staff : Util.STAFF) {
+                        List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
+                        LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
+                        hostMatchMap.put(staff, matches);
+                    }
                 }catch(Exception e) {
                     LOGGER.error("Error while updating data", e);
                 }
