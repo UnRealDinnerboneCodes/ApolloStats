@@ -1,0 +1,1311 @@
+{
+    "data": {
+        "Piggy Bank": {
+            "type": "scenario",
+            "values": [
+                "Piggy Banks",
+                "Piggy Bank"
+            ]
+        },
+        "Silent Night": {
+            "type": "scenario",
+            "values": [
+                "Silent Night"
+            ]
+        },
+        "Timebomb": {
+            "type": "scenario",
+            "values": [
+                "Timebomb",
+                "Timebombs"
+            ]
+        },
+        "Superheroes": {
+            "type": "scenario",
+            "values": [
+                "Superheroes",
+                "Superherores",
+                "Super Heros",
+                "Superpowers",
+                "Superheros"
+            ]
+        },
+        "Love at First Sight: Thieves": {
+            "type": "team",
+            "values": [
+                "Love at First Sight: Thieves"
+            ]
+        },
+        "Vengeful Spirits": {
+            "type": "scenario",
+            "values": [
+                "Vengeful Sprits",
+                "Vengeful Spirits"
+            ]
+        },
+        "Team Swap": {
+            "type": "scenario",
+            "values": [
+                "Team Swap"
+            ]
+        },
+        "Cut Clean": {
+            "type": "scenario",
+            "values": [
+                "NoClean"
+            ]
+        },
+        "Advancement Paranoia": {
+            "type": "scenario",
+            "values": [
+                "Advancement Paranoia",
+                "Advancment Paranoia",
+                "Advancemant Paranoia",
+                "Advancement/Nametag Paranoia"
+            ]
+        },
+        "Chicken Fight": {
+            "type": "scenario",
+            "values": [
+                "Chicken Fight"
+            ]
+        },
+        "Wild West": {
+            "type": "scenario",
+            "values": [
+                "Wild West"
+            ]
+        },
+        "X Marks the Spot": {
+            "type": "scenario",
+            "values": [
+                "X Marks the Spot"
+            ]
+        },
+        "Team Inventory": {
+            "type": "scenario",
+            "values": [
+                "Team Invetory",
+                "Teaminentory",
+                "Teaminventory",
+                "Team Inventory"
+            ]
+        },
+        "Double Dates": {
+            "type": "team",
+            "values": [
+                "Double Dates"
+            ]
+        },
+        "Eggs": {
+            "type": "scenario",
+            "values": [
+                "Eggs"
+            ]
+        },
+        "No Fall": {
+            "type": "scenario",
+            "values": [
+                "No Fall"
+            ]
+        },
+        "Double Big Crack": {
+            "type": "scenario",
+            "values": [
+                "Double Big Crack"
+            ]
+        },
+        "Superpower Compensation": {
+            "type": "scenario",
+            "values": [
+                "Superhero Compensation",
+                "Superpowers Compensation",
+                "Superheroes compensation",
+                "Superhero's Compensation",
+                "compensation",
+                "Superpower Compensation"
+            ]
+        },
+        "Fireball": {
+            "type": "scenario",
+            "values": [
+                "Fireballs",
+                "Fireball"
+            ]
+        },
+        "Krenzinator": {
+            "type": "scenario",
+            "values": [
+                "Kreninator",
+                "Krezinator",
+                "Kreanzinator",
+                "Krenzinator"
+            ]
+        },
+        "Kill Switch": {
+            "type": "scenario",
+            "values": [
+                "Kill Switch"
+            ]
+        },
+        "Unknown": {
+            "type": "scenario",
+            "values": [
+                "Lootcrates",
+                "Progressive Speed",
+                "Hypixel Heads",
+                "Hypixel UHC Champions",
+                "Fast Smelting",
+                "OPLootcrates",
+                "OPProgressiveSpeed",
+                "Barebones",
+                "Dead Biomes",
+                "Amplified Terrain",
+                "Genie",
+                "Cannibalism",
+                "Slimy Chunks",
+                "Double Ore Rates",
+                "Large Biomes",
+                "Mob Slayers",
+                "Split Spawn",
+                "Vanilla+",
+                "Potential Hearts",
+                "\"I thought that sheep was a player\"",
+                "paranoia",
+                "unkown",
+                "kings",
+                "feathers",
+                "bats",
+                "natures",
+                "gonefishin'",
+                "goodgame",
+                "achievementhunters",
+                "assaultbattery",
+                "cityworld",
+                "doublehealth",
+                "nethermonuments",
+                "who’sthatpokémon",
+                "Shrinking Border",
+                "scenariostackup",
+                "monopoly",
+                "dyeboozled",
+                "cripple",
+                "Gone Fishin’",
+                "monuments",
+                "Who’s That Pokémon?",
+                "Who's That Pokemon?",
+                "Upside Down Crafting",
+                "Who's That Pokemon?",
+                "THS3 Terrain",
+                "Select Fire",
+                "THS3 Terrain",
+                "Undergound Parallel",
+                "Iron Tournament",
+                "Iron",
+                "Build UHC",
+                "Melee Fun",
+                "SG",
+                "Archer",
+                "enchanteddeath",
+                "gonefishin’",
+                "Who’s That Pokémon?",
+                "THS3 Terrain",
+                "midas",
+                "timedteams",
+                "enchanteddeath",
+                "Cobwebless",
+                "Diamond Rod",
+                "Diamond Rod",
+                "Red vs Blue",
+                "Randomized Chest",
+                "Custom Temples",
+                "Custom Map",
+                "Starter Notch",
+                "MedievalHeat",
+                "4th of July",
+                "Gone Fishing",
+                "Head Hunter",
+                "Mini Border",
+                "Yacht Gang",
+                "Head Hunter",
+                "Drought",
+                "Custom Sky World",
+                "Double Honey Crack",
+                "Mini-Border",
+                "Rigged Double Dates",
+                "No Clean",
+                "Switcharoo",
+                "Permaday",
+                "Hades",
+                "True Love",
+                "Pyrophobia",
+                "Opposites Attract",
+                "CraftableTeleportation",
+                "Blitz",
+                "Mystery Scenerios",
+                "Starter End Crystal",
+                "Horseless",
+                "Double Ores",
+                "Bow Hunters",
+                "Chunk Gang",
+                "Nightmare Mode",
+                "Clean State",
+                "Perma Night",
+                "Astrophobia",
+                "Assault and Battery",
+                "Rigged Starter Item",
+                "Stormy Meetup",
+                "Double Nether Big Crack",
+                "Moved 00",
+                "True Love",
+                "\"Team\" Scatter",
+                "Weakest Link",
+                "Kill Reveal",
+                "Moved 00",
+                "Assassins",
+                "Block Battle",
+                "Sudden Death",
+                "End Meetup",
+                "Red v Blue",
+                "Red v Blue v Green",
+                "Absorptionless",
+                "Split Scatter",
+                "Double BidCrack",
+                "Xylophone yeet and zap",
+                "Xylophone yeet and zzz's",
+                "Obi Boys",
+                "Absorptionless",
+                "vienminer-vengeful spirits",
+                "Random Starter items-red arrows",
+                "presents-poltiergiest",
+                "piggy bank-Potion bomb",
+                "nametag paranoia-period of resistance",
+                "Lavaless-loot llamas",
+                "Jukebox-Krenzinator",
+                "Inventors-Item Bounties",
+                "Hasty Boys-Head Hunters",
+                "Gapple Roulette-Grave Robbers",
+                "Fast Getaway-Frosty Boys",
+                "Cupid-Cutlcean",
+                "Chump Charity-Circus",
+                "Biome Paranoia-Bleeding Sweets",
+                "Best Pve-Beta Zombies",
+                "Backpacks-Battle Sirens",
+                "Anvilless-Armored Mobs",
+                "Unbreakable-Upgrades",
+                "Timber-Trivia",
+                "Spawners Galore-Team Inventory",
+                "Skyhigh-Sound Paranoia",
+                "Rewarding Longshots-Siphon",
+                "Random Starter Items-Red Arrow",
+                "Quadrant Paranoia-Randomized Chests",
+                "Potion Bomb-Presents",
+                "Piggy Bank-Poltergeist",
+                "Permaglow-Permakill",
+                "Overcook-Period of Resistance",
+                "Nametag Paranoia-No fall",
+                "Beta Zombie-Biome Paranoia",
+                "X Marks the Spot-Zoomies",
+                "Veinminer-Vengeful Spirits",
+                "Unbreakable-Upgrade",
+                "Timebomb-Trivia",
+                "Team Inventory-Timber",
+                "Sound Paranoia-Spawners Galore",
+                "Siphon-Skyhigh",
+                "Red Arrow-Rewarding Longshots",
+                "Randomized Chests-Random Starter Items",
+                "Presents-Quadrant Paranoia",
+                "Poltergeist-Potion Bomb",
+                "Permakill-Piggy Bank",
+                "Period of Resistance-Permaglow",
+                "Nametag Paranoia-Overcooked",
+                "Krenzinator-Lavaless",
+                "Item Bounties-Jukebox Hero",
+                "Head Hunters-Inventors",
+                "Grave Robbers-Hasty Boys",
+                "Frosty Boys-Gapple Roulette",
+                "Fast Getaway-Fireless",
+                "Cupid-Cutclean",
+                "Bleeding Sweets-Chump Charity",
+                "Beta Zombies-Biome Paranoia",
+                "Battle Siren-Best PvE",
+                "Anvilless-Backpacks",
+                "NoFlint",
+                "Team Cycle",
+                "Bengeful Spirits",
+                "Timed Team",
+                "Timer",
+                "50%Maxheath",
+                "Mystery scerarios",
+                "Starter TnT minecart",
+                "Chaos",
+                "Superflat",
+                "Mole Kits",
+                "Big Hole",
+                "Corner Scatter",
+                "Snowball",
+                "Waterless",
+                "nothingpearlsonal",
+                "doubleheath",
+                "Timed Teams",
+                "Big Cracks",
+                "Miniborder",
+                "Randomized Chest+",
+                "Nothing Pearlsonal",
+                "Double Health",
+                "CustomShrine",
+                "HeavyPocket",
+                "Bprobability",
+                "SplitSpawn"
+            ]
+        },
+        "Potion Bomb": {
+            "type": "scenario",
+            "values": [
+                "Potion Bomb"
+            ]
+        },
+        "Chump Charity": {
+            "type": "scenario",
+            "values": [
+                "Chump chairty",
+                "chumpcharityplus",
+                "Chump Charity"
+            ]
+        },
+        "Jukebox Hero": {
+            "type": "scenario",
+            "values": [
+                "Jukebox Hero"
+            ]
+        },
+        "Blood Market": {
+            "type": "team",
+            "values": [
+                "Blood Market"
+            ]
+        },
+        "Permaglow": {
+            "type": "scenario",
+            "values": [
+                "Peramglow",
+                "Permaglow"
+            ]
+        },
+        "Sky High": {
+            "type": "scenario",
+            "values": [
+                "Sky High"
+            ]
+        },
+        "Snowball Flight": {
+            "type": "scenario",
+            "values": [
+                "Snowball Fight",
+                "Snowball Flight"
+            ]
+        },
+        "Infinite Allies": {
+            "type": "scenario",
+            "values": [
+                "Infinite Allies"
+            ]
+        },
+        "Head Hunters": {
+            "type": "scenario",
+            "values": [
+                "Head Hunters"
+            ]
+        },
+        "Unbreakable": {
+            "type": "scenario",
+            "values": [
+                "Unbreakable"
+            ]
+        },
+        "Trading Places": {
+            "type": "scenario",
+            "values": [
+                "Trading Places"
+            ]
+        },
+        "Hasty Boys": {
+            "type": "scenario",
+            "values": [
+                "Speedy Miners",
+                "Hasty Boy",
+                "HasteyBoys",
+                "Hastey Boys",
+                "Hastyboys",
+                "Hasty Boys"
+            ]
+        },
+        "Mystery Paths": {
+            "type": "scenario",
+            "values": [
+                "Mystery Paths"
+            ]
+        },
+        "Bullseye": {
+            "type": "scenario",
+            "values": [
+                "Bullseye"
+            ]
+        },
+        "Nametag Paranoia": {
+            "type": "scenario",
+            "values": [
+                "Nametag Paranoia",
+                "Advancement/Nametag Paranoia"
+            ]
+        },
+        "Union Spawn": {
+            "type": "scenario",
+            "values": [
+                "Union Spawn"
+            ]
+        },
+        "Golden Retriever": {
+            "type": "scenario",
+            "values": [
+                "Golden Retriever"
+            ]
+        },
+        "Hasty Babies": {
+            "type": "scenario",
+            "values": [
+                "Hasty Babies"
+            ]
+        },
+        "Bandits": {
+            "type": "scenario",
+            "values": [
+                "Bandits"
+            ]
+        },
+        "Randomized Chests+": {
+            "type": "scenario",
+            "values": [
+                "Randomized Chests+"
+            ]
+        },
+        "Sky Ores": {
+            "type": "scenario",
+            "values": [
+                "Sky Ores"
+            ]
+        },
+        "Enderdragon Rush": {
+            "type": "scenario",
+            "values": [
+                "enderdragonrushplus"
+            ]
+        },
+        "Quadrants": {
+            "type": "scenario",
+            "values": [
+                "Quadrants"
+            ]
+        },
+        "Inventors": {
+            "type": "scenario",
+            "values": [
+                "Inventors"
+            ]
+        },
+        "Permanent Invisibility": {
+            "type": "scenario",
+            "values": [
+                "Permanent Invisibility"
+            ]
+        },
+        "Alone Together": {
+            "type": "scenario",
+            "values": [
+                "Alone Together"
+            ]
+        },
+        "Silent Auction": {
+            "type": "team",
+            "values": [
+                "Silent Auction"
+            ]
+        },
+        "Beta Zombies": {
+            "type": "scenario",
+            "values": [
+                "Beta Zombies"
+            ]
+        },
+        "Gold Medal": {
+            "type": "scenario",
+            "values": [
+                "Gold Medal"
+            ]
+        },
+        "Spawners Galore": {
+            "type": "scenario",
+            "values": [
+                "Spawners Glore",
+                "Spawners Galore"
+            ]
+        },
+        "Blood Lapis": {
+            "type": "scenario",
+            "values": [
+                "Blood Lapis"
+            ]
+        },
+        "Chicken": {
+            "type": "scenario",
+            "values": [
+                "Chickens",
+                "Chicken"
+            ]
+        },
+        "Backpacks": {
+            "type": "scenario",
+            "values": [
+                "Backpack",
+                "Backpacks"
+            ]
+        },
+        "Item Bounties": {
+            "type": "scenario",
+            "values": [
+                "Item Bounties"
+            ]
+        },
+        "Nether Meetup": {
+            "type": "scenario",
+            "values": [
+                "Nether Meetup"
+            ]
+        },
+        "FireBall": {
+            "type": "scenario",
+            "values": [
+                "Fire Balls"
+            ]
+        },
+        "Upgrades": {
+            "type": "scenario",
+            "values": [
+                "Upgrade",
+                "Upgrades"
+            ]
+        },
+        "Team Split": {
+            "type": "scenario",
+            "values": [
+                "Team Split"
+            ]
+        },
+        "Circus": {
+            "type": "scenario",
+            "values": [
+                "Circus"
+            ]
+        },
+        "Grim Reaper": {
+            "type": "scenario",
+            "values": [
+                "Grim Reaper"
+            ]
+        },
+        "Timber": {
+            "type": "scenario",
+            "values": [
+                "Timber"
+            ]
+        },
+        "Big Chungus": {
+            "type": "scenario",
+            "values": [
+                "Big Chungus"
+            ]
+        },
+        "Stock Up": {
+            "type": "scenario",
+            "values": [
+                "Stock Up"
+            ]
+        },
+        "Deep Diggers": {
+            "type": "scenario",
+            "values": [
+                "Deep Digger",
+                "Deep Diggers"
+            ]
+        },
+        "Flower Power": {
+            "type": "scenario",
+            "values": [
+                "Flower Powwer",
+                "Flower Power"
+            ]
+        },
+        "Team Health": {
+            "type": "scenario",
+            "values": [
+                "Team Heath",
+                "Team Healh",
+                "Team Health"
+            ]
+        },
+        "Fallout": {
+            "type": "scenario",
+            "values": [
+                "Fallout"
+            ]
+        },
+        "Jackpot": {
+            "type": "scenario",
+            "values": [
+                "Jackpot"
+            ]
+        },
+        "Best PvE": {
+            "type": "scenario",
+            "values": [
+                "Best PvE"
+            ]
+        },
+        "Fish Tank": {
+            "type": "scenario",
+            "values": [
+                "Fish Tank"
+            ]
+        },
+        "Slimy Crack": {
+            "type": "scenario",
+            "values": [
+                "Double Slimy Crack",
+                "Slimy Big Hole",
+                "Slimey Crack",
+                "Slimy Crack"
+            ]
+        },
+        "C_money": {
+            "type": "scenario",
+            "values": [
+                "C_money"
+            ]
+        },
+        "Overcook": {
+            "type": "scenario",
+            "values": [
+                "Overcooked",
+                "Overcook"
+            ]
+        },
+        "Monsters, Inc.": {
+            "type": "scenario",
+            "values": [
+                "Monsters, Inc."
+            ]
+        },
+        "Enshrined": {
+            "type": "scenario",
+            "values": [
+                "Enshrined"
+            ]
+        },
+        "Shrines Galore": {
+            "type": "scenario",
+            "values": [
+                "Shrines Galore",
+                "Shrines Glore"
+            ]
+        },
+        "Skyblock Grave Robbers": {
+            "type": "scenario",
+            "values": [
+                "Skyblock Grave Robbers"
+            ]
+        },
+        "Chorus Gapples": {
+            "type": "scenario",
+            "values": [
+                "Chorus Gapple",
+                "Chorus Gaps",
+                "Chorus Apples",
+                "Chrorus Gapples",
+                "Chorus Gapple"
+            ]
+        },
+        "Loot Llamas": {
+            "type": "scenario",
+            "values": [
+                "Loot Llama",
+                "Loot Llamas"
+            ]
+        },
+        "Cupid": {
+            "type": "scenario",
+            "values": [
+                "Cupid"
+            ]
+        },
+        "Lavaless": {
+            "type": "scenario",
+            "values": [
+                "Lavaless"
+            ]
+        },
+        "Permakill": {
+            "type": "scenario",
+            "values": [
+                "Permakill"
+            ]
+        },
+        "Prickly Situation": {
+            "type": "scenario",
+            "values": [
+                "Prickly Situation"
+            ]
+        },
+        "Moles": {
+            "type": "scenario",
+            "values": [
+                "Mole",
+                "Moles"
+            ]
+        },
+        "Player Swap": {
+            "type": "scenario",
+            "values": [
+                "Player Swap"
+            ]
+        },
+        "Trivia": {
+            "type": "scenario",
+            "values": [
+                "Trivia",
+                "Triva"
+            ]
+        },
+        "Random Starter Items": {
+            "type": "scenario",
+            "values": [
+                "Random Starting Items",
+                "Random Start Items",
+                "Random starter item",
+                "Starter Item: 3x Map",
+                "Rigged Starter Items",
+                "RiggedStarterItem",
+                "Random Starter Items"
+            ]
+        },
+        "Period of Resistance": {
+            "type": "scenario",
+            "values": [
+                "Period of Resistence",
+                "Period of Resistance"
+            ]
+        },
+        "Preamblee's Grave Robbers": {
+            "type": "scenario",
+            "values": [
+                "Preamblee's Grave Robbers",
+                "Preamblee's Grabe Robbers",
+                "Preamble's Grave Robbers",
+                "Preamblee’s Grave Robbers"
+            ]
+        },
+        "Big Crack": {
+            "type": "scenario",
+            "values": [
+                "Big Crack"
+            ]
+        },
+        "Grave Robbers": {
+            "type": "scenario",
+            "values": [
+                "Grave Robbers",
+                "Grave Robber",
+                "Grave Robbers",
+                "Grave Diggers"
+            ]
+        },
+        "Love at First Sight": {
+            "type": "team",
+            "values": [
+                "Love at First Sight"
+            ]
+        },
+        "Amplified": {
+            "type": "scenario",
+            "values": [
+                "Amplified"
+            ]
+        },
+        "Quadrant Paranoia": {
+            "type": "scenario",
+            "values": [
+                "Quandrant Paranoia",
+                "Quadrant Paranoia"
+            ]
+        },
+        "Switcheroo": {
+            "type": "scenario",
+            "values": [
+                "Switcherro",
+                "Switcheroo"
+            ]
+        },
+        "Unscramble": {
+            "type": "scenario",
+            "values": [
+                "Unscramble"
+            ]
+        },
+        "Mystery Scenarios": {
+            "type": "mystery_scenario",
+            "values": [
+                "Mystery Scenarios"
+            ]
+        },
+        "Gapple Roulette": {
+            "type": "scenario",
+            "values": [
+                "Gapple Roulette"
+            ]
+        },
+        "Good Diet": {
+            "type": "scenario",
+            "values": [
+                "Good Diet"
+            ]
+        },
+        "Red Arrows": {
+            "type": "scenario",
+            "values": [
+                "Redarrow",
+                "Red Arrows"
+            ]
+        },
+        "Custom 00": {
+            "type": "scenario",
+            "values": [
+                "Custom 00"
+            ]
+        },
+        "Bench Blitz": {
+            "type": "scenario",
+            "values": [
+                "Bench Blitz"
+            ]
+        },
+        "Slice of Life": {
+            "type": "scenario",
+            "values": [
+                "Slice of Life"
+            ]
+        },
+        "Hasty Worlds": {
+            "type": "scenario",
+            "values": [
+                "Hasty World",
+                "HastyWorld",
+                "Hasty Worlds"
+            ]
+        },
+        "Blood Diamonds": {
+            "type": "scenario",
+            "values": [
+                "Blood Diamonds",
+                "Blood diamond"
+            ]
+        },
+        "Go To Hell": {
+            "type": "scenario",
+            "values": [
+                "Go To Hell"
+            ]
+        },
+        "Superpower Switch": {
+            "type": "scenario",
+            "values": [
+                "Superpower Switch"
+            ]
+        },
+        "Fast Getaway": {
+            "type": "scenario",
+            "values": [
+                "Fast Getaway"
+            ]
+        },
+        "Fireless": {
+            "type": "scenario",
+            "values": [
+                "Fireless"
+            ]
+        },
+        "Love at First Advancement": {
+            "type": "team",
+            "values": [
+                "Love at First Advancement"
+            ]
+        },
+        "Randomized Chests": {
+            "type": "scenario",
+            "values": [
+                "Randomized Chests",
+                "Randomised Chests"
+            ]
+        },
+        "Zoomies": {
+            "type": "scenario",
+            "values": [
+                "Zoomies"
+            ]
+        },
+        "Rewarding LongShots": {
+            "type": "scenario",
+            "values": [
+                "Rewarding Longshots",
+                "Rewarding LongShot",
+                "Rewarding Longshits"
+            ]
+        },
+        "Infection": {
+            "type": "team",
+            "values": [
+                "Infection"
+            ]
+        },
+        "Mystery Teams": {
+            "type": "team",
+            "values": [
+                "Mystery Teams",
+                "Secret Teams"
+            ]
+        },
+        "Sound Paranoia": {
+            "type": "scenario",
+            "values": [
+                "Sounds Paranoia",
+                "Sound Paranoia"
+            ]
+        },
+        "Fluid Swap": {
+            "type": "scenario",
+            "values": [
+                "Fluid Swap"
+            ]
+        },
+        "Shulkers": {
+            "type": "scenario",
+            "values": [
+                "Shulkers"
+            ]
+        },
+        "Armored Mobs+": {
+            "type": "scenario",
+            "values": [
+                "Armored Mobs+"
+            ]
+        },
+        "Clean Slate": {
+            "type": "scenario",
+            "values": [
+                "Clean State",
+                "Clean Slate"
+            ]
+        },
+        "Blood Enchants": {
+            "type": "scenario",
+            "values": [
+                "Starter Elytra",
+                "Blood Enchant"
+            ]
+        },
+        "Bleeding Sweets": {
+            "type": "scenario",
+            "values": [
+                "BleedSweets",
+                "Bleed Sweets",
+                "Bleeds sweets",
+                "Bleeding Sweats",
+                "Bleeding Sweets"
+            ]
+        },
+        "Biome Paranoia": {
+            "type": "scenario",
+            "values": [
+                "Biome Paranoia"
+            ]
+        },
+        "1-Up": {
+            "type": "scenario",
+            "values": [
+                "1-Up"
+            ]
+        },
+        "Balanced Random Teams": {
+            "type": "team",
+            "values": [
+                "Balanced Random Teams"
+            ]
+        },
+        "Training Rabbits": {
+            "type": "scenario",
+            "values": [
+                "Training Rabbits"
+            ]
+        },
+        "Sniper Spleef": {
+            "type": "scenario",
+            "values": [
+                "Sniper Spleef"
+            ]
+        },
+        "Advanced Tactics": {
+            "type": "scenario",
+            "values": [
+                "Advanced Tactics"
+            ]
+        },
+        "Goomba Stomp": {
+            "type": "scenario",
+            "values": [
+                "Goomba Stop"
+            ]
+        },
+        "Underground Parallel": {
+            "type": "scenario",
+            "values": [
+                "Parallel Worlds",
+                "Underground Parellel",
+                "Underground Parrelel",
+                "Underground Parallel"
+            ]
+        },
+        "Anonymous": {
+            "type": "scenario",
+            "values": [
+                "Anonymous",
+                "Anoymous"
+            ]
+        },
+        "Farm Gang": {
+            "type": "scenario",
+            "values": [
+                "Farm Gang"
+            ]
+        },
+        "Siphon": {
+            "type": "scenario",
+            "values": [
+                "Siphon",
+                "Sihpon"
+            ]
+        },
+        "Rewarding Longshots": {
+            "type": "scenario",
+            "values": [
+                "Reward Longshots"
+            ]
+        },
+        "Calculator": {
+            "type": "scenario",
+            "values": [
+                "Calculator"
+            ]
+        },
+        "Anvilless": {
+            "type": "scenario",
+            "values": [
+                "Anvilless",
+                "Anviless",
+                "Anvilesss"
+            ]
+        },
+        "Love at First Lake": {
+            "type": "team",
+            "values": [
+                "Love at First Lake"
+            ]
+        },
+        "Cutclean": {
+            "type": "scenario",
+            "values": [
+                "Cutclean"
+            ]
+        },
+        "Webcage": {
+            "type": "scenario",
+            "values": [
+                "Webcage"
+            ]
+        },
+        "Valley Girls": {
+            "type": "scenario",
+            "values": [
+                "Valley Girls"
+            ]
+        },
+        "Wrath of God": {
+            "type": "scenario",
+            "values": [
+                "Wrath of God"
+            ]
+        },
+        "Hitman": {
+            "type": "scenario",
+            "values": [
+                "Hitman"
+            ]
+        },
+        "Fragile Shields": {
+            "type": "scenario",
+            "values": [
+                "Fragile Sheilds",
+                "Fragile Shields"
+            ]
+        },
+        "Bees?": {
+            "type": "scenario",
+            "values": [
+                "Bees?"
+            ]
+        },
+        "Rush": {
+            "type": "scenario",
+            "values": [
+                "Rush"
+            ]
+        },
+        "Veinminer": {
+            "type": "scenario",
+            "values": [
+                "Veinminer",
+                "Vienminer",
+                "Vein Miners",
+                "Verinminer",
+                "Veinnminer"
+            ]
+        },
+        "Jump Scare": {
+            "type": "scenario",
+            "values": [
+                "Jump Scare"
+            ]
+        },
+        "Slave Market": {
+            "type": "team",
+            "values": [
+                "Slave Market"
+            ]
+        },
+        "Chunk Apocalypse": {
+            "type": "scenario",
+            "values": [
+                "Chunk Apocalypse"
+            ]
+        },
+        "Risky Retrieval": {
+            "type": "scenario",
+            "values": [
+                "Risky Retrieval",
+                "Risky Retrival",
+                "Risky Retrieval"
+            ]
+        },
+        "Fast Food": {
+            "type": "scenario",
+            "values": [
+                "Fast Food"
+            ]
+        },
+        "Children Left Unattended": {
+            "type": "scenario",
+            "values": [
+                "Children Unattended",
+                "Children Left Unattended"
+            ]
+        },
+        "Ender Dragon Rush": {
+            "type": "scenario",
+            "values": [
+                "Ender Dragon Rush"
+            ]
+        },
+        "Battle Siren": {
+            "type": "scenario",
+            "values": [
+                "Battle Sirens",
+                "Battle Siren"
+            ]
+        },
+        "Honey Crack": {
+            "type": "scenario",
+            "values": [
+                "Honey Crack"
+            ]
+        },
+        "Frosty Boys": {
+            "type": "scenario",
+            "values": [
+                "Frosty Boys"
+            ]
+        },
+        "Dog Fight": {
+            "type": "scenario",
+            "values": [
+                "Dog Fight"
+            ]
+        },
+        "Drafters": {
+            "type": "team",
+            "values": [
+                "Drafters"
+            ]
+        },
+        "Heavy Pockets": {
+            "type": "scenario",
+            "values": [
+                "Heavy Pockets"
+            ]
+        },
+        "Poltergeist": {
+            "type": "scenario",
+            "values": [
+                "Poltergeist",
+                "Poltergiest"
+            ]
+        },
+        "Presents": {
+            "type": "scenario",
+            "values": [
+                "Custom Presents",
+                "x2 Presents",
+                "Presents x10",
+                "Christmas Presents",
+                "Presents x5",
+                "Presents x3",
+                "Presents x2",
+                "Boxing Day Presents",
+                "Presents(x30)",
+                "Presents 3x",
+                "present",
+                "PresentsBut1250ofThem",
+                "Presents"
+            ]
+        },
+        "Love at First Damage": {
+            "type": "team",
+            "values": [
+                "Love at First Damage"
+            ]
+        },
+        "Armored Mobs": {
+            "type": "scenario",
+            "values": [
+                "Armored Mobs",
+                "Armour Mobs"
+            ]
+        }
+    }
+}

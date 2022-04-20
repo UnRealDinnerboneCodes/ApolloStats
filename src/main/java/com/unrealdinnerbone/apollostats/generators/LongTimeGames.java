@@ -9,6 +9,7 @@ import com.unrealdinnerbone.unreallib.web.WebUtils;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class LongTimeGames implements IWebPage {
 
@@ -31,7 +32,7 @@ public class LongTimeGames implements IWebPage {
             int fallout = entry.getValue().getOrDefault(Type.FALLOUT, new AtomicInteger(0)).get();
             return new Types(entry.getKey(), edr, skyhigh, slo, nether, fallout);
         }).toList();
-        return WebUtils.makeHTML("Long Time Games", Arrays.asList("Host", "EDR", "SkyHigh", "SOL", "Nether", "Fallout"), types);
+        return WebUtils.makeHTML("Long Time Games", "",Arrays.asList("Host", "EDR", "SkyHigh", "SOL", "Nether", "Fallout"), types);
     }
 
     @Override
@@ -40,9 +41,9 @@ public class LongTimeGames implements IWebPage {
     }
 
 
-    public record Types(String host, int edr, int skyhigh, int slo, int nether, int fallout) implements WebUtils.ITableData {
+    public record Types(String host, int edr, int skyhigh, int slo, int nether, int fallout) implements Supplier<List<String>> {
         @Override
-        public List<String> getData() {
+        public List<String> get() {
             return Arrays.asList(host, String.valueOf(edr), String.valueOf(skyhigh), String.valueOf(slo), String.valueOf(nether), String.valueOf(fallout));
         }
     }
@@ -61,7 +62,7 @@ public class LongTimeGames implements IWebPage {
         }
 
         public static Optional<Type> getType(Match match) {
-            for(String fixScen : Scenarios.fixScenarios(match.scenarios())) {
+            for(String fixScen : Scenarios.fix(Scenarios.Type.SCENARIO, match.scenarios())) {
                 for(Type type : Type.values()) {
                     for(String name : type.getNames()) {
                         if(fixScen.equalsIgnoreCase(name)) {

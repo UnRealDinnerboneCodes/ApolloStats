@@ -8,6 +8,7 @@ import com.unrealdinnerbone.unreallib.web.WebUtils;
 import javax.swing.*;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Supplier;
 
 public class TimeBetweenGames implements IWebPage {
 
@@ -27,7 +28,7 @@ public class TimeBetweenGames implements IWebPage {
             lastMatch = match;
         }
 
-        return WebUtils.makeHTML("Times", Arrays.asList("One", "Two", "Diff"), matchPairs.stream().sorted(Comparator.comparing(pair -> (Instant.parse(pair.before().opens()).toEpochMilli() - Instant.parse(pair.after().opens()).toEpochMilli()))).toList());
+        return WebUtils.makeHTML("Times", "", Arrays.asList("One", "Two", "Diff"), matchPairs.stream().sorted(Comparator.comparing(pair -> (Instant.parse(pair.before().opens()).toEpochMilli() - Instant.parse(pair.after().opens()).toEpochMilli()))).toList());
     }
 
     @Override
@@ -36,9 +37,9 @@ public class TimeBetweenGames implements IWebPage {
     }
 
 
-    public record Data(Match before, Match after) implements WebUtils.ITableData {
+    public record Data(Match before, Match after) implements Supplier<List<String>> {
         @Override
-        public List<String> getData() {
+        public List<String> get() {
             return Arrays.asList(before.opens(), after.opens(), String.valueOf(Instant.parse(after().opens()).toEpochMilli() - Instant.parse(before().opens()).toEpochMilli()));
         }
     }

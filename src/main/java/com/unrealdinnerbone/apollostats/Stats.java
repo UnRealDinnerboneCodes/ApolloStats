@@ -3,11 +3,14 @@ package com.unrealdinnerbone.apollostats;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.unrealdinnerbone.apollostats.generators.*;
+import com.unrealdinnerbone.apollostats.generators.test.TestRandomScen;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.web.HttpUtils;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
+import io.javalin.http.ContentType;
+import io.javalin.http.staticfiles.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +28,7 @@ public class Stats {
     private static final Logger LOGGER = LoggerFactory.getLogger("Stats");
 
     private static final List<IWebPage> generators = new ArrayList<>();
-    private static final Cache<String, String> pages = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
+    private static final Cache<String, String> pages = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
 
     static {
 //        generators.add(new GameHostedGen());
@@ -36,6 +39,8 @@ public class Stats {
         generators.add(new TeamTypesGames());
         generators.add(new TeamSizeGames());
         generators.add(new TimeBetweenGames());
+        generators.add(new HostIn24HoursGen());
+        generators.add(new TestRandomScen());
     }
 
 
@@ -43,24 +48,46 @@ public class Stats {
 
     public static void main(String[] args) throws Exception {
         Map<String, List<Match>> hostMatchMap = new HashMap<>();
-        TaskScheduler.scheduleRepeatingTask(1, TimeUnit.HOURS, () -> {
-            try {
-                Scenarios.updateOfficialScenarios();
-                Scenarios.loadDiskData();
-                hostMatchMap.clear();
-                for(String staff : Util.STAFF) {
-                    List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
-                    LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
-                    hostMatchMap.put(staff, matches);
+        TaskScheduler.scheduleRepeatingTask(1, TimeUnit.HOURS, new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    Scenarios.loadDiskData();
+                    hostMatchMap.clear();
+//                    for(String staff : Util.STAFF) {
+//                        List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
+//                        LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
+//                        hostMatchMap.put(staff, matches);
+//                    }
+                }catch(Exception e) {
+                    LOGGER.error("Error while updating data", e);
                 }
-            }catch(Exception e) {
-                LOGGER.error("Error while updating data", e);
-            }
+            }});
+
+        Javalin app = Javalin.create(javalinConfig -> {
+            javalinConfig.addStaticFiles(staticFileConfig -> {
+                staticFileConfig.directory = "img/scens";
+                staticFileConfig.location = Location.CLASSPATH;
+                staticFileConfig.hostedPath = "/img/scens";
+            });
+            javalinConfig.addStaticFiles(staticFileConfig -> {
+                staticFileConfig.directory = "img/teams";
+                staticFileConfig.location = Location.CLASSPATH;
+                staticFileConfig.hostedPath = "/img/teams";
+            });
+        }).start(1000);
+
+        app.before(ctx -> {
+
         });
-        Javalin app = Javalin.create().start(1000);
+
         app.get("css/stats.css", ctx -> ctx.result(getResourceAsString("css/stats.css")));
         app.get("js/fixed.js", ctx -> ctx.result(getResourceAsString("js/fixed.js")));
         app.get("js/sorttable.txt", ctx -> ctx.result(getResourceAsString("js/sorttable.js")));
+//        app.get("img/scen/{scen}", ctx -> {
+//            String scen = ctx.pathParam("scen");
+//            ctx.contentType(ContentType.IMAGE_PNG).result(getResourceAsString("img/scens/" + scen + ".png"));
+//        });
 
         for(IWebPage generator : generators) {
             app.get(generator.getName(), ctx -> {

@@ -44,7 +44,8 @@ public class Util
             "Andronifyy",
             "LordJxck",
             "PingasPootis",
-            "DIISU","Gejin",
+            "DIISU",
+            "Gejin",
             "uh_joe",
             "Chugabunga",
             "Sharkbob94349",
@@ -53,7 +54,7 @@ public class Util
 
 
     public static String formalize(String s) {
-        return s.toLowerCase().replace(" ", "").replaceAll("\\p{Punct}+", "");
+        return s.toLowerCase().replace(" ", "").replace("+", "plus").replaceAll("\\p{Punct}+", "");
     }
 
 

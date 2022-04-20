@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class LastPlayedGen implements IWebPage {
 
@@ -22,7 +23,7 @@ public class LastPlayedGen implements IWebPage {
                 .flatMap(List::stream)
                 .filter(Match::isApolloGame)
                 .filter(Predicate.not(Match::removed))
-                .forEach(match -> Scenarios.fixScenarios(match.scenarios())
+                .forEach(match -> Scenarios.fix(Scenarios.Type.SCENARIO, match.scenarios())
                         .forEach(scenario -> Maps.putIfAbsent(plays, scenario, new ArrayList<>()).add(Pair.of(Instant.parse(match.opens()), match.hostingName()))));
 
         List<Stats> stats = new ArrayList<>();
@@ -32,7 +33,7 @@ public class LastPlayedGen implements IWebPage {
         });
 
         stats.sort(Comparator.comparing(stats1 -> stats1.last().key()));
-        return WebUtils.makeHTML("Scenarios First / Last Played", Arrays.asList("Scenarios", "First Time", "Last Time", "First Host", "Last Host"), stats);
+        return WebUtils.makeHTML("Scenarios First / Last Played", "", Arrays.asList("Scenarios", "First Time", "Last Time", "First Host", "Last Host"), stats);
     }
 
     @Override
@@ -40,14 +41,14 @@ public class LastPlayedGen implements IWebPage {
         return "played";
     }
 
-    public record Stats(String name, Pair<Instant, String> first, Pair<Instant, String> last) implements WebUtils.ITableData {
+    public record Stats(String name, Pair<Instant, String> first, Pair<Instant, String> last) implements Supplier<List<String>> {
 
         private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MMM dd")
                         .withLocale(Locale.UK)
                         .withZone(ZoneId.of("UTC"));
 
         @Override
-        public List<String> getData() {
+        public List<String> get() {
             return Arrays.asList(name, formatter.format(first.key()), formatter.format(last.key()), first.value(), last.value());
         }
     }

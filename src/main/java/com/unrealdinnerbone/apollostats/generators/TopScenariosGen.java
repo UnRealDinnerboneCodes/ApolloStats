@@ -5,15 +5,13 @@ import com.unrealdinnerbone.apollostats.Match;
 import com.unrealdinnerbone.apollostats.Scenarios;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
-import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
-import java.util.Map.Entry;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 public class TopScenariosGen implements IWebPage {
 
@@ -27,7 +25,7 @@ public class TopScenariosGen implements IWebPage {
                         .filter(Match::isApolloGame)
                         .filter(Predicate.not(Match::removed))
                         .peek(match -> total.incrementAndGet())
-                        .forEach(match -> Scenarios.fixScenarios(match.scenarios())
+                        .forEach(match -> Scenarios.fix(Scenarios.Type.SCENARIO, match.scenarios())
                                 .forEach(scenario -> Maps.putIfAbsent(matchCount, scenario, new AtomicInteger(0)).incrementAndGet())));
 
 
@@ -39,7 +37,7 @@ public class TopScenariosGen implements IWebPage {
 
 
         stats.sort(Comparator.comparing(Count::percent).reversed());
-        return WebUtils.makeHTML("Top Scenarios", Arrays.asList("Scenario", "Count", "Percent"), stats);
+        return WebUtils.makeHTML("Top Scenarios", "", Arrays.asList("Scenario", "Count", "Percent"), stats);
     }
 
     @Override
@@ -48,12 +46,12 @@ public class TopScenariosGen implements IWebPage {
     }
 
 
-    public record Count(String scenario, int amount, double percent) implements WebUtils.ITableData {
+    public record Count(String scenario, int amount, double percent) implements Supplier<List<String>> {
 
         private final static DecimalFormat df = new DecimalFormat("#.#####");
 
         @Override
-        public List<String> getData() {
+        public List<String> get() {
             return Arrays.asList(scenario, String.valueOf(amount), df.format(percent) + "%");
         }
     }

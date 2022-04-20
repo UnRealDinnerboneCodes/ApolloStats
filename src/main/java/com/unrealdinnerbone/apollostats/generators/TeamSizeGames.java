@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class TeamSizeGames implements IWebPage {
 
@@ -36,7 +37,7 @@ public class TeamSizeGames implements IWebPage {
         });
 
 
-        List<WebUtils.ITableData> iTableData = new ArrayList<>();
+        List<Supplier<List<String>>> iTableData = new ArrayList<>();
 
         typesList.sort(Comparator.naturalOrder());
         typesList.add(0, "Host");
@@ -53,7 +54,7 @@ public class TeamSizeGames implements IWebPage {
                 return values;
             });
         }
-        return WebUtils.makeHTML("Team Types", typesList, iTableData);
+        return WebUtils.makeHTML("Team Types", "",typesList, iTableData);
     }
 
     @Override

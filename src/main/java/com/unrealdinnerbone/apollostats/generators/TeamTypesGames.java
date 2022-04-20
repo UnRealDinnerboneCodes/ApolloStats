@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class TeamTypesGames implements IWebPage {
 
@@ -38,7 +39,7 @@ public class TeamTypesGames implements IWebPage {
         });
 
 
-        List<WebUtils.ITableData> iTableData = new ArrayList<>();
+        List<Supplier<List<String>>> iTableData = new ArrayList<>();
 
         for(Map.Entry<String, Map<String, AtomicInteger>> entry : types.entrySet()) {
             iTableData.add(() -> {
@@ -52,7 +53,7 @@ public class TeamTypesGames implements IWebPage {
                 return values;
             });
         }
-        return WebUtils.makeHTML("Team Types", typesList, iTableData);
+        return WebUtils.makeHTML("Team Types", "", typesList, iTableData);
     }
 
     @Override
@@ -60,10 +61,10 @@ public class TeamTypesGames implements IWebPage {
         return "team_types";
     }
 
-    public record Stats(String name, Pair<Instant, String> first, Pair<Instant, String> last) implements WebUtils.ITableData {
+    public record Stats(String name, Pair<Instant, String> first, Pair<Instant, String> last) implements Supplier<List<String>> {
 
         @Override
-        public List<String> getData() {
+        public List<String> get() {
             return Arrays.asList(name, first.key().toString(), last.key().toString(), first.value(), last.value());
         }
     }
