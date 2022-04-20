@@ -217,7 +217,7 @@
                 "Diamond Rod",
                 "Diamond Rod",
                 "Red vs Blue",
-                "Randomized Chest",
+
                 "Custom Temples",
                 "Custom Map",
                 "Starter Notch",
@@ -951,6 +951,7 @@
         "Randomized Chests": {
             "type": "scenario",
             "values": [
+                "Randomized Chest",
                 "Randomized Chests",
                 "Randomised Chests"
             ]

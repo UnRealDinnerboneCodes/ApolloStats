@@ -10,17 +10,25 @@ import com.unrealdinnerbone.unreallib.MathHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class TestRandomScen implements IWebPage {
 
 
     @Override
     public String generateStats(Map<String, List<Match>> hostMatchMap, Function<String, String> query) {
+        List<String> scens = getScenList();
+        UUID uuid = UUID.randomUUID();
+        String minS = query.apply("min");
+        String maxS = query.apply("max");
+        int min = minS == null ? 3 : Integer.parseInt(minS);
+        int max = maxS == null ? 9 : Math.min(scens.size(), Integer.parseInt(maxS));
+        return generatePage(uuid, scens, min, max);
+
+    }
+
+    public static List<String> getScenList() {
         List<String> random = new ArrayList<>(Scenarios.getValues(Scenarios.Type.SCENARIO));
         random.remove("Rush");
         random.remove("Unknown");
@@ -29,14 +37,15 @@ public class TestRandomScen implements IWebPage {
         random.remove("Custom 00");
         random.remove("Farm Gang");
         random.remove("Permanent Invisibility");
+        return random;
+    }
+
+
+    public static String generatePage(UUID uuid, List<String> scens, int min, int max) {
         List<String> randomSelect = new ArrayList<>();
-//        String page = getPage();
-        String minS = query.apply("min");
-        String maxS = query.apply("max");
-        int min = minS == null ? 3 : Integer.parseInt(minS);
-        int max = maxS == null ? 9 : Math.min(random.size(), Integer.parseInt(maxS));
-        for(int i = 0; i <= MathHelper.randomInt(min -1, max + 1); i++) {
-            String type = ArrayUtil.getRandomValueAndRemove(random);
+        Random theRandom = new Random(uuid.hashCode());
+        for(int i = 0; i <= MathHelper.randomInt(theRandom, min -1, max + 1); i++) {
+            String type = ArrayUtil.getRandomValueAndRemove(theRandom, scens);
             randomSelect.add(type);
         }
         StringBuilder builder = new StringBuilder();
@@ -57,10 +66,10 @@ public class TestRandomScen implements IWebPage {
         }
         List<String> teams = new ArrayList<>(Scenarios.getValues(Scenarios.Type.TEAM));
         teams.remove("Love at First Lake");
-        String teamType = ArrayUtil.getRandomValue(teams);
-        String scens = teamType + ", " + randomSelect.stream().collect(Collectors.joining(", "));
-        String page  = getPage().replace("{STUFF}", scens).replace("{data}", builder.toString()).replace("{team}", Util.formalize(teamType));
-        LOGGER.info("Random Scenarios: {}", randomSelect);
+        String teamType = ArrayUtil.getRandomValue(theRandom, teams);
+        String theScens = teamType + ", " + String.join(", ", randomSelect) + " (https://apollo.unreal.codes/random_game/" + uuid + ")";
+        String page  = getPage().replace("{STUFF}", theScens).replace("{data}", builder.toString()).replace("{team}", Util.formalize(teamType));
+        LOGGER.info("Random Scenarios: {} {}", uuid, randomSelect);
         return page;
     }
 
@@ -79,7 +88,7 @@ public class TestRandomScen implements IWebPage {
 
     public static String getPage() {
         return """
-                             <link rel="stylesheet" type="text/css" href="css/stats.css">
+                             <link rel="stylesheet" type="text/css" href="../css/stats.css">
                 <table class="center">
                     <tr>
                         <td></td>
