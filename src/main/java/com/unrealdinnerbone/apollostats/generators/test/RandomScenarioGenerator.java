@@ -99,7 +99,6 @@ public class RandomScenarioGenerator implements IWebPage {
                              <meta property="og:title" content="Random Scens">
                              <meta property="og:description" content="The Scens would go here, here, here, here, here, here, here, here, here, here, here">
                              <meta property="og:type" content="website">
-                             <meta name="og:image" itemprop="image" content="https://unreal.codes/kevStonk.png">
                       
                              <link rel="stylesheet" type="text/css" href="../css/stats.css">
                 <table class="center">
