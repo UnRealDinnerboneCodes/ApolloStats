@@ -94,7 +94,6 @@ public class RandomScenarioGenerator implements IWebPage {
 
     public static String getPage() {
         return """
-                             <meta property="og:site_name" content="Apollo Scen Generator">
                              <meta property="og:url" content="https://apollo.unreal.codes">
                              <meta property="og:title" content="Random Scens">
                              <meta property="og:description" content="The Scens would go here, here, here, here, here, here, here, here, here, here, here">
