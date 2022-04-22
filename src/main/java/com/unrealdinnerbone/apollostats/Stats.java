@@ -91,7 +91,7 @@ public class Stats {
             });
         }
 
-        app.get("random_game/{id}", ctx -> ctx.html(RandomScenarioGenerator.generatePage(ctx.pathParam("id"))));
+        app.get("random_game/{id}", ctx -> ctx.html(RandomScenarioGenerator.generatePage(ctx.pathParam("id"), true)));
     }
 
     public static List<Match> getAllMatchesForHost(String name, Optional<Integer> before) throws Exception {

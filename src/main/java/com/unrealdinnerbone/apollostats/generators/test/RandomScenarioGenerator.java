@@ -25,7 +25,7 @@ public class RandomScenarioGenerator implements IWebPage {
         int min = minS == null ? 3 : Integer.parseInt(minS);
         int max = maxS == null ? 9 : Math.min(scens.size(), Integer.parseInt(maxS));
         int maxId = scens.stream().max(Comparator.comparing(Scenarios.Scenario::id)).map(Scenarios.Scenario::id).orElseThrow();
-        return generatePage(Util.createId(maxId, min, max));
+        return generatePage(Util.createId(maxId, min, max), false);
 
     }
 
@@ -36,7 +36,7 @@ public class RandomScenarioGenerator implements IWebPage {
     }
 
 
-    public static String generatePage(String id) {
+    public static String generatePage(String id, boolean createEmbed) {
         Triplet<Integer, Integer, Integer> s = Util.decodeId(id);
         int scenList = s.a();
         int min = s.b();
@@ -72,8 +72,11 @@ public class RandomScenarioGenerator implements IWebPage {
                         .toList();
         String teamType = ArrayUtil.getRandomValue(random, teams);
         String copyMessage = teamType + ", " + String.join(", ", randomSelect);
-        copyMessage = copyMessage + "(https://apollo.unreal.codes/random_game/" + id + ")";
-        String page  = getPage().replace("{STUFF}", copyMessage).replace("{data}", builder.toString()).replace("{team}", Util.formalize(teamType));
+        String page  = getPage().replace("{STUFF}", copyMessage)
+                .replace("{ID}", createEmbed ? "" : "/" + id)
+                .replace("{data}", builder.toString())
+                .replace("{EMBED}", createEmbed ? createDiscordEmbed(copyMessage) : "")
+                .replace("{team}", Util.formalize(teamType));
         LOGGER.info("Random Scenarios: {} {}", copyMessage, randomSelect);
         return page;
     }
@@ -91,13 +94,17 @@ public class RandomScenarioGenerator implements IWebPage {
         return "random_game";
     }
 
+    public static String createDiscordEmbed(String content) {
+        return
+                """
+                <meta property="og:description" content="{}">""".replace("{}", content);
+    }
+
 
     public static String getPage() {
         return """
-                             <meta property="og:url" content="https://apollo.unreal.codes">
-                             <meta property="og:title" content="Random Scens">
-                             <meta property="og:description" content="The Scens would go here, here, here, here, here, here, here, here, here, here, here">
-                             <meta property="og:type" content="website">
+                             {EMBED}
+                             
                       
                              <link rel="stylesheet" type="text/css" href="../css/stats.css">
                 <table class="center">
@@ -121,10 +128,16 @@ public class RandomScenarioGenerator implements IWebPage {
                       }
                 </style>
                 <div class="center_table">
-                <button onclick="copyText()">Click Here to copy scenes to clipboard</button></div>
+                <button onclick="copyTextTwo()">Copy Discord Share Link</button>
+                <br></br>
+                <button onclick="copyText()">Copy Scenarios to text</button>
+                </div>
                       <script>
                             function copyText() {
-                                navigator.clipboard.writeText(window.location.href + "/{STUFF}");
+                                navigator.clipboard.writeText("{STUFF}");
+                            }
+                            function copyTextTwo() {
+                                navigator.clipboard.writeText(window.location.href + "{ID}");
                             }
                         </script>
 
