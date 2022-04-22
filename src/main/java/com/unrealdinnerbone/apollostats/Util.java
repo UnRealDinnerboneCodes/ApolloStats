@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 
 public class Util
 {
-    private static final String VAILD = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
+    private static final String VAILD = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 
     public static final int MIN = 3;
     public static final int MAX = 9;
