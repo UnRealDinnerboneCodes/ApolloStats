@@ -3,6 +3,8 @@ package com.unrealdinnerbone.apollostats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,7 +12,7 @@ public class Scenarios
 {
     private static final String SCENARIOS_URL = System.getenv().getOrDefault("SCENARIOS_URL", "https://pastebin.com/raw/PixjeKaS");
     private static final Logger LOGGER = LoggerFactory.getLogger(Scenarios.class);
-    private static final Map<Type, List<String>> values = new HashMap<>();
+    private static final Map<Type, List<Scenario>> values = new HashMap<>();
     private static final Map<String, String> remaps = new HashMap<>();
 
     public static void loadDiskData() throws Exception {
@@ -25,7 +27,8 @@ public class Scenarios
                 remaps.put(value, stringMapObjectEntry.getKey());
             }
             Type type = Type.fromString(stringMapObjectEntry.getValue().type());
-            values.get(type).add(stringMapObjectEntry.getKey());
+            values.get(type).add(new Scenario(stringMapObjectEntry.getKey(), stringMapObjectEntry.getValue().id()));
+
         }
 
         LOGGER.info("Loaded {} remaps", remaps.size());
@@ -34,7 +37,9 @@ public class Scenarios
 
     public record Thing(Map<String, MapObject> data) {}
 
-    public record MapObject(String type, List<String> values) {}
+    public record MapObject(String type, List<String> values, int id) {}
+
+    public record Scenario(String name, int id) {}
 
     public enum Type {
         TEAM,
@@ -58,7 +63,7 @@ public class Scenarios
         return remaps.entrySet().stream().filter(stringStringEntry -> scenario.equalsIgnoreCase(stringStringEntry.getKey())).map(Map.Entry::getValue).toList();
     }
 
-    public static List<String> getValues(Type type) {
+    public static List<Scenario> getValues(Type type) {
         return values.get(type);
     }
 }

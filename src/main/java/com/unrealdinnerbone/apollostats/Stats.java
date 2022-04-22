@@ -3,25 +3,19 @@ package com.unrealdinnerbone.apollostats;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.unrealdinnerbone.apollostats.generators.*;
-import com.unrealdinnerbone.apollostats.generators.test.TestRandomScen;
+import com.unrealdinnerbone.apollostats.generators.test.RandomScenarioGenerator;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
-import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.web.HttpUtils;
 import io.javalin.Javalin;
-import io.javalin.core.util.RouteOverviewPlugin;
-import io.javalin.http.ContentType;
 import io.javalin.http.staticfiles.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Stats {
@@ -40,7 +34,7 @@ public class Stats {
         generators.add(new TeamSizeGames());
         generators.add(new TimeBetweenGames());
         generators.add(new HostIn24HoursGen());
-        generators.add(new TestRandomScen());
+        generators.add(new RandomScenarioGenerator());
     }
 
 
@@ -48,6 +42,7 @@ public class Stats {
 
     public static void main(String[] args) throws Exception {
         Map<String, List<Match>> hostMatchMap = new HashMap<>();
+
         TaskScheduler.scheduleRepeatingTask(1, TimeUnit.HOURS, new TimerTask() {
             @Override
             public void run() {
@@ -96,9 +91,7 @@ public class Stats {
             });
         }
 
-        app.get("random_game/{id}", ctx -> {
-            ctx.html(TestRandomScen.generatePage(UUID.fromString(ctx.pathParam("id")), TestRandomScen.getScenList(), ctx.queryParam("min") == null ? 3 : Integer.parseInt(ctx.queryParam("min")), ctx.queryParam("max") == null ? 9 : Integer.parseInt(ctx.queryParam("max"))));
-        });
+        app.get("random_game/{id}", ctx -> ctx.html(RandomScenarioGenerator.generatePage(ctx.pathParam("id"))));
     }
 
     public static List<Match> getAllMatchesForHost(String name, Optional<Integer> before) throws Exception {

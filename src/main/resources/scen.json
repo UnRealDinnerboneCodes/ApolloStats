@@ -1,6 +1,7 @@
 {
     "data": {
         "Piggy Bank": {
+            "id": 0,
             "type": "scenario",
             "values": [
                 "Piggy Banks",
@@ -8,12 +9,14 @@
             ]
         },
         "Silent Night": {
+            "id": 1,
             "type": "scenario",
             "values": [
                 "Silent Night"
             ]
         },
         "Timebomb": {
+            "id": 2,
             "type": "scenario",
             "values": [
                 "Timebomb",
@@ -21,6 +24,7 @@
             ]
         },
         "Superheroes": {
+            "id": 3,
             "type": "scenario",
             "values": [
                 "Superheroes",
@@ -31,12 +35,14 @@
             ]
         },
         "Love at First Sight: Thieves": {
+            "id": 4,
             "type": "team",
             "values": [
                 "Love at First Sight: Thieves"
             ]
         },
         "Vengeful Spirits": {
+            "id": 5,
             "type": "scenario",
             "values": [
                 "Vengeful Sprits",
@@ -44,18 +50,21 @@
             ]
         },
         "Team Swap": {
+            "id": 6,
             "type": "scenario",
             "values": [
                 "Team Swap"
             ]
         },
         "Cut Clean": {
+            "id": 7,
             "type": "scenario",
             "values": [
                 "NoClean"
             ]
         },
         "Advancement Paranoia": {
+            "id": 8,
             "type": "scenario",
             "values": [
                 "Advancement Paranoia",
@@ -65,24 +74,28 @@
             ]
         },
         "Chicken Fight": {
+            "id": 9,
             "type": "scenario",
             "values": [
                 "Chicken Fight"
             ]
         },
         "Wild West": {
+            "id": 10,
             "type": "scenario",
             "values": [
                 "Wild West"
             ]
         },
         "X Marks the Spot": {
+            "id": 11,
             "type": "scenario",
             "values": [
                 "X Marks the Spot"
             ]
         },
         "Team Inventory": {
+            "id": 12,
             "type": "scenario",
             "values": [
                 "Team Invetory",
@@ -92,30 +105,35 @@
             ]
         },
         "Double Dates": {
+            "id": 13,
             "type": "team",
             "values": [
                 "Double Dates"
             ]
         },
         "Eggs": {
+            "id": 14,
             "type": "scenario",
             "values": [
                 "Eggs"
             ]
         },
         "No Fall": {
+            "id": 15,
             "type": "scenario",
             "values": [
                 "No Fall"
             ]
         },
         "Double Big Crack": {
+            "id": 16,
             "type": "scenario",
             "values": [
                 "Double Big Crack"
             ]
         },
         "Superpower Compensation": {
+            "id": 17,
             "type": "scenario",
             "values": [
                 "Superhero Compensation",
@@ -127,6 +145,7 @@
             ]
         },
         "Fireball": {
+            "id": 18,
             "type": "scenario",
             "values": [
                 "Fireballs",
@@ -134,6 +153,7 @@
             ]
         },
         "Krenzinator": {
+            "id": 19,
             "type": "scenario",
             "values": [
                 "Kreninator",
@@ -143,12 +163,14 @@
             ]
         },
         "Kill Switch": {
+            "id": 20,
             "type": "scenario",
             "values": [
                 "Kill Switch"
             ]
         },
         "Unknown": {
+            "id": -1,
             "type": "scenario",
             "values": [
                 "Lootcrates",
@@ -192,11 +214,8 @@
                 "cripple",
                 "Gone Fishin’",
                 "monuments",
-                "Who’s That Pokémon?",
                 "Who's That Pokemon?",
                 "Upside Down Crafting",
-                "Who's That Pokemon?",
-                "THS3 Terrain",
                 "Select Fire",
                 "THS3 Terrain",
                 "Undergound Parallel",
@@ -209,22 +228,17 @@
                 "enchanteddeath",
                 "gonefishin’",
                 "Who’s That Pokémon?",
-                "THS3 Terrain",
                 "midas",
                 "timedteams",
-                "enchanteddeath",
                 "Cobwebless",
                 "Diamond Rod",
-                "Diamond Rod",
                 "Red vs Blue",
-
                 "Custom Temples",
                 "Custom Map",
                 "Starter Notch",
                 "MedievalHeat",
                 "4th of July",
                 "Gone Fishing",
-                "Head Hunter",
                 "Mini Border",
                 "Yacht Gang",
                 "Head Hunter",
@@ -237,7 +251,6 @@
                 "Switcharoo",
                 "Permaday",
                 "Hades",
-                "True Love",
                 "Pyrophobia",
                 "Opposites Attract",
                 "CraftableTeleportation",
@@ -256,7 +269,6 @@
                 "Rigged Starter Item",
                 "Stormy Meetup",
                 "Double Nether Big Crack",
-                "Moved 00",
                 "True Love",
                 "\"Team\" Scatter",
                 "Weakest Link",
@@ -268,7 +280,6 @@
                 "End Meetup",
                 "Red v Blue",
                 "Red v Blue v Green",
-                "Absorptionless",
                 "Split Scatter",
                 "Double BidCrack",
                 "Xylophone yeet and zap",
@@ -360,12 +371,14 @@
             ]
         },
         "Potion Bomb": {
+            "id": 22,
             "type": "scenario",
             "values": [
                 "Potion Bomb"
             ]
         },
         "Chump Charity": {
+            "id": 23,
             "type": "scenario",
             "values": [
                 "Chump chairty",
@@ -374,18 +387,21 @@
             ]
         },
         "Jukebox Hero": {
+            "id": 24,
             "type": "scenario",
             "values": [
                 "Jukebox Hero"
             ]
         },
         "Blood Market": {
+            "id": 25,
             "type": "team",
             "values": [
                 "Blood Market"
             ]
         },
         "Permaglow": {
+            "id": 26,
             "type": "scenario",
             "values": [
                 "Peramglow",
@@ -393,12 +409,14 @@
             ]
         },
         "Sky High": {
+            "id": 27,
             "type": "scenario",
             "values": [
                 "Sky High"
             ]
         },
         "Snowball Flight": {
+            "id": 28,
             "type": "scenario",
             "values": [
                 "Snowball Fight",
@@ -406,30 +424,35 @@
             ]
         },
         "Infinite Allies": {
+            "id": 29,
             "type": "scenario",
             "values": [
                 "Infinite Allies"
             ]
         },
         "Head Hunters": {
+            "id": 30,
             "type": "scenario",
             "values": [
                 "Head Hunters"
             ]
         },
         "Unbreakable": {
+            "id": 31,
             "type": "scenario",
             "values": [
                 "Unbreakable"
             ]
         },
         "Trading Places": {
+            "id": 32,
             "type": "scenario",
             "values": [
                 "Trading Places"
             ]
         },
         "Hasty Boys": {
+            "id": 33,
             "type": "scenario",
             "values": [
                 "Speedy Miners",
@@ -441,18 +464,21 @@
             ]
         },
         "Mystery Paths": {
+            "id": 34,
             "type": "scenario",
             "values": [
                 "Mystery Paths"
             ]
         },
         "Bullseye": {
+            "id": 35,
             "type": "scenario",
             "values": [
                 "Bullseye"
             ]
         },
         "Nametag Paranoia": {
+            "id": 36,
             "type": "scenario",
             "values": [
                 "Nametag Paranoia",
@@ -460,90 +486,105 @@
             ]
         },
         "Union Spawn": {
+            "id": -1,
             "type": "scenario",
             "values": [
                 "Union Spawn"
             ]
         },
         "Golden Retriever": {
+            "id": 38,
             "type": "scenario",
             "values": [
                 "Golden Retriever"
             ]
         },
         "Hasty Babies": {
+            "id": 39,
             "type": "scenario",
             "values": [
                 "Hasty Babies"
             ]
         },
         "Bandits": {
+            "id": 40,
             "type": "scenario",
             "values": [
                 "Bandits"
             ]
         },
         "Randomized Chests+": {
+            "id": 41,
             "type": "scenario",
             "values": [
                 "Randomized Chests+"
             ]
         },
         "Sky Ores": {
+            "id": 42,
             "type": "scenario",
             "values": [
                 "Sky Ores"
             ]
         },
         "Enderdragon Rush": {
+            "id": 43,
             "type": "scenario",
             "values": [
                 "enderdragonrushplus"
             ]
         },
         "Quadrants": {
+            "id": 44,
             "type": "scenario",
             "values": [
                 "Quadrants"
             ]
         },
         "Inventors": {
+            "id": 45,
             "type": "scenario",
             "values": [
                 "Inventors"
             ]
         },
         "Permanent Invisibility": {
+            "id": -1,
             "type": "scenario",
             "values": [
                 "Permanent Invisibility"
             ]
         },
         "Alone Together": {
+            "id": 47,
             "type": "scenario",
             "values": [
                 "Alone Together"
             ]
         },
         "Silent Auction": {
+            "id": 48,
             "type": "team",
             "values": [
                 "Silent Auction"
             ]
         },
         "Beta Zombies": {
+            "id": 49,
             "type": "scenario",
             "values": [
                 "Beta Zombies"
             ]
         },
         "Gold Medal": {
+            "id": 50,
             "type": "scenario",
             "values": [
                 "Gold Medal"
             ]
         },
         "Spawners Galore": {
+            "id": 51,
             "type": "scenario",
             "values": [
                 "Spawners Glore",
@@ -551,12 +592,14 @@
             ]
         },
         "Blood Lapis": {
+            "id": 52,
             "type": "scenario",
             "values": [
                 "Blood Lapis"
             ]
         },
         "Chicken": {
+            "id": 53,
             "type": "scenario",
             "values": [
                 "Chickens",
@@ -564,6 +607,7 @@
             ]
         },
         "Backpacks": {
+            "id": 54,
             "type": "scenario",
             "values": [
                 "Backpack",
@@ -571,24 +615,28 @@
             ]
         },
         "Item Bounties": {
+            "id": 55,
             "type": "scenario",
             "values": [
                 "Item Bounties"
             ]
         },
         "Nether Meetup": {
+            "id": 56,
             "type": "scenario",
             "values": [
                 "Nether Meetup"
             ]
         },
         "FireBall": {
+            "id": 57,
             "type": "scenario",
             "values": [
                 "Fire Balls"
             ]
         },
         "Upgrades": {
+            "id": 58,
             "type": "scenario",
             "values": [
                 "Upgrade",
@@ -596,42 +644,49 @@
             ]
         },
         "Team Split": {
+            "id": 59,
             "type": "scenario",
             "values": [
                 "Team Split"
             ]
         },
         "Circus": {
+            "id": 60,
             "type": "scenario",
             "values": [
                 "Circus"
             ]
         },
         "Grim Reaper": {
+            "id": 61,
             "type": "scenario",
             "values": [
                 "Grim Reaper"
             ]
         },
         "Timber": {
+            "id": 62,
             "type": "scenario",
             "values": [
                 "Timber"
             ]
         },
         "Big Chungus": {
+            "id": 63,
             "type": "scenario",
             "values": [
                 "Big Chungus"
             ]
         },
         "Stock Up": {
+            "id": 64,
             "type": "scenario",
             "values": [
                 "Stock Up"
             ]
         },
         "Deep Diggers": {
+            "id": 65,
             "type": "scenario",
             "values": [
                 "Deep Digger",
@@ -639,6 +694,7 @@
             ]
         },
         "Flower Power": {
+            "id": 66,
             "type": "scenario",
             "values": [
                 "Flower Powwer",
@@ -646,6 +702,7 @@
             ]
         },
         "Team Health": {
+            "id": 67,
             "type": "scenario",
             "values": [
                 "Team Heath",
@@ -654,30 +711,35 @@
             ]
         },
         "Fallout": {
+            "id": 68,
             "type": "scenario",
             "values": [
                 "Fallout"
             ]
         },
         "Jackpot": {
+            "id": 69,
             "type": "scenario",
             "values": [
                 "Jackpot"
             ]
         },
         "Best PvE": {
+            "id": 70,
             "type": "scenario",
             "values": [
                 "Best PvE"
             ]
         },
         "Fish Tank": {
+            "id": 71,
             "type": "scenario",
             "values": [
                 "Fish Tank"
             ]
         },
         "Slimy Crack": {
+            "id": 72,
             "type": "scenario",
             "values": [
                 "Double Slimy Crack",
@@ -687,12 +749,14 @@
             ]
         },
         "C_money": {
+            "id": 73,
             "type": "scenario",
             "values": [
                 "C_money"
             ]
         },
         "Overcook": {
+            "id": 74,
             "type": "scenario",
             "values": [
                 "Overcooked",
@@ -700,18 +764,21 @@
             ]
         },
         "Monsters, Inc.": {
+            "id": 75,
             "type": "scenario",
             "values": [
                 "Monsters, Inc."
             ]
         },
         "Enshrined": {
+            "id": 76,
             "type": "scenario",
             "values": [
                 "Enshrined"
             ]
         },
         "Shrines Galore": {
+            "id": 77,
             "type": "scenario",
             "values": [
                 "Shrines Galore",
@@ -719,12 +786,14 @@
             ]
         },
         "Skyblock Grave Robbers": {
+            "id": 78,
             "type": "scenario",
             "values": [
                 "Skyblock Grave Robbers"
             ]
         },
         "Chorus Gapples": {
+            "id": -1,
             "type": "scenario",
             "values": [
                 "Chorus Gapple",
@@ -735,6 +804,7 @@
             ]
         },
         "Loot Llamas": {
+            "id": 80,
             "type": "scenario",
             "values": [
                 "Loot Llama",
@@ -742,30 +812,35 @@
             ]
         },
         "Cupid": {
+            "id": 81,
             "type": "scenario",
             "values": [
                 "Cupid"
             ]
         },
         "Lavaless": {
+            "id": 82,
             "type": "scenario",
             "values": [
                 "Lavaless"
             ]
         },
         "Permakill": {
+            "id": 83,
             "type": "scenario",
             "values": [
                 "Permakill"
             ]
         },
         "Prickly Situation": {
+            "id": 84,
             "type": "scenario",
             "values": [
                 "Prickly Situation"
             ]
         },
         "Moles": {
+            "id": 85,
             "type": "scenario",
             "values": [
                 "Mole",
@@ -773,12 +848,14 @@
             ]
         },
         "Player Swap": {
+            "id": 86,
             "type": "scenario",
             "values": [
                 "Player Swap"
             ]
         },
         "Trivia": {
+            "id": 87,
             "type": "scenario",
             "values": [
                 "Trivia",
@@ -786,6 +863,7 @@
             ]
         },
         "Random Starter Items": {
+            "id": 88,
             "type": "scenario",
             "values": [
                 "Random Starting Items",
@@ -798,6 +876,7 @@
             ]
         },
         "Period of Resistance": {
+            "id": 89,
             "type": "scenario",
             "values": [
                 "Period of Resistence",
@@ -805,6 +884,7 @@
             ]
         },
         "Preamblee's Grave Robbers": {
+            "id": 90,
             "type": "scenario",
             "values": [
                 "Preamblee's Grave Robbers",
@@ -814,12 +894,14 @@
             ]
         },
         "Big Crack": {
+            "id": 91,
             "type": "scenario",
             "values": [
                 "Big Crack"
             ]
         },
         "Grave Robbers": {
+            "id": 92,
             "type": "scenario",
             "values": [
                 "Grave Robbers",
@@ -829,18 +911,21 @@
             ]
         },
         "Love at First Sight": {
+            "id": 93,
             "type": "team",
             "values": [
                 "Love at First Sight"
             ]
         },
         "Amplified": {
+            "id": 94,
             "type": "scenario",
             "values": [
                 "Amplified"
             ]
         },
         "Quadrant Paranoia": {
+            "id": 95,
             "type": "scenario",
             "values": [
                 "Quandrant Paranoia",
@@ -848,6 +933,7 @@
             ]
         },
         "Switcheroo": {
+            "id": 96,
             "type": "scenario",
             "values": [
                 "Switcherro",
@@ -855,30 +941,35 @@
             ]
         },
         "Unscramble": {
+            "id": 97,
             "type": "scenario",
             "values": [
                 "Unscramble"
             ]
         },
         "Mystery Scenarios": {
+            "id": 98,
             "type": "mystery_scenario",
             "values": [
                 "Mystery Scenarios"
             ]
         },
         "Gapple Roulette": {
+            "id": 99,
             "type": "scenario",
             "values": [
                 "Gapple Roulette"
             ]
         },
         "Good Diet": {
+            "id": 100,
             "type": "scenario",
             "values": [
                 "Good Diet"
             ]
         },
         "Red Arrows": {
+            "id": 101,
             "type": "scenario",
             "values": [
                 "Redarrow",
@@ -886,24 +977,28 @@
             ]
         },
         "Custom 00": {
+            "id": -1,
             "type": "scenario",
             "values": [
                 "Custom 00"
             ]
         },
         "Bench Blitz": {
+            "id": 103,
             "type": "scenario",
             "values": [
                 "Bench Blitz"
             ]
         },
         "Slice of Life": {
+            "id": 104,
             "type": "scenario",
             "values": [
                 "Slice of Life"
             ]
         },
         "Hasty Worlds": {
+            "id": 105,
             "type": "scenario",
             "values": [
                 "Hasty World",
@@ -912,6 +1007,7 @@
             ]
         },
         "Blood Diamonds": {
+            "id": 106,
             "type": "scenario",
             "values": [
                 "Blood Diamonds",
@@ -919,36 +1015,42 @@
             ]
         },
         "Go To Hell": {
+            "id": 107,
             "type": "scenario",
             "values": [
                 "Go To Hell"
             ]
         },
         "Superpower Switch": {
+            "id": 108,
             "type": "scenario",
             "values": [
                 "Superpower Switch"
             ]
         },
         "Fast Getaway": {
+            "id": 109,
             "type": "scenario",
             "values": [
                 "Fast Getaway"
             ]
         },
         "Fireless": {
+            "id": 110,
             "type": "scenario",
             "values": [
                 "Fireless"
             ]
         },
         "Love at First Advancement": {
+            "id": 111,
             "type": "team",
             "values": [
                 "Love at First Advancement"
             ]
         },
         "Randomized Chests": {
+            "id": 112,
             "type": "scenario",
             "values": [
                 "Randomized Chest",
@@ -957,12 +1059,14 @@
             ]
         },
         "Zoomies": {
+            "id": 113,
             "type": "scenario",
             "values": [
                 "Zoomies"
             ]
         },
         "Rewarding LongShots": {
+            "id": 114,
             "type": "scenario",
             "values": [
                 "Rewarding Longshots",
@@ -971,12 +1075,14 @@
             ]
         },
         "Infection": {
+            "id": 115,
             "type": "team",
             "values": [
                 "Infection"
             ]
         },
         "Mystery Teams": {
+            "id": 116,
             "type": "team",
             "values": [
                 "Mystery Teams",
@@ -984,6 +1090,7 @@
             ]
         },
         "Sound Paranoia": {
+            "id": 117,
             "type": "scenario",
             "values": [
                 "Sounds Paranoia",
@@ -991,24 +1098,28 @@
             ]
         },
         "Fluid Swap": {
+            "id": 118,
             "type": "scenario",
             "values": [
                 "Fluid Swap"
             ]
         },
         "Shulkers": {
+            "id": 119,
             "type": "scenario",
             "values": [
                 "Shulkers"
             ]
         },
         "Armored Mobs+": {
+            "id": 120,
             "type": "scenario",
             "values": [
                 "Armored Mobs+"
             ]
         },
         "Clean Slate": {
+            "id": 121,
             "type": "scenario",
             "values": [
                 "Clean State",
@@ -1016,6 +1127,7 @@
             ]
         },
         "Blood Enchants": {
+            "id": 122,
             "type": "scenario",
             "values": [
                 "Starter Elytra",
@@ -1023,6 +1135,7 @@
             ]
         },
         "Bleeding Sweets": {
+            "id": 123,
             "type": "scenario",
             "values": [
                 "BleedSweets",
@@ -1033,48 +1146,56 @@
             ]
         },
         "Biome Paranoia": {
+            "id": 124,
             "type": "scenario",
             "values": [
                 "Biome Paranoia"
             ]
         },
         "1-Up": {
+            "id": 125,
             "type": "scenario",
             "values": [
                 "1-Up"
             ]
         },
         "Balanced Random Teams": {
+            "id": 126,
             "type": "team",
             "values": [
                 "Balanced Random Teams"
             ]
         },
         "Training Rabbits": {
+            "id": 127,
             "type": "scenario",
             "values": [
                 "Training Rabbits"
             ]
         },
         "Sniper Spleef": {
+            "id": 128,
             "type": "scenario",
             "values": [
                 "Sniper Spleef"
             ]
         },
         "Advanced Tactics": {
+            "id": 129,
             "type": "scenario",
             "values": [
                 "Advanced Tactics"
             ]
         },
         "Goomba Stomp": {
+            "id": 130,
             "type": "scenario",
             "values": [
                 "Goomba Stop"
             ]
         },
         "Underground Parallel": {
+            "id": 131,
             "type": "scenario",
             "values": [
                 "Parallel Worlds",
@@ -1084,6 +1205,7 @@
             ]
         },
         "Anonymous": {
+            "id": 132,
             "type": "scenario",
             "values": [
                 "Anonymous",
@@ -1091,12 +1213,14 @@
             ]
         },
         "Farm Gang": {
+            "id": -1,
             "type": "scenario",
             "values": [
                 "Farm Gang"
             ]
         },
         "Siphon": {
+            "id": 134,
             "type": "scenario",
             "values": [
                 "Siphon",
@@ -1104,18 +1228,21 @@
             ]
         },
         "Rewarding Longshots": {
+            "id": 135,
             "type": "scenario",
             "values": [
                 "Reward Longshots"
             ]
         },
         "Calculator": {
+            "id": 136,
             "type": "scenario",
             "values": [
                 "Calculator"
             ]
         },
         "Anvilless": {
+            "id": 137,
             "type": "scenario",
             "values": [
                 "Anvilless",
@@ -1124,42 +1251,49 @@
             ]
         },
         "Love at First Lake": {
+            "id": 138,
             "type": "team",
             "values": [
                 "Love at First Lake"
             ]
         },
         "Cutclean": {
+            "id": 139,
             "type": "scenario",
             "values": [
                 "Cutclean"
             ]
         },
         "Webcage": {
+            "id": 140,
             "type": "scenario",
             "values": [
                 "Webcage"
             ]
         },
         "Valley Girls": {
+            "id": 141,
             "type": "scenario",
             "values": [
                 "Valley Girls"
             ]
         },
         "Wrath of God": {
+            "id": 142,
             "type": "scenario",
             "values": [
                 "Wrath of God"
             ]
         },
         "Hitman": {
+            "id": 143,
             "type": "scenario",
             "values": [
                 "Hitman"
             ]
         },
         "Fragile Shields": {
+            "id": 144,
             "type": "scenario",
             "values": [
                 "Fragile Sheilds",
@@ -1167,18 +1301,21 @@
             ]
         },
         "Bees?": {
+            "id": 145,
             "type": "scenario",
             "values": [
                 "Bees?"
             ]
         },
         "Rush": {
+            "id": -1,
             "type": "scenario",
             "values": [
                 "Rush"
             ]
         },
         "Veinminer": {
+            "id": 147,
             "type": "scenario",
             "values": [
                 "Veinminer",
@@ -1189,24 +1326,28 @@
             ]
         },
         "Jump Scare": {
+            "id": 148,
             "type": "scenario",
             "values": [
                 "Jump Scare"
             ]
         },
         "Slave Market": {
+            "id": 149,
             "type": "team",
             "values": [
                 "Slave Market"
             ]
         },
         "Chunk Apocalypse": {
+            "id": 150,
             "type": "scenario",
             "values": [
                 "Chunk Apocalypse"
             ]
         },
         "Risky Retrieval": {
+            "id": 151,
             "type": "scenario",
             "values": [
                 "Risky Retrieval",
@@ -1215,12 +1356,14 @@
             ]
         },
         "Fast Food": {
+            "id": 152,
             "type": "scenario",
             "values": [
                 "Fast Food"
             ]
         },
         "Children Left Unattended": {
+            "id": 153,
             "type": "scenario",
             "values": [
                 "Children Unattended",
@@ -1228,12 +1371,14 @@
             ]
         },
         "Ender Dragon Rush": {
+            "id": 154,
             "type": "scenario",
             "values": [
                 "Ender Dragon Rush"
             ]
         },
         "Battle Siren": {
+            "id": 155,
             "type": "scenario",
             "values": [
                 "Battle Sirens",
@@ -1241,36 +1386,42 @@
             ]
         },
         "Honey Crack": {
+            "id": 156,
             "type": "scenario",
             "values": [
                 "Honey Crack"
             ]
         },
         "Frosty Boys": {
+            "id": 157,
             "type": "scenario",
             "values": [
                 "Frosty Boys"
             ]
         },
         "Dog Fight": {
+            "id": 158,
             "type": "scenario",
             "values": [
                 "Dog Fight"
             ]
         },
         "Drafters": {
+            "id": 159,
             "type": "team",
             "values": [
                 "Drafters"
             ]
         },
         "Heavy Pockets": {
+            "id": 160,
             "type": "scenario",
             "values": [
                 "Heavy Pockets"
             ]
         },
         "Poltergeist": {
+            "id": 161,
             "type": "scenario",
             "values": [
                 "Poltergeist",
@@ -1278,6 +1429,7 @@
             ]
         },
         "Presents": {
+            "id": 162,
             "type": "scenario",
             "values": [
                 "Custom Presents",
@@ -1296,16 +1448,25 @@
             ]
         },
         "Love at First Damage": {
+            "id": 163,
             "type": "team",
             "values": [
                 "Love at First Damage"
             ]
         },
         "Armored Mobs": {
+            "id": 164,
             "type": "scenario",
             "values": [
                 "Armored Mobs",
                 "Armour Mobs"
+            ]
+        },
+        "Test": {
+            "id": 165,
+            "type": "scenario",
+            "values": [
+                "Test"
             ]
         }
     }

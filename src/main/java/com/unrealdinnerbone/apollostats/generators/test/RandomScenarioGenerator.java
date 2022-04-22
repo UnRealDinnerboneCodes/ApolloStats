@@ -7,47 +7,49 @@ import com.unrealdinnerbone.apollostats.Scenarios;
 import com.unrealdinnerbone.apollostats.Util;
 import com.unrealdinnerbone.unreallib.ArrayUtil;
 import com.unrealdinnerbone.unreallib.MathHelper;
+import com.unrealdinnerbone.unreallib.Triplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class TestRandomScen implements IWebPage {
-
-
+public class RandomScenarioGenerator implements IWebPage {
     @Override
     public String generateStats(Map<String, List<Match>> hostMatchMap, Function<String, String> query) {
-        List<String> scens = getScenList();
-        UUID uuid = UUID.randomUUID();
+        List<Scenarios.Scenario> scens = getScenList();
         String minS = query.apply("min");
         String maxS = query.apply("max");
         int min = minS == null ? 3 : Integer.parseInt(minS);
         int max = maxS == null ? 9 : Math.min(scens.size(), Integer.parseInt(maxS));
-        return generatePage(uuid, scens, min, max);
+        int maxId = scens.stream().max(Comparator.comparing(Scenarios.Scenario::id)).map(Scenarios.Scenario::id).orElseThrow();
+        return generatePage(Util.createId(maxId, min, max));
 
     }
 
-    public static List<String> getScenList() {
-        List<String> random = new ArrayList<>(Scenarios.getValues(Scenarios.Type.SCENARIO));
-        random.remove("Rush");
-        random.remove("Unknown");
-        random.remove("Union Spawn");
-        random.remove("Chorus Gapples");
-        random.remove("Custom 00");
-        random.remove("Farm Gang");
-        random.remove("Permanent Invisibility");
-        return random;
+    public static List<Scenarios.Scenario> getScenList() {
+        return Scenarios.getValues(Scenarios.Type.SCENARIO).stream()
+                .filter(scen -> scen.id() != -1)
+                .toList();
     }
 
 
-    public static String generatePage(UUID uuid, List<String> scens, int min, int max) {
-        List<String> randomSelect = new ArrayList<>();
-        Random theRandom = new Random(uuid.hashCode());
-        for(int i = 0; i <= MathHelper.randomInt(theRandom, min -1, max + 1); i++) {
-            String type = ArrayUtil.getRandomValueAndRemove(theRandom, scens);
-            randomSelect.add(type);
-        }
+    public static String generatePage(String id) {
+        Triplet<Integer, Integer, Integer> s = Util.decodeId(id);
+        int scenList = s.a();
+        int min = s.b();
+        int max = s.c();
+
+
+        List<String> scens = getScenList().stream().filter(scen -> scen.id() <= scenList).map(Scenarios.Scenario::name).collect(Collectors.toList());
+        Random random = new Random(id.hashCode());
+
+        List<String> randomSelect = IntStream.rangeClosed(0, MathHelper.randomInt(random, min - 1, max + 1))
+                .mapToObj(i -> ArrayUtil.getRandomValueAndRemove(random, scens))
+                .collect(Collectors.toList());
+
         StringBuilder builder = new StringBuilder();
         for(List<String> strings : Lists.partition(randomSelect, 3)) {
             String row = getLine();
@@ -64,16 +66,20 @@ public class TestRandomScen implements IWebPage {
             }
             builder.append(row);
         }
-        List<String> teams = new ArrayList<>(Scenarios.getValues(Scenarios.Type.TEAM));
-        teams.remove("Love at First Lake");
-        String teamType = ArrayUtil.getRandomValue(theRandom, teams);
-        String theScens = teamType + ", " + String.join(", ", randomSelect) + " (https://apollo.unreal.codes/random_game/" + uuid + "?=min=" + min + "&=max=" + max + ")";
-        String page  = getPage().replace("{STUFF}", theScens).replace("{data}", builder.toString()).replace("{team}", Util.formalize(teamType));
-        LOGGER.info("Random Scenarios: {} {}", uuid, randomSelect);
+        List<String> teams = Scenarios.getValues(Scenarios.Type.TEAM)
+                .stream().map(Scenarios.Scenario::name)
+                .filter(name -> !name.equals("Love at First Lake"))
+                        .toList();
+        String teamType = ArrayUtil.getRandomValue(random, teams);
+        String copyMessage = teamType + ", " + String.join(", ", randomSelect);
+        copyMessage = copyMessage + "(https://apollo.unreal.codes/random_game/" + id + ")";
+        String page  = getPage().replace("{STUFF}", copyMessage).replace("{data}", builder.toString()).replace("{team}", Util.formalize(teamType));
+        LOGGER.info("Random Scenarios: {} {}", copyMessage, randomSelect);
         return page;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestRandomScen.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RandomScenarioGenerator.class);
 
     @Override
     public String generateStats(Map<String, List<Match>> hostMatchMap) {
@@ -88,6 +94,13 @@ public class TestRandomScen implements IWebPage {
 
     public static String getPage() {
         return """
+                             <meta property="og:site_name" content="Apollo Scen Generator">
+                             <meta property="og:url" content="https://apollo.unreal.codes">
+                             <meta property="og:title" content="Random Scens">
+                             <meta property="og:description" content="The Scens would go here, here, here, here, here, here, here, here, here, here, here">
+                             <meta property="og:type" content="website">
+                             <meta name="og:image" itemprop="image" content="https://unreal.codes/kevStonk.png">
+                      
                              <link rel="stylesheet" type="text/css" href="../css/stats.css">
                 <table class="center">
                     <tr>
@@ -97,7 +110,7 @@ public class TestRandomScen implements IWebPage {
                     </tr>
                     {data}
                   </table>
-                           
+
                   <style>
                       .center {
                         margin-left: auto;
@@ -113,10 +126,10 @@ public class TestRandomScen implements IWebPage {
                 <button onclick="copyText()">Click Here to copy scenes to clipboard</button></div>
                       <script>
                             function copyText() {
-                                navigator.clipboard.writeText("{STUFF}");
+                                navigator.clipboard.writeText(window.location.href + "/{STUFF}");
                             }
                         </script>
-                        
+
                     """;
     }
 
@@ -129,4 +142,6 @@ public class TestRandomScen implements IWebPage {
                 </tr>
                 """;
     }
+
+
 }

@@ -8,12 +8,16 @@ plugins {
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/base.gradle'
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 
-
+repositories {
+    maven {
+        url = uri("https://nurio.me/repo/mvn/")
+    }
+}
 
 version = "1.0.0"
 
 dependencies {
-    shade 'com.unrealdinnerbone:UnRealLib:3.2.1+build.100'
+    shade 'com.unrealdinnerbone:UnRealLib:3.2.1+build.101'
     shade 'com.google.guava:guava:31.0.1-jre'
     shade('io.javalin:javalin:4.3.0')
 }
