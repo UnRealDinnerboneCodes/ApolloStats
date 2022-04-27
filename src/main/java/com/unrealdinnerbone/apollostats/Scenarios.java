@@ -53,8 +53,13 @@ public class Scenarios
     }
 
     public static List<String> fix(Type type, List<String> fixed) {
-        return fixed.stream().flatMap(scenario -> remap(scenario).stream())
-                .filter(scenario -> values.get(type).contains(scenario))
+        List<String> cake = values.get(type).stream().map(Scenario::name).flatMap(s -> remap(s).stream()).toList();
+        return fixed.stream()
+                .flatMap(scenarioName -> remap(scenarioName).stream())
+                .filter(scenario -> {
+
+                    return cake.contains(scenario);
+                })
                 .collect(Collectors.toList());
 
     }
