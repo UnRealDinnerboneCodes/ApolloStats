@@ -85,7 +85,10 @@ public class Stats {
                 }
             }});
 
-        Javalin publicPlace = Javalin.create(javalinConfig -> javalinConfig.addStaticFiles("/web", Location.CLASSPATH)).start(1000);
+        Javalin publicPlace = Javalin.create(javalinConfig -> {
+            javalinConfig.accessManager(new WebAccessManger());
+            javalinConfig.addStaticFiles("/web", Location.CLASSPATH);
+        }).start(1000);
 
         Javalin pushAPI = Javalin.create(javalinConfig -> javalinConfig.accessManager(new WebAccessManger())).start(1001);
 
@@ -96,7 +99,7 @@ public class Stats {
             }, generator.getRole());
         }
 
-        publicPlace.get("random_game/{id}", ctx -> ctx.html(RandomScenarioGenerator.generatePage(ctx.pathParam("id"), true)));
+        publicPlace.get("random_game/{id}", ctx -> ctx.html(RandomScenarioGenerator.generatePage(ctx.pathParam("id"), true)), ApolloRole.EVERYONE);
 
 
         pushAPI.post("/v1/bingo/add", ctx -> {
@@ -136,7 +139,7 @@ public class Stats {
         }, ApolloRole.POST_API);
 
 
-        pushAPI.get("/v1/bingo", ctx -> ctx.result(JsonUtil.DEFAULT.toJson(List.class, BINGO_VALUES)));
+        pushAPI.get("/v1/bingo", ctx -> ctx.result(JsonUtil.DEFAULT.toJson(List.class, BINGO_VALUES)), ApolloRole.EVERYONE);
 
 
         publicPlace.get("bingo", ctx -> {
