@@ -15,6 +15,7 @@ import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.ArrayUtil;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
+import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.web.HttpUtils;
 import io.javalin.Javalin;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
@@ -115,6 +117,13 @@ public class Stats {
                                 statement.setString(1, value.bingo());
                                 statement.setBoolean(2, value.isBingo());
                                 statement.setBoolean(3, value.isPlayer());
+                            });
+                            TaskScheduler.handleTaskOnThread(() -> {
+                                try {
+                                    DiscordWebhook.of(CONFIG.getDiscordWebBotToken()).setContent("Added new bingo value: " + value.bingo()).execute();
+                                }catch(IOException | InterruptedException e) {
+                                    LOGGER.error("Error while sending message to discord", e);
+                                }
                             });
                             ctx.result(Results.message("Successfully added bingo value"));
                         }
