@@ -127,6 +127,9 @@ public class Stats {
         }, ApolloRole.POST_API);
 
 
+        pushAPI.get("/v1/bingo", ctx -> ctx.result(JsonUtil.DEFAULT.toJson(List.class, BINGO_VALUES)));
+
+
         publicPlace.get("bingo", ctx -> {
             String perm = ctx.queryParam("player");
             boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
