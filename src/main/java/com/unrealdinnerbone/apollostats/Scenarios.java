@@ -1,5 +1,6 @@
 package com.unrealdinnerbone.apollostats;
 
+import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class Scenarios
         Arrays.stream(Type.values()).forEach(value -> values.put(value, new ArrayList<>()));
         remaps.clear();
 
-        Thing theMap = Util.parser().parse(Thing.class, Stats.getResourceAsString("scen.json"));
+        Thing theMap = JsonUtil.DEFAULT.parse(Thing.class, Stats.getResourceAsString("scen.json"));
         for(Map.Entry<String, MapObject> stringMapObjectEntry : theMap.data().entrySet()) {
             for(String value : stringMapObjectEntry.getValue().values()) {
                 remaps.put(value, stringMapObjectEntry.getKey());

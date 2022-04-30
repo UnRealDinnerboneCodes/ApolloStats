@@ -87,17 +87,11 @@ public class Util
 
     }
 
-    private static String createID() {
+    public static String createID() {
         return IntStream.range(0, 5).mapToObj(i -> String.valueOf(VAILD.charAt(MathHelper.randomInt(0, VAILD.length())))).collect(Collectors.joining());
     }
     public static boolean isNewLine(String s) {
         return s.equals("\n");
     }
 
-    private static final IJsonParser<IOException> JSON_PARSER = new MoshiParser(new Moshi.Builder().add(new RecordsJsonAdapterFactory()).build());
-
-
-    public static IJsonParser<IOException> parser() {
-        return JSON_PARSER;
-    }
 }

@@ -1,8 +1,7 @@
-package com.unrealdinnerbone.apollostats.generators;
+package com.unrealdinnerbone.apollostats.web.pages.stats;
 
-import com.unrealdinnerbone.apollostats.IWebPage;
+import com.unrealdinnerbone.apollostats.api.IWebPage;
 import com.unrealdinnerbone.apollostats.Match;
-import com.unrealdinnerbone.unreallib.Pair;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;

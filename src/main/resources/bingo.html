@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Apollo Bingo</title>
+	<style>
+		body {
+			font-family: sans-serif;
+			text-align: center;
+			background-color: #23272a;
+
+		}
+
+		#card {
+			border: 2px solid #23272a;
+			border-radius: 5px;
+			align-items: center;
+		}
+
+		.bingocard td {
+			width: 120px;
+			height: 120px;
+			background-color: #23272a;
+			border: solid 1px #ccc;
+			border-collapse: collapse;
+			border-radius: 5px;
+			color: white;
+			text-align: center;
+			vertical-align: center;
+			cursor: pointer;
+			text-transform: capitalize;
+			transition: all .2s;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.bingocard td:hover {
+			background-color: #99aab5
+		}
+
+		.bingocard td:active {
+			background-color: #424549;
+		}
+
+		.center {
+			margin-left: auto;
+			margin-right: auto;
+		}
+	</style>
+	<!-- <link rel="stylesheet" href="./style.css"> -->
+
+</head>
+
+<body>
+	<div id="thecard" class="bingocard">
+		<h1>Apollo Spec Bingo</h1>
+		<table id="card" , class="center">
+			<tbody>
+				<tr>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+				</tr>
+				<tr>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+				</tr>
+				<tr>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td class="markedcell"><strong>{"FREE_SPACE"}</strong></td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+				</tr>
+				<tr>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+				</tr>
+				<tr>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+					<td onclick="markSquare(this);">...</td>
+				</tr>
+			</tbody>
+		</table>
+		<button onclick="copyText()">Copy Share Link</button>
+	</div>
+	<script>
+		var words = [{"BINGO_VALUES"}]
+		var bingoWords = [{"BINGO_WORDS"}]
+
+
+		var flasherInterval = null;
+
+
+		function flashWin() {
+			var bingocard = document.getElementById('thecard');
+
+			if (bingocard.style.backgroundColor == "#36393e") {
+				bingocard.style.color = "";
+				bingocard.style.backgroundColor = "";
+			} else {
+				bingocard.style.color = "#36393e";
+				bingocard.style.backgroundColor = "#36393e";
+			}
+
+			var flasherCounter = 0;
+
+			if (++flasherCounter >= 6) {
+				clearInterval(flasherInterval);
+				flasherCounter = 0;
+				flasherInterval = null;
+			}
+		}
+
+
+		function youWin() {
+			var center = document.getElementById('card').rows[2].cells[2];
+			center.innerHTML = "<strong>BINGO!!<br>BINGO!!<br>BINGO!!</strong>";
+			center.style.background = "#36393e";
+		}
+
+
+		function youLose() {
+			var center = document.getElementById('card').rows[2].cells[2];
+
+			center.innerHTML = "<strong>{"FREE_SPACE"}</strong>";
+			center.style.background = "";
+
+		}
+
+		function checkForWin() {
+			var t = document.getElementById('card');
+			if ((t.rows[0].cells[0].marker & t.rows[0].cells[1].marker & t.rows[0].cells[2].marker & t.rows[0].cells[3].marker & t.rows[0].cells[4].marker) || (t.rows[1].cells[0].marker & t.rows[1].cells[1].marker & t.rows[1].cells[2].marker & t.rows[1].cells[3].marker & t.rows[1].cells[4].marker) || (t.rows[2].cells[0].marker & t.rows[2].cells[1].marker & t.rows[2].cells[3].marker & t.rows[2].cells[4].marker) || (t.rows[3].cells[0].marker & t.rows[3].cells[1].marker & t.rows[3].cells[2].marker & t.rows[3].cells[3].marker & t.rows[3].cells[4].marker) || (t.rows[4].cells[0].marker & t.rows[4].cells[1].marker & t.rows[4].cells[2].marker & t.rows[4].cells[3].marker & t.rows[4].cells[4].marker) || (t.rows[0].cells[0].marker & t.rows[1].cells[0].marker & t.rows[2].cells[0].marker & t.rows[3].cells[0].marker & t.rows[4].cells[0].marker) || (t.rows[0].cells[1].marker & t.rows[1].cells[1].marker & t.rows[2].cells[1].marker & t.rows[3].cells[1].marker & t.rows[4].cells[1].marker) || (t.rows[0].cells[2].marker & t.rows[1].cells[2].marker & t.rows[3].cells[2].marker & t.rows[4].cells[2].marker) || (t.rows[0].cells[3].marker & t.rows[1].cells[3].marker & t.rows[2].cells[3].marker & t.rows[3].cells[3].marker & t.rows[4].cells[3].marker) || (t.rows[0].cells[4].marker & t.rows[1].cells[4].marker & t.rows[2].cells[4].marker & t.rows[3].cells[4].marker & t.rows[4].cells[4].marker) || (t.rows[0].cells[0].marker & t.rows[1].cells[1].marker & t.rows[3].cells[3].marker & t.rows[4].cells[4].marker) || (t.rows[4].cells[0].marker & t.rows[3].cells[1].marker & t.rows[1].cells[3].marker & t.rows[0].cells[4].marker)) {
+				youWin();
+			} else {
+				var merged = [].concat.apply([], table_to_array('card'));
+				let isFounded = merged.some( ai => bingoWords.includes(ai) );
+				console.log(isFounded)
+				if (isFounded) {
+					youWin();
+				} else {
+					youLose();
+				}
+
+			}
+		}
+
+		function table_to_array(table_id) {
+			myData = document.getElementById(table_id).rows
+			//console.log(myData)
+			my_liste = []
+			for (var i = 0; i < myData.length; i++) {
+				el = myData[i].children
+				my_el = []
+				for (var j = 0; j < el.length; j++) {
+					if (el[j].marker) {
+						my_el.push(el[j].innerText);
+					}
+
+				}
+				my_liste.push(my_el)
+
+			}
+			return my_liste
+		}
+
+		function markSquare(square) {
+
+			if (square.marker == '1') {
+				square.marker = 0;
+				square.style.background = '';
+			} else {
+				square.marker = 1;
+				square.style.backgroundColor = "#7289da";
+			}
+			checkForWin();
+		}
+
+
+		function fillBingoCard(wordlist) {
+
+			// for (var i = 0; i < wordlist.length; i++) {
+			// 	temp = wordlist[i];
+			// 	j = Math.floor(Math.random() * wordlist.length);
+			// 	wordlist[i] = wordlist[j];
+			// 	wordlist[j] = temp;
+			// }
+
+			var bingocard = document.getElementById('card');
+			for (var i = 0; i < 5; i++) {
+				for (var j = 0; j < 5; j++) {
+					bingocard.rows[i].cells[j].innerHTML = wordlist[i * 5 + j];
+				}
+			}
+			bingocard.rows[2].cells[2].innerHTML = '<strong>{"FREE_SPACE"}</strong>';
+		}
+
+
+		function setupGame() {
+			fillBingoCard(words);
+		}
+
+
+		function resetBingoCard() {
+			var bingocard = document.getElementById('card');
+			for (row = 0; row < 5; row++) {
+				for (col = 0; col < 5; col++) {
+					with (bingocard.rows[row].cells[col]) {
+						marker = 0;
+						style.background = '';
+					}
+				}
+			}
+			setupGame();
+		}
+
+		function copyText() {
+			console.log(window.location.href)
+			let count = window.location.href.split("/").length - 1
+
+			if(count >= 4 && !window.location.href.endsWith("/bingo/")){
+				navigator.clipboard.writeText(window.location.href)
+			}else {
+				navigator.clipboard.writeText(window.location.href + "{"URL"}")
+			}
+		}
+
+		setupGame();
+	</script>
+</body>
+
+</html>

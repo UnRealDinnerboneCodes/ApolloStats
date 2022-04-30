@@ -1,7 +1,7 @@
-package com.unrealdinnerbone.apollostats.generators.test;
+package com.unrealdinnerbone.apollostats.web.pages.other;
 
 import com.google.common.collect.Lists;
-import com.unrealdinnerbone.apollostats.IWebPage;
+import com.unrealdinnerbone.apollostats.api.IWebPage;
 import com.unrealdinnerbone.apollostats.Match;
 import com.unrealdinnerbone.apollostats.Scenarios;
 import com.unrealdinnerbone.apollostats.Util;
