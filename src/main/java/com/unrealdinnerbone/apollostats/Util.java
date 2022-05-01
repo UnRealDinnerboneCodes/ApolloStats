@@ -1,17 +1,9 @@
 package com.unrealdinnerbone.apollostats;
 
-import com.squareup.moshi.Moshi;
-import com.unrealdinnerbone.apollostats.temp.temp.RecordsJsonAdapterFactory;
 import com.unrealdinnerbone.unreallib.MathHelper;
 import com.unrealdinnerbone.unreallib.Triplet;
-import com.unrealdinnerbone.unreallib.json.IJsonParser;
-import com.unrealdinnerbone.unreallib.json.MoshiParser;
-import org.checkerframework.checker.units.qual.min;
-import org.eclipse.jetty.util.IO;
 
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
