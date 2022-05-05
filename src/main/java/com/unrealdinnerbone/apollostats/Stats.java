@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class Stats {
     private static final Logger LOGGER = LoggerFactory.getLogger("Stats");
     private static final List<IWebPage> statPages = new ArrayList<>();
-    private static final Cache<String, String> pages = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
+    private static final Cache<String, String> pages = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     private static final Cache<String, String> BINGO_CACHE = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     private static final List<BingoValue> BINGO_VALUES = new ArrayList<>();
 
