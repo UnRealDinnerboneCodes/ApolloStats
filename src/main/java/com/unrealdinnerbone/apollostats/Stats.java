@@ -58,6 +58,7 @@ public class Stats {
         statPages.add(new HostIn24HoursGen());
         statPages.add(new RandomScenarioGenerator());
         statPages.add(new Season9Thing());
+        statPages.add(new HostedGen());
     }
 
     public static void main(String[] args) throws Exception {
