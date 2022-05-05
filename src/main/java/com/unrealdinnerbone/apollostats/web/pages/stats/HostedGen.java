@@ -31,7 +31,7 @@ public class HostedGen implements IWebPage {
 
 
 
-        List<HostData> hostData = plays.entrySet().stream().map(e -> new HostData(e.getKey(), e.getValue())).toList();
+        List<HostData> hostData = new ArrayList<>(plays.entrySet().stream().map(e -> new HostData(e.getKey(), e.getValue())).toList());
         int total = hostData.stream().map(HostData::i).mapToInt(Math::toIntExact).sum();
         hostData.add(new HostData("ApolloUHC", total));
 
