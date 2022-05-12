@@ -1,10 +1,7 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
-import com.unrealdinnerbone.apollostats.api.Scenario;
-import com.unrealdinnerbone.apollostats.api.Type;
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
-import com.unrealdinnerbone.apollostats.Scenarios;
+import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
@@ -12,12 +9,13 @@ import java.text.DecimalFormat;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class TopScenariosGen implements IWebPage {
+public class TopScenariosGen implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap,ICTXWrapper query) {
         AtomicInteger total = new AtomicInteger(0);
         HashMap<Scenario, AtomicInteger> matchCount = new HashMap<>();
 
@@ -27,7 +25,7 @@ public class TopScenariosGen implements IWebPage {
                 .flatMap(Collection::stream)
                 .filter(Match::isGoodGame)
                 .peek(match -> total.incrementAndGet())
-                .map(match -> Scenarios.fix(Type.SCENARIO, match.scenarios()))
+                .map(match -> ScenarioManager.fix(Type.SCENARIO, match.scenarios()))
                 .flatMap(Collection::stream)
                 .forEach(scenario -> Maps.putIfAbsent(matchCount, scenario, new AtomicInteger(0)).incrementAndGet());
 
@@ -40,7 +38,7 @@ public class TopScenariosGen implements IWebPage {
     }
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "top";
     }
 

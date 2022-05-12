@@ -1,19 +1,16 @@
 package com.unrealdinnerbone.apollostats.api;
 
 import com.unrealdinnerbone.apollostats.web.ApolloRole;
+import io.javalin.http.Context;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 public interface IWebPage {
+    void getPage(Context handler);
 
-    default String generateStats(Map<String, List<Match>> hostMatchMap, Function<String, String> query) {
-        return generateStats(hostMatchMap);
-    }
-    String generateStats(Map<String, List<Match>> hostMatchMap);
-
-    String getName();
+    String getPath();
 
 
     default ApolloRole getRole() {

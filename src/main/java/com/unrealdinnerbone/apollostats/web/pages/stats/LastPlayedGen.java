@@ -1,10 +1,7 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
-import com.unrealdinnerbone.apollostats.api.Scenario;
-import com.unrealdinnerbone.apollostats.api.Type;
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
-import com.unrealdinnerbone.apollostats.Scenarios;
+import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.Pair;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
@@ -16,19 +13,20 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class LastPlayedGen implements IWebPage {
+public class LastPlayedGen implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap,ICTXWrapper query) {
         Map<Scenario, List<Pair<Instant, String>>> plays = new HashMap<>();
         AtomicInteger totalGames = new AtomicInteger();
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
                 .filter(Match::isGoodGame)
                 .peek(match -> totalGames.incrementAndGet())
-                .forEach(match -> Scenarios.fix(Type.SCENARIO, match.scenarios())
+                .forEach(match -> ScenarioManager.fix(Type.SCENARIO, match.scenarios())
                         .stream()
                         .filter(Scenario::official)
                         .toList()
@@ -48,7 +46,7 @@ public class LastPlayedGen implements IWebPage {
     }
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "played";
     }
 

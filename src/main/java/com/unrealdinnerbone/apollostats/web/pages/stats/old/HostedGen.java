@@ -1,22 +1,22 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
-import com.unrealdinnerbone.apollostats.api.Match;
-import com.unrealdinnerbone.apollostats.api.IWebPage;
+import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class HostedGen implements IWebPage {
+public class HostedGen implements IStatPage {
 
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
-        Map<String, Long> plays = new HashMap<>();
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+        Map<Staff, Long> plays = new HashMap<>();
 
-        for (Map.Entry<String, List<Match>> stringListEntry : hostMatchMap.entrySet()) {
+        for (Map.Entry<Staff, List<Match>> stringListEntry : hostMatchMap.entrySet()) {
             plays.put(stringListEntry.getKey(), stringListEntry.getValue().stream()
                     .filter(Match::isApolloGame)
                     .filter(Predicate.not(Match::removed))
@@ -28,7 +28,7 @@ public class HostedGen implements IWebPage {
 
 
 
-        List<HostData> hostData = new ArrayList<>(plays.entrySet().stream().map(e -> new HostData(e.getKey(), e.getValue())).toList());
+        List<HostData> hostData = new ArrayList<>(plays.entrySet().stream().map(e -> new HostData(e.getKey().displayName(), e.getValue())).toList());
         int total = hostData.stream().map(HostData::i).mapToInt(Math::toIntExact).sum();
         hostData.add(new HostData("ApolloUHC", total));
 
@@ -44,7 +44,7 @@ public class HostedGen implements IWebPage {
 
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "hosted";
     }
 

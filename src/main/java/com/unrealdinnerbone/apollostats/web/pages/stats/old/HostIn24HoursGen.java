@@ -1,25 +1,25 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class HostIn24HoursGen implements IWebPage {
+public class HostIn24HoursGen implements IStatPage {
 
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
-        Map<String, List<Instant>> plays = new HashMap<>();
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+        Map<Staff, List<Instant>> plays = new HashMap<>();
 
-        for (Map.Entry<String, List<Match>> stringListEntry : hostMatchMap.entrySet()) {
+        for (Map.Entry<Staff, List<Match>> stringListEntry : hostMatchMap.entrySet()) {
             plays.put(stringListEntry.getKey(), stringListEntry.getValue().stream()
                     .filter(Match::isApolloGame)
                     .filter(Predicate.not(Match::removed))
@@ -29,9 +29,9 @@ public class HostIn24HoursGen implements IWebPage {
         }
 
 
-        Map<String, AtomicInteger> max = hostMatchMap.keySet().stream().collect(Collectors.toMap(s -> s, s -> new AtomicInteger(0), (a, b) -> b));
+        Map<Staff, AtomicInteger> max = hostMatchMap.keySet().stream().collect(Collectors.toMap(s -> s, s -> new AtomicInteger(0), (a, b) -> b));
 
-        for (Map.Entry<String, List<Instant>> stringListEntry : plays.entrySet()) {
+        for (Map.Entry<Staff, List<Instant>> stringListEntry : plays.entrySet()) {
             List<Instant> times = new ArrayList<>(stringListEntry.getValue());
             times.sort(Comparator.reverseOrder());
             for (Instant time : times) {
@@ -58,7 +58,7 @@ public class HostIn24HoursGen implements IWebPage {
             }
         }
 
-        List<HostData> cake = max.entrySet().stream().map(entry -> new HostData(entry.getKey(), entry.getValue().get())).toList();
+        List<HostData> cake = max.entrySet().stream().map(entry -> new HostData(entry.getKey().displayName(), entry.getValue().get())).toList();
 
 
         return WebUtils.makeHTML("Hosts in 24 hours", "https://unreal.codes/kevStonk.png", Arrays.asList("Host", "Times"), cake);
@@ -73,7 +73,7 @@ public class HostIn24HoursGen implements IWebPage {
 
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "cheese";
     }
 

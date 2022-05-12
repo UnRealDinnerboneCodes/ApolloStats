@@ -1,17 +1,17 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class AverageFillPage implements IWebPage {
+public class AverageFillPage implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
         List<Match> matches = hostMatchMap.values().stream().flatMap(List::stream).toList();
         Map<String, List<Integer>> fills = new HashMap<>();
         matches.forEach(match -> match.findGameData().ifPresent(game -> Maps.putIfAbsent(fills, match.displayName(), new ArrayList<>()).add(game.fill())));
@@ -40,7 +40,7 @@ public class AverageFillPage implements IWebPage {
 
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "fills";
     }
 }

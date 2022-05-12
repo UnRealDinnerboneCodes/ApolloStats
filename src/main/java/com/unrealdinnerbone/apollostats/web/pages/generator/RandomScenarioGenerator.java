@@ -1,12 +1,9 @@
-package com.unrealdinnerbone.apollostats.web.pages.other;
+package com.unrealdinnerbone.apollostats.web.pages.generator;
 
 import com.google.common.collect.Lists;
-import com.unrealdinnerbone.apollostats.*;
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
-import com.unrealdinnerbone.apollostats.api.Scenario;
-import com.unrealdinnerbone.apollostats.api.Type;
+import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.apollostats.lib.Util;
+import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.ArrayUtil;
 import com.unrealdinnerbone.unreallib.MathHelper;
 import com.unrealdinnerbone.unreallib.Triplet;
@@ -18,12 +15,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class RandomScenarioGenerator implements IWebPage {
+public class RandomScenarioGenerator implements IStatPage {
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap, Function<String, String> query) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         List<Scenario> scens = getScenList();
-        String minS = query.apply("min");
-        String maxS = query.apply("max");
+        String minS = wrapper.queryParam("min");
+        String maxS = wrapper.queryParam("max");
         int min = minS == null ? 3 : Integer.parseInt(minS);
         int max = maxS == null ? 9 : Math.min(scens.size(), Integer.parseInt(maxS));
         int maxId = scens.stream().max(Comparator.comparing(Scenario::id)).map(Scenario::id).orElseThrow();
@@ -32,7 +29,7 @@ public class RandomScenarioGenerator implements IWebPage {
     }
 
     public static List<Scenario> getScenList() {
-        return Scenarios.getValues(Type.SCENARIO).stream()
+        return ScenarioManager.getValues(Type.SCENARIO).stream()
                 .filter(Scenario::official)
                 .filter(Scenario::image)
                 .toList();
@@ -69,7 +66,7 @@ public class RandomScenarioGenerator implements IWebPage {
             }
             builder.append(row);
         }
-        List<String> teams = Scenarios.getValues(Type.TEAM)
+        List<String> teams = ScenarioManager.getValues(Type.TEAM)
                 .stream().map(Scenario::name)
                 .filter(name -> !name.equals("Love at First Lake"))
                         .toList();
@@ -88,12 +85,7 @@ public class RandomScenarioGenerator implements IWebPage {
     private static final Logger LOGGER = LoggerFactory.getLogger(RandomScenarioGenerator.class);
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
-       return null;
-    }
-
-    @Override
-    public String getName() {
+    public String getPath() {
         return "random_game";
     }
 
@@ -157,5 +149,17 @@ public class RandomScenarioGenerator implements IWebPage {
                 """;
     }
 
+    public static class IDPage implements IStatPage {
+
+        @Override
+        public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
+            return RandomScenarioGenerator.generatePage(wrapper.pathParam("id"), true);
+        }
+
+        @Override
+        public String getPath() {
+            return "random_game/{id}";
+        }
+    }
 
 }

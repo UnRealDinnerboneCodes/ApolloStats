@@ -1,15 +1,15 @@
 package com.unrealdinnerbone.apollostats.web.pages.graph;
 
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.*;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
 
-public class FillsGraphPage implements IWebPage {
+public class FillsGraphPage implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
         StringBuilder builder = new StringBuilder("Time,Host,Amount\n");
 
 
@@ -21,7 +21,7 @@ public class FillsGraphPage implements IWebPage {
     }
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "data/fills";
     }
 

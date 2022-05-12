@@ -1,22 +1,20 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
-import com.unrealdinnerbone.apollostats.api.Scenario;
-import com.unrealdinnerbone.apollostats.api.Type;
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
-import com.unrealdinnerbone.apollostats.Scenarios;
+import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class LongTimeGames implements IWebPage {
+public class LongTimeGames implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap,ICTXWrapper query) {
         Map<String, Map<LTGType, AtomicInteger>> theMap = new HashMap<>();
 
 
@@ -38,7 +36,7 @@ public class LongTimeGames implements IWebPage {
     }
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "ltg";
     }
 
@@ -64,7 +62,7 @@ public class LongTimeGames implements IWebPage {
         }
 
         public static Optional<LTGType> getType(Match match) {
-            for(String fixScen : Scenarios.fix(Type.SCENARIO, match.scenarios()).stream().map(Scenario::name).toList()) {
+            for(String fixScen : ScenarioManager.fix(Type.SCENARIO, match.scenarios()).stream().map(Scenario::name).toList()) {
                 for(LTGType type : LTGType.values()) {
                     for(String name : type.getNames()) {
                         if(fixScen.equalsIgnoreCase(name)) {

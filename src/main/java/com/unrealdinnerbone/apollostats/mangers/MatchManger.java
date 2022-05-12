@@ -1,97 +1,114 @@
-package com.unrealdinnerbone.apollostats;
+package com.unrealdinnerbone.apollostats.mangers;
 
+import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.Game;
 import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.minecraft.ping.MCPing;
 import com.unrealdinnerbone.unreallib.web.HttpUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Matches {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Matches.class);
+public class MatchManger {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MatchManger.class);
 
-    private static final Map<String, List<Match>> matchesMap = new HashMap<>();
+    private static final Map<Staff, List<Match>> matchesMap = new HashMap<>();
 
     private static final List<Integer> ids = new ArrayList<>();
 
-    public static void init(PostgressHandler postgressHandler) {
-        Util.STAFF.stream().parallel().forEach(staff -> TaskScheduler.scheduleRepeatingTaskExpectantly(15, TimeUnit.MINUTES, task -> {
+    public static CompletableFuture<Void> init() {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+            TaskScheduler.scheduleRepeatingTaskExpectantly(15, TimeUnit.MINUTES, task -> {
+                loadMatchData();
+                if(!future.isDone()) {
+                    future.complete(null);
+                }
+            }, e -> LOGGER.error("Error loading match data", e));
+            return future;
+    }
+
+
+    private static void loadMatchData() throws Exception {
+        for(Staff staff : StaffManager.getStaff()) {
             List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
-            LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
+            LOGGER.info("{} has {} matches", staff, matches.size());
             matchesMap.put(staff, matches);
-            matches.stream().filter(Predicate.not(Match::hasPlayed))
+            matches.stream()
+                    .filter(Predicate.not(Match::hasPlayed))
+                    .filter(Predicate.not(Match::removed))
                     .forEach(match -> {
                         if(!ids.contains(match.id())) {
                             Instant opens = Instant.parse(match.opens());
                             if(opens.isAfter(Instant.now())) {
                                 ids.add(match.id());
-                                LOGGER.info("Scheduling match {}", match.id());
+                                LOGGER.info("Scheduling match {}", match);
                                 TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> {
-                                    watchForFill(postgressHandler, match);
-                                    ids.remove(match.id());
+                                    watchForFill(match);
+                                    ids.remove((Object) match.id());
                                 });
                             }
                             if(opens.isBefore(Instant.now().plus(15, ChronoUnit.MINUTES))) {
                                 if(!ids.contains(match.id())) {
-                                    watchForFill(postgressHandler, match);
+                                    watchForFill(match);
                                 }
                             }
                         }
 
                     });
-
-        }, e -> LOGGER.error("Failed to load matches for {}", staff, e)));
+        }
     }
 
-    public static List<Match> getAllMatchesForHost(String name, Optional<Integer> before) throws Exception {
-        String json = HttpUtils.get("https://hosts.uhc.gg/api/hosts/" + name.replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse("")).body();
+    public static List<Match> getAllMatchesForHost(Staff staff, Optional<Integer> before) throws Exception {
+        String json = HttpUtils.get("https://hosts.uhc.gg/api/hosts/" + staff.username().replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse("")).body();
         try {
             List<Match> matches = Arrays.stream(JsonUtil.DEFAULT.parse(Match[].class, json)).collect(Collectors.toList());
             if(matches.size() == 50) {
-                matches.addAll(getAllMatchesForHost(name, Optional.of(matches.get(49).id())));
+                matches.addAll(getAllMatchesForHost(staff, Optional.of(matches.get(49).id())));
             }
             return matches;
         }catch(AssertionError e) {
             LOGGER.error("Error while parsing json", e);
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 
-    public static void watchForFill(PostgressHandler postgressHandler, Match match) {
+    public static void watchForFill(Match match) {
         LOGGER.warn("Watching for fill for match {}", match.id());
         AtomicInteger fill = new AtomicInteger(0);
-        TaskScheduler.scheduleRepeatingTask(1, TimeUnit.MINUTES, task -> {
-            MCPing.ping("apollouhc.com", 25565).whenComplete((result, throwable) -> {
+        TaskScheduler.scheduleRepeatingTask(30, TimeUnit.SECONDS, task -> {
+            MCPing.ping(Stats.CONFIG.getServerIp(), Stats.CONFIG.getServerPort()).whenComplete((result, throwable) -> {
                 if(throwable == null) {
-                    Component component = GsonComponentSerializer.gson().deserialize(result.description());
-                    String message = PlainTextComponentSerializer.plainText().serialize(component);
+                    String message = Util.getMotdMessage(result);
                     GameState state = GameState.getState(message);
-                    if(state == GameState.PVP) {
+                    if(state == GameState.PRE_PVP) {
                         int online = result.players().online();
                         if(online > fill.get()) {
+                            LOGGER.info("{} players online, filling match {}", online, match.id());
                             fill.set(online);
                         }
-                    }else if(state == GameState.MEATUP) {
-                        LOGGER.info("Match {} is full", match.id());
-                        Games.addGames(postgressHandler, Collections.singletonList(new Game(match.id(), fill.get())));
+                    }else if(state == GameState.PVP) {
+                        int totalFill = (fill.get() == 0 ? result.players().online() : fill.get()) - 1;
+                        LOGGER.info("Game {} fill is {}", match.id(), totalFill);
+//                        GameManager.addGames(Collections.singletonList(new Game(match.id(), totalFill)));
                         task.cancel();
+                    }else if(state == GameState.IDLE) {
+                        task.cancel();
+                    }else {
+                        LOGGER.info("Game {} is {} at {}", match.id(), state, result.players().online());
                     }
-                    LOGGER.warn("Ping Data: {} ({})", message, state.name());
                 }else {
                     LOGGER.error("Error while pinging", throwable);
                 }
@@ -100,16 +117,17 @@ public class Matches {
 
     }
 
-    public static Map<String, List<Match>> getMap() {
+    public static Map<Staff, List<Match>> getMap() {
         return matchesMap;
     }
 
     public enum GameState {
         IDLE(s -> s.equalsIgnoreCase("Apollo » No game is running.\nWhitelist is on.")),
         LOBBY(s -> s.startsWith("Apollo » No game is running.\nWhitelist is off. Arena is")),
-        PVP(s -> s.startsWith("Apollo » PvP is in: ")),
-        MEATUP(s -> false),
-        OVER(s -> false),
+        PRE_PVP(s -> s.startsWith("Apollo » PvP is in: ")),
+        PVP(s -> s.startsWith("Apollo » Meetup is in: ")),
+        MEATUP(s -> s.startsWith("Apollo » Meetup is now!")),
+//        OVER(s -> false),
         UNKNOWN(s -> false);
         ;
 

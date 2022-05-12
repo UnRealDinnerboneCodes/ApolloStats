@@ -1,6 +1,8 @@
 package com.unrealdinnerbone.apollostats.api;
 
-import com.unrealdinnerbone.apollostats.Games;
+import com.unrealdinnerbone.apollostats.mangers.GameManager;
+import com.unrealdinnerbone.apollostats.mangers.StaffManager;
+import com.unrealdinnerbone.apollostats.Stats;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -8,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public record Match(int id,
                     String author,
@@ -62,8 +63,21 @@ public record Match(int id,
         return id();
     }
 
+    @Override
+    public String toString() {
+        return displayName() + " (" + id + ")";
+    }
+
     public Optional<Game> findGameData() {
-        return Games.getGames().stream().filter(game -> game.id() == id).findFirst();
+        return GameManager.getGames().stream().filter(game -> game.id() == id).findFirst();
+    }
+
+    public Optional<Staff> findStaff() {
+        return StaffManager.getStaff().stream().filter(staff -> staff.username().equals(author)).findFirst();
+    }
+
+    public String getUrl() {
+        return Stats.CONFIG.getMatchPage() + id;
     }
 
     public String displayName() {

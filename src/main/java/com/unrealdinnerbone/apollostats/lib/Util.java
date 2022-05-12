@@ -2,6 +2,10 @@ package com.unrealdinnerbone.apollostats.lib;
 
 import com.unrealdinnerbone.unreallib.MathHelper;
 import com.unrealdinnerbone.unreallib.Triplet;
+import com.unrealdinnerbone.unreallib.minecraft.ping.MCServerPingResponse;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,47 +19,9 @@ public class Util
     public static final int MIN = 3;
     public static final int MAX = 9;
 
-    public final static List<String> STAFF = Arrays.asList(
-            "C_moneySmith",
-            "adorablur",
-            "AlgoHost",
-            "AtomicCrossbow",
-            "CarbonateCO3",
-            "CxlibriPlays",
-            "DaniDeVit0",
-            "Dashetoboba",
-            "ElTioDodo",
-            "Gronyak124",
-            "JJQ4",
-            "DaDoshua",
-            "zombi3s_",
-            "MSIPig",
-            "NeededCheese",
-            "rachammc",
-            "Sicced",
-            "TheMainMiek",
-            "ImHab",
-            "CheetaaahReddit",
-            "AyeeSammy14",
-            "_UglySheep_",
-            "WackMaDino",
-            "p1an_",
-            "sam03062",
-            "Slushybunion",
-            "TinyxNinja",
-            "Mihkeeee",
-            "Andronifyy",
-            "LordJxck",
-            "PingasPootis",
-            "DIISU",
-            "Gejin",
-            "uh_joe",
-            "Chugabunga",
-            "Sharkbob94349",
-            "MrDennis25",
-            "rachammc");
-
-
+    public static String getMotdMessage(MCServerPingResponse result) {
+        return PlainTextComponentSerializer.plainText().serialize(GsonComponentSerializer.gson().deserialize(result.description()));
+    }
     public static String formalize(String s) {
         return s.toLowerCase().replace(" ", "").replace("+", "plus").replaceAll("\\p{Punct}+", "");
     }
@@ -82,8 +48,4 @@ public class Util
     public static String createID() {
         return IntStream.range(0, 5).mapToObj(i -> String.valueOf(VAILD.charAt(MathHelper.randomInt(0, VAILD.length())))).collect(Collectors.joining());
     }
-    public static boolean isNewLine(String s) {
-        return s.equals("\n");
-    }
-
 }

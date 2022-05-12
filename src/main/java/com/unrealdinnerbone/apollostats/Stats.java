@@ -1,32 +1,30 @@
 package com.unrealdinnerbone.apollostats;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.unrealdinnerbone.apollostats.api.BingoValue;
+import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
 import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.WebInstance;
+import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
 import com.unrealdinnerbone.apollostats.lib.Config;
 import com.unrealdinnerbone.apollostats.lib.Util;
+import com.unrealdinnerbone.apollostats.mangers.*;
 import com.unrealdinnerbone.apollostats.web.ApolloRole;
 import com.unrealdinnerbone.apollostats.web.Results;
 import com.unrealdinnerbone.apollostats.web.WebAccessManger;
+import com.unrealdinnerbone.apollostats.web.pages.bingo.BingoPages;
 import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
-import com.unrealdinnerbone.apollostats.web.pages.other.RandomScenarioGenerator;
+import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
-import com.unrealdinnerbone.apollostats.web.pages.stats.old.*;
 import com.unrealdinnerbone.config.ConfigManager;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.ArrayUtil;
+import com.unrealdinnerbone.unreallib.LazyValue;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
-import com.unrealdinnerbone.unreallib.web.HttpUtils;
 import io.javalin.Javalin;
 import io.javalin.http.HttpCode;
-import io.javalin.http.staticfiles.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,195 +32,111 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Stats {
     private static final Logger LOGGER = LoggerFactory.getLogger("Stats");
-    private static final List<IWebPage> statPages = new ArrayList<>();
-    private static final Cache<String, String> pages = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
-    private static final Cache<String, String> BINGO_CACHE = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
-    private static final List<BingoValue> BINGO_VALUES = new ArrayList<>();
+    private static final List<WebInstance<?>> instances = new ArrayList<>();
+    private static final List<Supplier<CompletableFuture<Void>>> futures = new ArrayList<>();
 
     public static final Config CONFIG;
     private static final PostgresConfig POSTGRES_CONFIG;
+
+    private static final LazyValue<PostgressHandler> HANDLER;
 
     static {
         ConfigManager configManager = ConfigManager.createSimpleEnvPropertyConfigManger();
         CONFIG = configManager.loadConfig("apollo", Config::new);
         POSTGRES_CONFIG = configManager.loadConfig("postgres", PostgresConfig::new);
-        statPages.add(new TopScenariosGen());
-        statPages.add(new LastPlayedGen());
-        statPages.add(new AverageFillPage());
-        statPages.add(new GameHostedGen());
-        statPages.add(new FillsGraphPage());
-//        statPages.add(new LongTimeGames());
-//        statPages.add(new TeamTypesGames());
-//        statPages.add(new TeamSizeGames());
-//        statPages.add(new TimeBetweenGames());
-//        statPages.add(new HostIn24HoursGen());
-//        statPages.add(new RandomScenarioGenerator());
-//        statPages.add(new Season9Thing());
-//        statPages.add(new HostedGen());
-//        statPages.add(new SpelledWrong());
+        HANDLER = new LazyValue<>(() -> {
+            try {
+                return new PostgressHandler(POSTGRES_CONFIG);
+            }catch(SQLException | ClassNotFoundException e) {
+                LOGGER.error("Failed to create postgres handler", e);
+                return null;
+            }
+        });
+        instances.add(
+                new PublicInstance(Arrays.asList(
+                        new TopScenariosGen(),
+                        new LastPlayedGen(),
+                        new AverageFillPage(),
+                        new GameHostedGen(),
+                        new FillsGraphPage(),
+                        new BingoPages.IDCard(),
+                        new BingoPages.NewCard(),
+                        new RandomScenarioGenerator(),
+                        new RandomScenarioGenerator.IDPage()
+        )));
+
+        futures.add(BingoManger::init);
+        futures.add(ScenarioManager::init);
+        futures.add(StaffManager::load);
+        futures.add(GameManager::init);
+        futures.add(MatchManger::init);
     }
 
     public static void main(String[] args) throws Exception {
+        TaskScheduler.allAsync(futures.stream().map(Supplier::get).toList()).whenComplete((v, t) -> {
+            if (t != null) {
+                LOGGER.error("Failed to load data", t);
+            }else {
+                for(WebInstance<?> instance : instances) {
+                    Javalin javalin = Javalin.create(javalinConfig -> {
+                        javalinConfig.accessManager(new WebAccessManger());
+                        instance.getConfig().accept(javalinConfig);
+                    }).start(instance.getPort());
 
-        PostgressHandler postgressHandler = new PostgressHandler(POSTGRES_CONFIG);
-        ResultSet resultSet = postgressHandler.getSet("SELECT * FROM public.bingo");
-        while(resultSet.next()) {
-            BINGO_VALUES.add(new BingoValue(resultSet.getString("bingo"), resultSet.getBoolean("auto_win"), resultSet.getBoolean("is_player")));
-        }
-
-
-        TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> Scenarios.loadData(postgressHandler), e -> LOGGER.error("Failed to load scenarios", e));
-
-        Games.loadData(postgressHandler);
-        Matches.init(postgressHandler);
-
-
-
-        Javalin publicPlace = Javalin.create(javalinConfig -> {
-            javalinConfig.accessManager(new WebAccessManger());
-            javalinConfig.addStaticFiles("/web", Location.CLASSPATH);
-        }).start(1000);
-
-        Javalin pushAPI = Javalin.create(javalinConfig -> javalinConfig.accessManager(new WebAccessManger())).start(1001);
-
-        for(IWebPage generator : statPages) {
-            publicPlace.get(generator.getName(), ctx -> {
-                LOGGER.info("Received request for {}", generator.getName());
-                ctx.html(pages.get(generator.getName(), () -> generator.generateStats(Matches.getMap(), ctx::queryParam)));
-            }, generator.getRole());
-        }
-
-        publicPlace.get("random_game/{id}", ctx -> ctx.html(RandomScenarioGenerator.generatePage(ctx.pathParam("id"), true)), ApolloRole.EVERYONE);
-
-
-        pushAPI.post("/v1/bingo/add", ctx -> {
-            try {
-                BingoValue value = JsonUtil.DEFAULT.parse(BingoValue.class, ctx.body());
-                if(value == null) {
-                    ctx.status(HttpCode.BAD_REQUEST).result(Results.message("Invalid JSON (How did you get here?)"));
-                }else {
-                    if(value.bingo() == null) {
-                        ctx.status(HttpCode.BAD_REQUEST).result(Results.message("Bingo value is null"));
-                    }else {
-                        if(BINGO_VALUES.contains(value)) {
-                            ctx.status(HttpCode.BAD_REQUEST).result(Results.message("Bingo value already exists"));
-                        }else {
-                            BINGO_VALUES.add(value);
-                            LOGGER.info("Added {}", value);
-                            postgressHandler.executeUpdate("INSERT INTO public.bingo (bingo, auto_win, is_player) VALUES (?, ?, ?)", statement -> {
-                                statement.setString(1, value.bingo());
-                                statement.setBoolean(2, value.isBingo());
-                                statement.setBoolean(3, value.isPlayer());
-                            });
-                            TaskScheduler.handleTaskOnThread(() -> {
-                                try {
-                                    DiscordWebhook.of(CONFIG.getDiscordWebBotToken()).setContent("Added new bingo value: " + value.bingo()).execute();
-                                }catch(IOException | InterruptedException e) {
-                                    LOGGER.error("Error while sending message to discord", e);
-                                }
-                            });
-                            ctx.result(Results.message("Successfully added bingo value"));
+                    instance.getPages().forEach((key, value) -> value.forEach(iWebPage -> {
+                        if(key == WebInstance.Type.GET) {
+                            javalin.get(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
+                        }else if(key == WebInstance.Type.POST) {
+                            javalin.post(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
                         }
-                    }
+                    }));
                 }
-            }catch(Exception e) {
-                ctx.status(HttpCode.BAD_REQUEST).result(Results.message(e.getMessage()));
+
+                Javalin pushAPI = Javalin.create(javalinConfig -> javalinConfig.accessManager(new WebAccessManger())).start(1001);
+
+
+
+                pushAPI.post("/v1/bingo/add", ctx -> {
+
+
+                }, ApolloRole.POST_API);
+
+
+//                pushAPI.get("/v1/bingo", ctx -> ctx.result(JsonUtil.DEFAULT.toJson(List.class, BINGO_VALUES)), ApolloRole.EVERYONE);
+//
+//
+//                publicPlace.get("bingo", ctx -> {
+//                    String perm = ctx.queryParam("player");
+//                    boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
+//                    String freeSpace = ctx.queryParam("freeSpace");
+//                    ctx.html(getBingoCard(Util.createID(), postgressHandler, isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace));
+//                });
+//                publicPlace.get("bingo/{id}", ctx -> {
+//                    String id = ctx.pathParam("id");
+//                    String perm = ctx.queryParam("player");
+//                    boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
+//                    String freeSpace = ctx.queryParam("freeSpace");
+//                    ctx.html(getBingoCard(id, postgressHandler, isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace));
+//                });
             }
-
-        }, ApolloRole.POST_API);
-
-
-        pushAPI.get("/v1/bingo", ctx -> ctx.result(JsonUtil.DEFAULT.toJson(List.class, BINGO_VALUES)), ApolloRole.EVERYONE);
-
-
-        publicPlace.get("bingo", ctx -> {
-            String perm = ctx.queryParam("player");
-            boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
-            String freeSpace = ctx.queryParam("freeSpace");
-            ctx.html(getBingoCard(Util.createID(), postgressHandler, isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace));
-        });
-        publicPlace.get("bingo/{id}", ctx -> {
-            String id = ctx.pathParam("id");
-            String perm = ctx.queryParam("player");
-            boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
-            String freeSpace = ctx.queryParam("freeSpace");
-            ctx.html(getBingoCard(id, postgressHandler, isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace));
         });
 
-
-
     }
 
 
-    public static String getBingoCard(String id, PostgressHandler postgressHandler, boolean players, String freeSpace) {
-        Random random = new Random(id.hashCode());
-        try {
-            return BINGO_CACHE.get(id, () -> {
-                ResultSet resultSet = postgressHandler.getSet("SELECT * FROM public.cards where id = ?", statement -> statement.setString(1, id));
-                if(resultSet.next()) {
-                    String values = resultSet.getString("values");
-                    String theFreespace = resultSet.getString("freespace");
-                    String[] split = values.split(";");
-                    String[] frocedBingos = resultSet.getString("bingos").split(";");
-                    return getCard(List.of(split), List.of(frocedBingos), theFreespace, "");
-                }else {
-                    List<BingoValue> values = new ArrayList<>(BINGO_VALUES.stream().filter(bingoValue -> players || bingoValue.isPlayer()).toList());
-                    if(values.size() >= 25) {
-                        List<String> list = new ArrayList<>();
-                        List<String> forced = new ArrayList<>();
-                        for(int i = 0; i < 25; i++) {
-                            BingoValue bingoValue = ArrayUtil.getRandomValueAndRemove(random, values);
-                            list.add(bingoValue.bingo());
-                            if(bingoValue.isBingo()) {
-                                forced.add(bingoValue.bingo());
-                            }
-                        }
-                        TaskScheduler.handleTaskOnThread(() -> {
-                            try {
-                                postgressHandler.executeUpdate("INSERT INTO public.cards (id, values, freespace, bingos) VALUES (?, ?, ?, ?)", statement -> {
-                                    statement.setString(1, id);
-                                    statement.setString(2, String.join(";", list));
-                                    statement.setString(3, freeSpace);
-                                    statement.setString(4, String.join(";", forced));
-                                });
-                            }catch(Exception e) {
-                                LOGGER.error("Error while inserting bingo card", e);
-                            }
-                        });
-                        return getCard(list, forced, freeSpace, id);
-
-                    }else {
-                        throw new RuntimeException("Not enough bingo values");
-                    }
-                }
-
-            });
-        }catch(ExecutionException | UncheckedExecutionException e) {
-            LOGGER.error("Error getting bingo card", e);
-            return getResourceAsString("/500.html");
-        }
+    public static PostgressHandler getPostgresHandler() {
+        return HANDLER.get();
     }
 
-    public static String getCard(List<String> values, List<String> forced, String freeSpace, String id) {
-        return getResourceAsString("bingo.html")
-                .replace("{\"BINGO_VALUES\"}", format(values))
-                .replace("{\"BINGO_WORDS\"}", format(forced))
-                .replace("{\"FREE_SPACE\"}", freeSpace)
-                .replace("{\"URL\"}", id);
-    }
 
-    public static String format(List<String> values) {
-        return values.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(","));
-    }
 
 
 

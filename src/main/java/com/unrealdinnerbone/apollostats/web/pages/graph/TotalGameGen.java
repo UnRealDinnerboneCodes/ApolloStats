@@ -1,17 +1,17 @@
 package com.unrealdinnerbone.apollostats.web.pages.graph;
 
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.*;
 
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class TotalGameGen implements IWebPage {
+public class TotalGameGen implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
         StringBuilder builder = new StringBuilder("Time,Amount\n");
         AtomicInteger amount = new AtomicInteger();
         hostMatchMap.values().stream()
@@ -26,7 +26,7 @@ public class TotalGameGen implements IWebPage {
     }
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "total_game";
     }
 

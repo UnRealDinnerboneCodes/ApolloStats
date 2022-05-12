@@ -1,17 +1,17 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class TimeBetweenGames implements IWebPage {
+public class TimeBetweenGames implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
         List<Match> matches = hostMatchMap.values().stream().flatMap(List::stream).toList().stream().sorted(Comparator.comparing(match -> {
             return Instant.parse(match.opens());
         })).toList();
@@ -30,7 +30,7 @@ public class TimeBetweenGames implements IWebPage {
     }
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "time";
     }
 

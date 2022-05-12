@@ -1,19 +1,19 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
-import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class TeamSizeGames implements IWebPage {
+public class TeamSizeGames implements IStatPage {
 
     @Override
-    public String generateStats(Map<String, List<Match>> hostMatchMap) {
-        Map<String, Map<Integer, AtomicInteger>> types = new HashMap<>();
+    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+        Map<Staff, Map<Integer, AtomicInteger>> types = new HashMap<>();
         List<String> typesList = new ArrayList<>();
 
 
@@ -38,10 +38,10 @@ public class TeamSizeGames implements IWebPage {
         typesList.sort(Comparator.naturalOrder());
         typesList.add(0, "Host");
 
-        for(Map.Entry<String, Map<Integer, AtomicInteger>> entry : types.entrySet()) {
+        for(Map.Entry<Staff, Map<Integer, AtomicInteger>> entry : types.entrySet()) {
             iTableData.add(() -> {
                 List<String> values = new ArrayList<>();
-                values.add(entry.getKey());
+                values.add(entry.getKey().displayName());
                 for(String s : typesList) {
                     if(!s.equals("Host")) {
                         values.add(String.valueOf(entry.getValue().getOrDefault(Integer.valueOf(s), new AtomicInteger(0)).get()));
@@ -54,7 +54,7 @@ public class TeamSizeGames implements IWebPage {
     }
 
     @Override
-    public String getName() {
+    public String getPath() {
         return "team_size";
     }
 
