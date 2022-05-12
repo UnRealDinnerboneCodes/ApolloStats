@@ -1,0 +1,102 @@
+
+<CTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Stats</title>
+        <link rel="stylesheet" href="css/graph.css">
+        <script>
+            window.console = window.console || function (t) { };
+        </script>
+        <script>
+            if (document.location.search.match(/type=embed/gi)) {
+                window.parent.postMessage("resize", "*");
+            }
+        </script>
+    </head>
+
+    <body translate="no">
+    <div id="title">Games Hosted</div>
+    <div id="legend">
+    </div>
+    <div id="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-1b93190375e9ccc259df3a57c1abc0e64599724ae30d7ea4c6877eb615f89387.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/google-palette/1.1.0/palette.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js'></script>
+
+
+    <script id="rendered-js">
+        Chart.defaults.global.defaultFontFamily = 'Roboto';
+        Chart.defaults.global.defaultFontColor = '#333';
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function makeChart(players) {
+            var time = players.map(function (d) { return d.Time; });
+            var dataMap = new Map();
+
+            players.forEach(data => {
+                if (!dataMap.has(data.Host)) {
+                    dataMap.set(data.Host, []);
+                }
+                dataMap.get(data.Host).push(
+                    {
+                        "t": data.Time,
+                        "y": +data.Amount
+                    }
+                )
+            })
+
+
+            var theData = []
+
+            dataMap.forEach(function(key, value) {
+                theData.push(
+                    {
+                        "label": value,
+                        "data": key,
+                        backgroundColor: getRandomColor(),
+                        fill: false,
+                        fillColor: 'rgba(0, 0, 0, 0.0)'
+                    }
+                )
+            })
+
+            var chart = new Chart('chart', {
+                type: 'line',
+                data: {
+                    labels: time,
+                    datasets: theData
+                },
+                options: {
+                    label: "Test",
+                    scales: {
+                        xAxes: [{
+                            type: 'time',
+                            distribution: 'linear'
+                        }]
+                    }
+                }
+            });
+        }
+
+        d3.csv(window.location.origin + '/data/fills').then(makeChart);
+    </script>
+
+
+
+    </body>
+
+    </html>

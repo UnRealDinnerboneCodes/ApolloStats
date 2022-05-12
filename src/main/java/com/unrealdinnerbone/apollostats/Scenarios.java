@@ -1,75 +1,95 @@
 package com.unrealdinnerbone.apollostats;
 
-import com.unrealdinnerbone.unreallib.json.JsonUtil;
+import com.unrealdinnerbone.apollostats.api.Scenario;
+import com.unrealdinnerbone.apollostats.api.Type;
+import com.unrealdinnerbone.apollostats.lib.Util;
+import com.unrealdinnerbone.postgresslib.PostgressHandler;
+import com.unrealdinnerbone.unreallib.LazyHashMap;
+import com.unrealdinnerbone.unreallib.Pair;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Scenarios
 {
-    private static final String SCENARIOS_URL = System.getenv().getOrDefault("SCENARIOS_URL", "https://pastebin.com/raw/PixjeKaS");
     private static final Logger LOGGER = LoggerFactory.getLogger(Scenarios.class);
     private static final Map<Type, List<Scenario>> values = new HashMap<>();
-    private static final Map<String, String> remaps = new HashMap<>();
+    private static final LazyHashMap<String, Optional<Scenario>> MAP = new LazyHashMap<>(cache -> {
+        Map<Integer, List<Scenario>> values = new HashMap<>();
+        for(Scenario scenario : getAll()) {
+            if(isSimilar(scenario.name(), cache)) {
+                return Optional.of(scenario);
+            }else {
+                int id = LevenshteinDistance.getDefaultInstance().apply(scenario.name(), cache);
+                if(!values.containsKey(id)) {
+                    values.put(id, new ArrayList<>());
+                }
+                values.get(id).add(scenario);
+            }
+        }
+        Optional<Pair<Integer, Optional<Scenario>>> lowestId = values.keySet()
+                .stream()
+                .min(Integer::compare)
+                .filter(id -> id <= 9)
+                .map(id -> Pair.of(id,Optional.of(values.get(id).get(0))));
+        Pair<Integer, Optional<Scenario>> returnValue = lowestId.orElse(Pair.of(-1,Optional.empty()));
+        LOGGER.info("{} -> {} ({})", cache, returnValue.value().map(Scenario::name).orElse("None"), returnValue.key());
+        return returnValue.value();
+    });
 
-    public static void loadDiskData() throws Exception {
-        LOGGER.info("Loading disk data...");
+    private static boolean isSimilar(String name, String other) {
+        return Util.formalize(name).equalsIgnoreCase(Util.formalize(other));
+    }
+
+    public static void loadData(PostgressHandler postgressHandler) throws SQLException {
         values.clear();
         Arrays.stream(Type.values()).forEach(value -> values.put(value, new ArrayList<>()));
-        remaps.clear();
-
-        Thing theMap = JsonUtil.DEFAULT.parse(Thing.class, Stats.getResourceAsString("scen.json"));
-        for(Map.Entry<String, MapObject> stringMapObjectEntry : theMap.data().entrySet()) {
-            for(String value : stringMapObjectEntry.getValue().values()) {
-                remaps.put(value, stringMapObjectEntry.getKey());
-            }
-            Type type = Type.fromString(stringMapObjectEntry.getValue().type());
-            values.get(type).add(new Scenario(stringMapObjectEntry.getKey(), stringMapObjectEntry.getValue().id()));
-
+        ResultSet resultSet = postgressHandler.getSet("SELECT * FROM public.scenario");
+        while(resultSet.next()) {
+            String name = resultSet.getString("name");
+            String type = resultSet.getString("type");
+            int id = resultSet.getInt("id");
+            boolean isActive = resultSet.getBoolean("image");
+            boolean official = resultSet.getBoolean("official");
+            Type type1 = Type.fromString(type);
+            values.get(type1).add(new Scenario(name, id, isActive, official, type1));
         }
-
-        LOGGER.info("Loaded {} remaps", remaps.size());
 
     }
 
-    public record Thing(Map<String, MapObject> data) {}
 
-    public record MapObject(String type, List<String> values, int id) {}
-
-    public record Scenario(String name, int id) {}
-
-    public enum Type {
-        TEAM,
-        SCENARIO,
-        MYSTERY_SCENARIO
-        ;
-
-        public static Type fromString(String s) {
-            return Arrays.stream(values()).filter(type -> type.name().equalsIgnoreCase(s)).findFirst().orElseThrow(()->new IllegalArgumentException("Unknown type: " + s));
-        }
-    }
-
-    public static List<String> fix(Type type, List<String> fixed) {
-        List<String> cake = values.get(type).stream().map(Scenario::name).flatMap(s -> remap(s).stream()).toList();
+    public static List<Scenario> fix(Type type, List<String> fixed) {
+        List<Scenario> cake = values.get(type)
+                .stream()
+                .map(Scenario::name)
+                .map(Scenarios::remap)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
         return fixed.stream()
-                .flatMap(scenarioName -> remap(scenarioName).stream())
-                .filter(scenario -> {
-
-                    return cake.contains(scenario);
-                })
+                .map(Scenarios::remap)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(cake::contains)
+                .filter(scenario -> scenario.type() == type)
                 .collect(Collectors.toList());
 
     }
 
-    public static List<String> remap(String scenario) {
-        return remaps.entrySet().stream().filter(stringStringEntry -> scenario.equalsIgnoreCase(stringStringEntry.getKey())).map(Map.Entry::getValue).toList();
+    private static Optional<Scenario> remap(String scenario) {
+        return MAP.get(scenario);
     }
 
     public static List<Scenario> getValues(Type type) {
         return values.get(type);
+    }
+
+    private static List<Scenario> getAll() {
+        return values.values().stream().flatMap(List::stream).collect(Collectors.toList());
     }
 }

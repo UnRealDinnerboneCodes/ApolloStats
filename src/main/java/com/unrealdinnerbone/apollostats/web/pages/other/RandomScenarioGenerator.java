@@ -1,10 +1,12 @@
 package com.unrealdinnerbone.apollostats.web.pages.other;
 
 import com.google.common.collect.Lists;
+import com.unrealdinnerbone.apollostats.*;
 import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.Match;
-import com.unrealdinnerbone.apollostats.Scenarios;
-import com.unrealdinnerbone.apollostats.Util;
+import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.Scenario;
+import com.unrealdinnerbone.apollostats.api.Type;
+import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.ArrayUtil;
 import com.unrealdinnerbone.unreallib.MathHelper;
 import com.unrealdinnerbone.unreallib.Triplet;
@@ -19,19 +21,20 @@ import java.util.stream.IntStream;
 public class RandomScenarioGenerator implements IWebPage {
     @Override
     public String generateStats(Map<String, List<Match>> hostMatchMap, Function<String, String> query) {
-        List<Scenarios.Scenario> scens = getScenList();
+        List<Scenario> scens = getScenList();
         String minS = query.apply("min");
         String maxS = query.apply("max");
         int min = minS == null ? 3 : Integer.parseInt(minS);
         int max = maxS == null ? 9 : Math.min(scens.size(), Integer.parseInt(maxS));
-        int maxId = scens.stream().max(Comparator.comparing(Scenarios.Scenario::id)).map(Scenarios.Scenario::id).orElseThrow();
+        int maxId = scens.stream().max(Comparator.comparing(Scenario::id)).map(Scenario::id).orElseThrow();
         return generatePage(Util.createId(maxId, min, max), false);
 
     }
 
-    public static List<Scenarios.Scenario> getScenList() {
-        return Scenarios.getValues(Scenarios.Type.SCENARIO).stream()
-                .filter(scen -> scen.id() != -1)
+    public static List<Scenario> getScenList() {
+        return Scenarios.getValues(Type.SCENARIO).stream()
+                .filter(Scenario::official)
+                .filter(Scenario::image)
                 .toList();
     }
 
@@ -43,7 +46,7 @@ public class RandomScenarioGenerator implements IWebPage {
         int max = s.c();
 
 
-        List<String> scens = getScenList().stream().filter(scen -> scen.id() <= scenList).map(Scenarios.Scenario::name).collect(Collectors.toList());
+        List<String> scens = getScenList().stream().filter(scen -> scen.id() <= scenList).map(Scenario::name).collect(Collectors.toList());
         Random random = new Random(id.hashCode());
 
         List<String> randomSelect = IntStream.rangeClosed(0, MathHelper.randomInt(random, min - 1, max + 1))
@@ -66,8 +69,8 @@ public class RandomScenarioGenerator implements IWebPage {
             }
             builder.append(row);
         }
-        List<String> teams = Scenarios.getValues(Scenarios.Type.TEAM)
-                .stream().map(Scenarios.Scenario::name)
+        List<String> teams = Scenarios.getValues(Type.TEAM)
+                .stream().map(Scenario::name)
                 .filter(name -> !name.equals("Love at First Lake"))
                         .toList();
         String teamType = ArrayUtil.getRandomValue(random, teams);

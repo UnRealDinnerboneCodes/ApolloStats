@@ -1,7 +1,7 @@
 package com.unrealdinnerbone.apollostats.web.pages.graph;
 
 import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.Match;
+import com.unrealdinnerbone.apollostats.api.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +48,6 @@ public class GameHostedGen  implements IWebPage {
 
     @Override
     public String getName() {
-        return "games_hosted.csv";
+        return "/data/games_hosted";
     }
 }

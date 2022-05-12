@@ -1,6 +1,6 @@
 package com.unrealdinnerbone.apollostats.api;
 
-import com.unrealdinnerbone.apollostats.Util;
+import com.unrealdinnerbone.apollostats.lib.Util;
 
 public record BingoValue(String bingo, boolean isBingo, boolean isPlayer) {
     @Override

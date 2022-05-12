@@ -5,11 +5,17 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.unrealdinnerbone.apollostats.api.BingoValue;
 import com.unrealdinnerbone.apollostats.api.IWebPage;
+import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.lib.Config;
+import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.web.ApolloRole;
 import com.unrealdinnerbone.apollostats.web.Results;
 import com.unrealdinnerbone.apollostats.web.WebAccessManger;
+import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
+import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
 import com.unrealdinnerbone.apollostats.web.pages.other.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
+import com.unrealdinnerbone.apollostats.web.pages.stats.old.*;
 import com.unrealdinnerbone.config.ConfigManager;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
@@ -38,7 +44,7 @@ import java.util.stream.Collectors;
 public class Stats {
     private static final Logger LOGGER = LoggerFactory.getLogger("Stats");
     private static final List<IWebPage> statPages = new ArrayList<>();
-    private static final Cache<String, String> pages = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
+    private static final Cache<String, String> pages = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
     private static final Cache<String, String> BINGO_CACHE = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     private static final List<BingoValue> BINGO_VALUES = new ArrayList<>();
 
@@ -51,40 +57,35 @@ public class Stats {
         POSTGRES_CONFIG = configManager.loadConfig("postgres", PostgresConfig::new);
         statPages.add(new TopScenariosGen());
         statPages.add(new LastPlayedGen());
-        statPages.add(new LongTimeGames());
-        statPages.add(new TeamTypesGames());
-        statPages.add(new TeamSizeGames());
-        statPages.add(new TimeBetweenGames());
-        statPages.add(new HostIn24HoursGen());
-        statPages.add(new RandomScenarioGenerator());
-        statPages.add(new Season9Thing());
-        statPages.add(new HostedGen());
+        statPages.add(new AverageFillPage());
+        statPages.add(new GameHostedGen());
+        statPages.add(new FillsGraphPage());
+//        statPages.add(new LongTimeGames());
+//        statPages.add(new TeamTypesGames());
+//        statPages.add(new TeamSizeGames());
+//        statPages.add(new TimeBetweenGames());
+//        statPages.add(new HostIn24HoursGen());
+//        statPages.add(new RandomScenarioGenerator());
+//        statPages.add(new Season9Thing());
+//        statPages.add(new HostedGen());
+//        statPages.add(new SpelledWrong());
     }
 
     public static void main(String[] args) throws Exception {
+
         PostgressHandler postgressHandler = new PostgressHandler(POSTGRES_CONFIG);
         ResultSet resultSet = postgressHandler.getSet("SELECT * FROM public.bingo");
         while(resultSet.next()) {
             BINGO_VALUES.add(new BingoValue(resultSet.getString("bingo"), resultSet.getBoolean("auto_win"), resultSet.getBoolean("is_player")));
         }
 
-        Map<String, List<Match>> hostMatchMap = new HashMap<>();
 
-        TaskScheduler.scheduleRepeatingTask(1, TimeUnit.HOURS, new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    Scenarios.loadDiskData();
-                    hostMatchMap.clear();
-                    for(String staff : Util.STAFF) {
-                        List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
-                        LOGGER.info("{} has {} matches", staff, matches.stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).count());
-                        hostMatchMap.put(staff, matches);
-                    }
-                }catch(Exception e) {
-                    LOGGER.error("Error while updating data", e);
-                }
-            }});
+        TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> Scenarios.loadData(postgressHandler), e -> LOGGER.error("Failed to load scenarios", e));
+
+        Games.loadData(postgressHandler);
+        Matches.init(postgressHandler);
+
+
 
         Javalin publicPlace = Javalin.create(javalinConfig -> {
             javalinConfig.accessManager(new WebAccessManger());
@@ -96,7 +97,7 @@ public class Stats {
         for(IWebPage generator : statPages) {
             publicPlace.get(generator.getName(), ctx -> {
                 LOGGER.info("Received request for {}", generator.getName());
-                ctx.html(pages.get(generator.getName(), () -> generator.generateStats(hostMatchMap, ctx::queryParam)));
+                ctx.html(pages.get(generator.getName(), () -> generator.generateStats(Matches.getMap(), ctx::queryParam)));
             }, generator.getRole());
         }
 
@@ -157,6 +158,8 @@ public class Stats {
             ctx.html(getBingoCard(id, postgressHandler, isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace));
         });
 
+
+
     }
 
 
@@ -172,8 +175,7 @@ public class Stats {
                     String[] frocedBingos = resultSet.getString("bingos").split(";");
                     return getCard(List.of(split), List.of(frocedBingos), theFreespace, "");
                 }else {
-                    List<BingoValue> values = new ArrayList<>(BINGO_VALUES.stream().filter(bingoValue -> players || bingoValue.isPlayer())
-                            .toList());
+                    List<BingoValue> values = new ArrayList<>(BINGO_VALUES.stream().filter(bingoValue -> players || bingoValue.isPlayer()).toList());
                     if(values.size() >= 25) {
                         List<String> list = new ArrayList<>();
                         List<String> forced = new ArrayList<>();
@@ -222,23 +224,12 @@ public class Stats {
         return values.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(","));
     }
 
-    public static List<Match> getAllMatchesForHost(String name, Optional<Integer> before) throws Exception {
-        String json = HttpUtils.get("https://hosts.uhc.gg/api/hosts/" + name.replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse("")).body();
-        try {
-            List<Match> matches = Arrays.stream(JsonUtil.DEFAULT.parse(Match[].class, json)).collect(Collectors.toList());
-            if (matches.size() == 50) {
-                matches.addAll(getAllMatchesForHost(name, Optional.of(matches.get(49).id())));
-            }
-            return matches;
-        }catch(AssertionError e) {
-            LOGGER.error("Error while parsing json", e);
-            return new ArrayList<>();
-        }
-    }
+
 
 
     public static String getResourceAsString(String thePath) {
         return new BufferedReader(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(thePath), StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
     }
+
 
 }

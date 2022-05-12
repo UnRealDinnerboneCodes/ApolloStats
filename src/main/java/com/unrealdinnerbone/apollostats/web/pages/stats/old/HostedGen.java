@@ -1,16 +1,13 @@
-package com.unrealdinnerbone.apollostats.web.pages.stats;
+package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
-import com.unrealdinnerbone.apollostats.Match;
+import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.IWebPage;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class HostedGen implements IWebPage {
 

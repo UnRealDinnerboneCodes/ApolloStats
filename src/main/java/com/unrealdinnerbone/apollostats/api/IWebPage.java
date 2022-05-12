@@ -1,6 +1,5 @@
 package com.unrealdinnerbone.apollostats.api;
 
-import com.unrealdinnerbone.apollostats.Match;
 import com.unrealdinnerbone.apollostats.web.ApolloRole;
 
 import java.util.List;
@@ -20,4 +19,7 @@ public interface IWebPage {
     default ApolloRole getRole() {
         return ApolloRole.EVERYONE;
     }
+
+
+
 }

@@ -1,7 +1,9 @@
-package com.unrealdinnerbone.apollostats.web.pages.stats;
+package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
+import com.unrealdinnerbone.apollostats.api.Scenario;
+import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.Match;
+import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.Scenarios;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
@@ -15,21 +17,21 @@ public class LongTimeGames implements IWebPage {
 
     @Override
     public String generateStats(Map<String, List<Match>> hostMatchMap) {
-        Map<String, Map<Type, AtomicInteger>> theMap = new HashMap<>();
+        Map<String, Map<LTGType, AtomicInteger>> theMap = new HashMap<>();
 
 
         hostMatchMap.forEach((host, matches) -> matches.stream()
                 .filter(Match::isApolloGame)
                 .filter(Predicate.not(Match::removed))
-                .forEach(match -> Type.getType(match)
+                .forEach(match -> LTGType.getType(match)
                         .ifPresent(type -> Maps.putIfAbsent(Maps.putIfAbsent(theMap, match.author(), new HashMap<>()), type, new AtomicInteger(0)).incrementAndGet())));
 
         List<Types> types =  theMap.entrySet().stream().map(entry -> {
-            int edr = entry.getValue().getOrDefault(Type.EDR, new AtomicInteger(0)).get();
-            int skyhigh = entry.getValue().getOrDefault(Type.SKYHIGH, new AtomicInteger(0)).get();
-            int slo = entry.getValue().getOrDefault(Type.SLO, new AtomicInteger(0)).get();
-            int nether = entry.getValue().getOrDefault(Type.NETHER, new AtomicInteger(0)).get();
-            int fallout = entry.getValue().getOrDefault(Type.FALLOUT, new AtomicInteger(0)).get();
+            int edr = entry.getValue().getOrDefault(LTGType.EDR, new AtomicInteger(0)).get();
+            int skyhigh = entry.getValue().getOrDefault(LTGType.SKYHIGH, new AtomicInteger(0)).get();
+            int slo = entry.getValue().getOrDefault(LTGType.SLO, new AtomicInteger(0)).get();
+            int nether = entry.getValue().getOrDefault(LTGType.NETHER, new AtomicInteger(0)).get();
+            int fallout = entry.getValue().getOrDefault(LTGType.FALLOUT, new AtomicInteger(0)).get();
             return new Types(entry.getKey(), edr, skyhigh, slo, nether, fallout);
         }).toList();
         return WebUtils.makeHTML("Long Time Games", "",Arrays.asList("Host", "EDR", "SkyHigh", "SOL", "Nether", "Fallout"), types);
@@ -48,7 +50,7 @@ public class LongTimeGames implements IWebPage {
         }
     }
 
-    public enum Type {
+    public enum LTGType {
         EDR("Ender Dragon Rush"),
         SKYHIGH("Sky High"),
         SLO("Slice of Life"),
@@ -57,13 +59,13 @@ public class LongTimeGames implements IWebPage {
 
         private final String[] name;
 
-        Type(String... name) {
+        LTGType(String... name) {
             this.name = name;
         }
 
-        public static Optional<Type> getType(Match match) {
-            for(String fixScen : Scenarios.fix(Scenarios.Type.SCENARIO, match.scenarios())) {
-                for(Type type : Type.values()) {
+        public static Optional<LTGType> getType(Match match) {
+            for(String fixScen : Scenarios.fix(Type.SCENARIO, match.scenarios()).stream().map(Scenario::name).toList()) {
+                for(LTGType type : LTGType.values()) {
                     for(String name : type.getNames()) {
                         if(fixScen.equalsIgnoreCase(name)) {
                             return Optional.of(type);

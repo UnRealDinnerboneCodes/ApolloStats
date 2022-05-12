@@ -1,7 +1,7 @@
-package com.unrealdinnerbone.apollostats.web.pages.stats;
+package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
 import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.Match;
+import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;

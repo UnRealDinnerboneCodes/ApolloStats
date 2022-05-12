@@ -1,7 +1,9 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
+import com.unrealdinnerbone.apollostats.api.Scenario;
+import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.api.IWebPage;
-import com.unrealdinnerbone.apollostats.Match;
+import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.Scenarios;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
@@ -10,7 +12,6 @@ import java.text.DecimalFormat;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class TopScenariosGen implements IWebPage {
@@ -18,22 +19,20 @@ public class TopScenariosGen implements IWebPage {
     @Override
     public String generateStats(Map<String, List<Match>> hostMatchMap) {
         AtomicInteger total = new AtomicInteger(0);
-        HashMap<String, AtomicInteger> matchCount = new HashMap<>();
+        HashMap<Scenario, AtomicInteger> matchCount = new HashMap<>();
 
-        hostMatchMap.values()
-                .forEach(value -> value.stream()
-                        .filter(Match::isApolloGame)
-                        .filter(Predicate.not(Match::removed))
-                        .peek(match -> total.incrementAndGet())
-                        .forEach(match -> Scenarios.fix(Scenarios.Type.SCENARIO, match.scenarios())
-                                .forEach(scenario -> Maps.putIfAbsent(matchCount, scenario, new AtomicInteger(0)).incrementAndGet())));
-
+        hostMatchMap
+                .values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(Match::isGoodGame)
+                .peek(match -> total.incrementAndGet())
+                .map(match -> Scenarios.fix(Type.SCENARIO, match.scenarios()))
+                .flatMap(Collection::stream)
+                .forEach(scenario -> Maps.putIfAbsent(matchCount, scenario, new AtomicInteger(0)).incrementAndGet());
 
         List<Count> stats = new ArrayList<>();
-        matchCount.forEach((key, times) -> {
-            double percent = times.get() / (double)total.get();
-            stats.add(new Count(key, times.get(), percent * 100));
-        });
+        matchCount.forEach((key, times) -> stats.add(new Count(key.name(), times.get(), (times.get() / (double) total.get()) * 100)));
 
 
         stats.sort(Comparator.comparing(Count::percent).reversed());

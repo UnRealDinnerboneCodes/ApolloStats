@@ -1,4 +1,4 @@
-package com.unrealdinnerbone.apollostats;
+package com.unrealdinnerbone.apollostats.lib;
 
 import com.unrealdinnerbone.config.IConfigCreator;
 import com.unrealdinnerbone.config.config.StringConfig;
