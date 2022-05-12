@@ -109,7 +109,7 @@ public class MatchManger {
                             LOGGER.error("Game {} already exists", match.id());
                         }
                         task.cancel();
-                    }else if(state == GameState.IDLE) {
+                    }else if(state == GameState.IDLE || state == GameState.MEATUP) {
                         task.cancel();
                     }else {
                         LOGGER.info("Game {} is {} at {}", match.id(), state, result.players().online());
