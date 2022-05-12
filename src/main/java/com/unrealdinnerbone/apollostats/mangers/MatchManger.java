@@ -102,7 +102,12 @@ public class MatchManger {
                     }else if(state == GameState.PVP) {
                         int totalFill = (fill.get() == 0 ? result.players().online() : fill.get()) - 1;
                         LOGGER.info("Game {} fill is {}", match.id(), totalFill);
-//                        GameManager.addGames(Collections.singletonList(new Game(match.id(), totalFill)));
+                        Game game = new Game(match.id(), totalFill);
+                        if(!GameManager.getGames().contains(game)) {
+                            GameManager.addGames(Collections.singletonList(new Game(match.id(), totalFill)));
+                        }else {
+                            LOGGER.error("Game {} already exists", match.id());
+                        }
                         task.cancel();
                     }else if(state == GameState.IDLE) {
                         task.cancel();
