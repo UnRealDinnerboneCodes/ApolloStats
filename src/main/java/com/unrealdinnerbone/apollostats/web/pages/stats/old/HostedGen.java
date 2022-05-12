@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
 import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;
@@ -22,7 +23,7 @@ public class HostedGen implements IStatPage {
                     .filter(Predicate.not(Match::removed))
                     .map(Match::opens)
                     .map(Instant::parse)
-                            .filter(instant -> Instant.now().isAfter(instant))
+                            .filter(instant -> Util.utcNow().isAfter(instant))
                     .count());
         }
 

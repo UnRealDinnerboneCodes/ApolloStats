@@ -1,11 +1,14 @@
 package com.unrealdinnerbone.apollostats.api;
 
+import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.mangers.GameManager;
 import com.unrealdinnerbone.apollostats.mangers.StaffManager;
 import com.unrealdinnerbone.apollostats.Stats;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -51,11 +54,11 @@ public record Match(int id,
     }
 
     public boolean hasHappened() {
-        return Instant.now().isAfter(Instant.parse(opens()));
+        return Util.utcNow().isAfter(Instant.parse(opens()));
     }
 
     public boolean hasPlayed() {
-        return Instant.now().minus(1, ChronoUnit.HOURS).isAfter(Instant.parse(opens()));
+        return Util.utcNow().minus(1, ChronoUnit.HOURS).isAfter(Instant.parse(opens()));
     }
 
     @Override

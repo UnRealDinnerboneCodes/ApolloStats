@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
 import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class SpelledWrong implements IStatPage {
             AtomicInteger total = new AtomicInteger();
             Stream<List<String>> values = stringListEntry.getValue().stream()
                     .filter(Match::isApolloGame)
-                    .filter(match -> Instant.now().isAfter(Instant.parse(match.opens())))
+                    .filter(match -> Util.utcNow().isAfter(Instant.parse(match.opens())))
                     .map(Match::scenarios);
 
             values.forEach(scenarios -> {

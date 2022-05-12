@@ -52,7 +52,7 @@ public class MatchManger {
                     .forEach(match -> {
                         if(!ids.contains(match.id())) {
                             Instant opens = Instant.parse(match.opens());
-                            if(opens.isAfter(Instant.now())) {
+                            if(opens.isAfter(Util.utcNow())) {
                                 ids.add(match.id());
                                 LOGGER.info("Scheduling match {}", match);
                                 TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> {
@@ -60,7 +60,7 @@ public class MatchManger {
                                     ids.remove((Object) match.id());
                                 });
                             }
-                            if(opens.isBefore(Instant.now().plus(15, ChronoUnit.MINUTES))) {
+                            if(opens.isBefore(Util.utcNow().plus(15, ChronoUnit.MINUTES))) {
                                 if(!ids.contains(match.id())) {
                                     watchForFill(match);
                                 }

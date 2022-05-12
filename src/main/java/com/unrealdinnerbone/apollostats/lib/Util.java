@@ -7,6 +7,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,5 +49,9 @@ public class Util
 
     public static String createID() {
         return IntStream.range(0, 5).mapToObj(i -> String.valueOf(VAILD.charAt(MathHelper.randomInt(0, VAILD.length())))).collect(Collectors.joining());
+    }
+
+    public static Instant utcNow() {
+        return Instant.now().atZone(ZoneId.of("UTC")).toInstant();
     }
 }
