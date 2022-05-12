@@ -17,7 +17,7 @@ repositories {
 version = "1.0.0"
 
 dependencies {
-    shade 'com.unrealdinnerbone:UnRealLib:3.2.1+build.103'
+    shade 'com.unrealdinnerbone:UnRealLib:3.2.1+build.104'
     shade 'com.google.guava:guava:31.0.1-jre'
     shade "com.unrealdinnerbone:UnRealConfig:4.0.0+build.36"
     shade "com.unrealdinnerbone:PostgressLib:2.0.1+build.27"
