@@ -49,24 +49,22 @@ public class MatchManger {
             matches.stream()
                     .filter(Predicate.not(Match::hasPlayed))
                     .filter(Predicate.not(Match::removed))
+                    .filter(Predicate.not(match -> ids.contains(match.id())))
                     .forEach(match -> {
-                        if(!ids.contains(match.id())) {
-                            Instant opens = Instant.parse(match.opens());
-                            if(opens.isAfter(Util.utcNow())) {
-                                ids.add(match.id());
-                                LOGGER.info("Scheduling match {}", match);
-                                TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> {
-                                    watchForFill(match);
-                                    ids.remove((Object) match.id());
-                                });
-                            }
+                        Instant opens = Instant.parse(match.opens());
+                        if(opens.isAfter(Util.utcNow())) {
+                            ids.add(match.id());
+                            LOGGER.info("Scheduling match {}", match);
+                            TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> {
+                                watchForFill(match);
+                                ids.remove((Object) match.id());
+                            });
+                        }else {
                             if(opens.isBefore(Util.utcNow().plus(15, ChronoUnit.MINUTES))) {
-                                if(!ids.contains(match.id())) {
-                                    watchForFill(match);
-                                }
+                                LOGGER.info("Match has passed but close to now, watching for fill {}", match);
+                                watchForFill(match);
                             }
                         }
-
                     });
         }
     }
