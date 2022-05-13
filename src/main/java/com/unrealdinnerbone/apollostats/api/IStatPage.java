@@ -12,9 +12,9 @@ import java.util.Map;
 
 public interface IStatPage extends IWebPage{
 
-    String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper);
+    void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper);
 
-    //Todo add host query and caching
+    //Todo add caching
     @Override
     default void getPage(Context handler) {
         Map<Staff, List<Match>> hostMap = MatchManger.getMap();
@@ -27,12 +27,8 @@ public interface IStatPage extends IWebPage{
             hostMap.putAll(map);
         }
 
-
-        handler.contentType(getContentType()).result(generateStats(hostMap, ICTXWrapper.of(handler)));
+        generateStats(hostMap, ICTXWrapper.of(handler));
     }
 
-    default ContentType getContentType() {
-        return ContentType.TEXT_HTML;
-    }
 
 }

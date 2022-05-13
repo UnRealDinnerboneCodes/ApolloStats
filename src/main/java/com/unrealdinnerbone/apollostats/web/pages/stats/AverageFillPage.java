@@ -1,17 +1,19 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
-import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
+import com.unrealdinnerbone.apollostats.api.IStatPage;
+import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class AverageFillPage implements IStatPage {
 
     @Override
-    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+    public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         List<Match> matches = hostMatchMap.values().stream().flatMap(List::stream).toList();
         Map<String, List<Integer>> fills = new HashMap<>();
         matches.forEach(match -> match.findGameData().ifPresent(game -> Maps.putIfAbsent(fills, match.displayName(), new ArrayList<>()).add(game.fill())));
@@ -34,7 +36,7 @@ public class AverageFillPage implements IStatPage {
             fillsList.add(new HostFill(stringListEntry.getKey(), min, max, average));
         }
 
-        return WebUtils.makeHTML("Fills", "", Arrays.asList("Host", "Smallest", "Largest", "Average"), fillsList);
+        wrapper.html(WebUtils.makeHTML("Fills", "", Arrays.asList("Host", "Smallest", "Largest", "Average"), fillsList));
     }
 
 

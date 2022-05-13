@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 public class LastPlayedGen implements IStatPage {
 
     @Override
-    public String generateStats(Map<Staff, List<Match>> hostMatchMap,ICTXWrapper query) {
+    public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         Map<Scenario, List<Pair<Instant, String>>> plays = new HashMap<>();
         AtomicInteger totalGames = new AtomicInteger();
         hostMatchMap.values().stream()
@@ -43,7 +43,7 @@ public class LastPlayedGen implements IStatPage {
         });
 
         stats.sort(Comparator.comparing(stats1 -> stats1.last().key()));
-        return WebUtils.makeHTML("Scenarios First / Last Played", "", Arrays.asList("Scenarios", "First Time", "Last Time", "First Host", "Last Host", "Days Since", "Times Hosted", "Percent Hosted"), stats);
+        wrapper.html(WebUtils.makeHTML("Scenarios First / Last Played", "", Arrays.asList("Scenarios", "First Time", "Last Time", "First Host", "Last Host", "Days Since", "Times Hosted", "Percent Hosted"), stats));
     }
 
     @Override

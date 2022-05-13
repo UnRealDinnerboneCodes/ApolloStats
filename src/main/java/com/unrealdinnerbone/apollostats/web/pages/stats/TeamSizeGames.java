@@ -1,4 +1,4 @@
-package com.unrealdinnerbone.apollostats.web.pages.stats.old;
+package com.unrealdinnerbone.apollostats.web.pages.stats;
 
 import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.unreallib.Maps;
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public class TeamSizeGames implements IStatPage {
 
     @Override
-    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+    public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         Map<Staff, Map<Integer, AtomicInteger>> types = new HashMap<>();
         List<String> typesList = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public class TeamSizeGames implements IStatPage {
                 return values;
             });
         }
-        return WebUtils.makeHTML("Team Types", "",typesList, iTableData);
+        wrapper.html(WebUtils.makeHTML("Team Types", "",typesList, iTableData));
     }
 
     @Override

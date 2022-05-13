@@ -6,16 +6,12 @@ import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.mangers.BingoManger;
 import com.unrealdinnerbone.apollostats.web.ApolloRole;
 import com.unrealdinnerbone.apollostats.web.Results;
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.TaskScheduler;
-import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import io.javalin.http.Context;
 import io.javalin.http.HttpCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +21,18 @@ public class BingoPages
     public static class NewCard implements IStatPage {
 
         @Override
-        public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper ctx) {
-            String perm = ctx.queryParam("player");
-            boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
-            String freeSpace = ctx.queryParam("freeSpace");
-            return BingoManger.getBingoCard(Util.createID(), Stats.getPostgresHandler(), isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace);
+        public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
+            boolean players = true;
+            String defaultFreeSpace = Stats.CONFIG.getDefaultFreeSpace();
+            String perm = wrapper.queryParam("players");
+            if(perm != null && perm.equalsIgnoreCase("false")) {
+                players = false;
+            }
+            String freespace = wrapper.queryParam("freespace");
+            if(freespace != null) {
+                defaultFreeSpace = freespace;
+            }
+            wrapper.html(BingoManger.getBingoCard(Util.createID(), players, defaultFreeSpace));
         }
 
         @Override
@@ -41,17 +44,14 @@ public class BingoPages
     public static class IDCard implements IStatPage {
 
         @Override
-        public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper ctx) {
+        public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper ctx) {
             String id = ctx.pathParam("id");
-            String perm = ctx.queryParam("player");
-            boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
-            String freeSpace = ctx.queryParam("freeSpace");
-            return BingoManger.getBingoCard(id, Stats.getPostgresHandler(), isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace);
+            ctx.html(BingoManger.findCard(id).orElse(Stats.getResourceAsString("/error.html")));
         }
 
         @Override
         public String getPath() {
-            return "bingo";
+            return "bingo/{id}";
         }
     }
 

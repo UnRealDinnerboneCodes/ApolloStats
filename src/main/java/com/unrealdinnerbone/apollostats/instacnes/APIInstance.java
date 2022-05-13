@@ -11,7 +11,7 @@ public class APIInstance extends WebInstance<IWebPage> {
     private final List<IWebPage> webPages;
 
     public APIInstance(List<IWebPage> webPages) {
-        super(1000, javalinConfig -> {});
+        super(1001, javalinConfig -> {});
         this.webPages = webPages;
     }
 

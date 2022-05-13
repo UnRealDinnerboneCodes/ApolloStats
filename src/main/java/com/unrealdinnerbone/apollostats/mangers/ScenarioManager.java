@@ -96,6 +96,10 @@ public class ScenarioManager
 
     }
 
+    public static Optional<Scenario> find(int id) {
+        return values.values().stream().flatMap(Collection::stream).filter(scenario -> scenario.id() == id).findFirst();
+    }
+
     private static Optional<Scenario> remap(String scenario) {
         return MAP.get(scenario);
     }

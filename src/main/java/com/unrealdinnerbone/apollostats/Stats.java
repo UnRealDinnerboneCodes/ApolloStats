@@ -63,6 +63,8 @@ public class Stats {
         });
         instances.add(
                 new PublicInstance(Arrays.asList(
+                        new RandomScenarioGenerator(),
+                        new RandomScenarioGenerator.IDPage(),
                         new TopScenariosGen(),
                         new LastPlayedGen(),
                         new AverageFillPage(),
@@ -70,8 +72,8 @@ public class Stats {
                         new FillsGraphPage(),
                         new BingoPages.IDCard(),
                         new BingoPages.NewCard(),
-                        new RandomScenarioGenerator(),
-                        new RandomScenarioGenerator.IDPage()
+                        new TeamSizeGames()
+
         )));
 
         instances.add(
@@ -98,8 +100,10 @@ public class Stats {
 
                     instance.getPages().forEach((key, value) -> value.forEach(iWebPage -> {
                         if(key == WebInstance.Type.GET) {
+                            LOGGER.info("Registering GET page {}", iWebPage.getPath());
                             javalin.get(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
                         }else if(key == WebInstance.Type.POST) {
+                            LOGGER.info("Registering POST page {}", iWebPage.getPath());
                             javalin.post(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
                         }
                     }));

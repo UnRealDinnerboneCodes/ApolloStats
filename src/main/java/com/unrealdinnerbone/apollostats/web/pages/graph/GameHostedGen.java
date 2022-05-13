@@ -18,7 +18,7 @@ public class GameHostedGen  implements IStatPage {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameHostedGen.class);
 
     @Override
-    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+    public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         List<Instant> times  = hostMatchMap.values().stream().flatMap(List::stream).filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).map(Match::opens).map(Instant::parse).sorted().toList();
         StringBuilder builder = new StringBuilder("Time,Host,Amount\n");
         Map<String, Integer> lastHostedAmount = new HashMap<>();
@@ -43,7 +43,7 @@ public class GameHostedGen  implements IStatPage {
                 lastHostedAmount.put(stringAtomicIntegerEntry.getKey(), stringAtomicIntegerEntry.getValue().get());
             }
         }
-        return builder.toString();
+        wrapper.html(builder.toString());
     }
 
     @Override

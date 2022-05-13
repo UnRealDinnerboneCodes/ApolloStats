@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 public class TotalGameGen implements IStatPage {
 
     @Override
-    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+    public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         StringBuilder builder = new StringBuilder("Time,Amount\n");
         AtomicInteger amount = new AtomicInteger();
         hostMatchMap.values().stream()
@@ -22,7 +22,7 @@ public class TotalGameGen implements IStatPage {
                 .map(Instant::parse)
                 .sorted(Comparator.comparing(Instant::toEpochMilli))
                         .forEach(instant -> builder.append(instant).append(",").append(amount.incrementAndGet()).append("\n"));
-        return builder.toString();
+        wrapper.html(builder.toString());
     }
 
     @Override

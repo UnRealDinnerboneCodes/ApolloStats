@@ -13,12 +13,15 @@ public class Config {
 
     private final StringConfig MATCH_PAGE;
 
+    private final StringConfig DEFAULT_FREE_SPACE;
+
     public Config(IConfigCreator configCreator) {
         this.PUSH_API_KEY = configCreator.createString("PUSH_API_KEY", "");
         this.DISCORD_WEBBOT_TOKEN = configCreator.createString("DISCORD_TOKEN", "");
         this.SERVER_IP = configCreator.createString("SERVER_IP", "apollouhc.com");
         this.SERVER_PORT = configCreator.createInteger("SERVER_PORT", 25565);
         this.MATCH_PAGE = configCreator.createString("MATCH_PAGE", "https://hosts.uhc.gg/m/");
+        this.DEFAULT_FREE_SPACE = configCreator.createString("DEFAULT_FREE_SPACE", "Free Space!");
     }
 
     public String getPushApiKey() {
@@ -39,5 +42,9 @@ public class Config {
 
     public String getMatchPage() {
         return MATCH_PAGE.getValue();
+    }
+
+    public String getDefaultFreeSpace() {
+        return DEFAULT_FREE_SPACE.getValue();
     }
 }

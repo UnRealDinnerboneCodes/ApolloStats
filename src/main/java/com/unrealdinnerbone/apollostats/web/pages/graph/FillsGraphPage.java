@@ -9,7 +9,7 @@ import java.util.function.Function;
 public class FillsGraphPage implements IStatPage {
 
     @Override
-    public String generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper query) {
+    public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         StringBuilder builder = new StringBuilder("Time,Host,Amount\n");
 
 
@@ -17,7 +17,7 @@ public class FillsGraphPage implements IStatPage {
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing(match -> Instant.parse(match.opens()).toEpochMilli()))
                 .forEach(match -> match.findGameData().ifPresent(game -> builder.append(Instant.parse(match.opens()).toString()).append(",").append( match.author()).append(",").append(game.fill()).append("\n")));
-        return builder.toString();
+        wrapper.html(builder.toString());
     }
 
     @Override

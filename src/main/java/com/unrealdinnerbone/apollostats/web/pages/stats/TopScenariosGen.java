@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class TopScenariosGen implements IStatPage {
 
     @Override
-    public String generateStats(Map<Staff, List<Match>> hostMatchMap,ICTXWrapper query) {
+    public void generateStats(Map<Staff, List<Match>> hostMatchMap,ICTXWrapper wrapper) {
         AtomicInteger total = new AtomicInteger(0);
         HashMap<Scenario, AtomicInteger> matchCount = new HashMap<>();
 
@@ -34,7 +34,7 @@ public class TopScenariosGen implements IStatPage {
 
 
         stats.sort(Comparator.comparing(Count::percent).reversed());
-        return WebUtils.makeHTML("Top Scenarios", "", Arrays.asList("Scenario", "Count", "Percent"), stats);
+        wrapper.html(WebUtils.makeHTML("Top Scenarios", "", Arrays.asList("Scenario", "Count", "Percent"), stats));
     }
 
     @Override
