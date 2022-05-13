@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class StaffManager
@@ -37,6 +38,10 @@ public class StaffManager
             ps.setString(1, staff.username());
             ps.setString(2, staff.displayName());
         });
+    }
+
+    public static Optional<Staff> findStaff(String name) {
+        return staff.stream().filter(staff -> staff.username().equalsIgnoreCase(name) || staff.displayName().equals(name)).findFirst();
     }
 
     public static List<Staff> getStaff() {

@@ -4,6 +4,7 @@ import com.unrealdinnerbone.apollostats.api.BingoValue;
 import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
 import com.unrealdinnerbone.apollostats.api.IWebPage;
 import com.unrealdinnerbone.apollostats.api.WebInstance;
+import com.unrealdinnerbone.apollostats.instacnes.APIInstance;
 import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
 import com.unrealdinnerbone.apollostats.lib.Config;
 import com.unrealdinnerbone.apollostats.lib.Util;
@@ -73,6 +74,10 @@ public class Stats {
                         new RandomScenarioGenerator.IDPage()
         )));
 
+        instances.add(
+                new APIInstance(Arrays.asList(new BingoPages.Add())
+        ));
+
         futures.add(BingoManger::init);
         futures.add(ScenarioManager::init);
         futures.add(StaffManager::load);
@@ -80,7 +85,7 @@ public class Stats {
         futures.add(MatchManger::init);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         TaskScheduler.allAsync(futures.stream().map(Supplier::get).toList()).whenComplete((v, t) -> {
             if (t != null) {
                 LOGGER.error("Failed to load data", t);
@@ -99,33 +104,6 @@ public class Stats {
                         }
                     }));
                 }
-
-                Javalin pushAPI = Javalin.create(javalinConfig -> javalinConfig.accessManager(new WebAccessManger())).start(1001);
-
-
-
-                pushAPI.post("/v1/bingo/add", ctx -> {
-
-
-                }, ApolloRole.POST_API);
-
-
-//                pushAPI.get("/v1/bingo", ctx -> ctx.result(JsonUtil.DEFAULT.toJson(List.class, BINGO_VALUES)), ApolloRole.EVERYONE);
-//
-//
-//                publicPlace.get("bingo", ctx -> {
-//                    String perm = ctx.queryParam("player");
-//                    boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
-//                    String freeSpace = ctx.queryParam("freeSpace");
-//                    ctx.html(getBingoCard(Util.createID(), postgressHandler, isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace));
-//                });
-//                publicPlace.get("bingo/{id}", ctx -> {
-//                    String id = ctx.pathParam("id");
-//                    String perm = ctx.queryParam("player");
-//                    boolean isPlayer = perm == null || Boolean.parseBoolean(perm);
-//                    String freeSpace = ctx.queryParam("freeSpace");
-//                    ctx.html(getBingoCard(id, postgressHandler, isPlayer, freeSpace == null ? "Cooldude Racism Mute": freeSpace));
-//                });
             }
         });
 

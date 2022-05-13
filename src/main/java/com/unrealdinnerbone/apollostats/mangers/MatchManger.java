@@ -104,6 +104,7 @@ public class MatchManger {
                         LOGGER.info("Game {} fill is {}", match.id(), totalFill);
                         Game game = new Game(match.id(), totalFill);
                         if(!GameManager.getGames().contains(game)) {
+                            AlertManager.gameSaved(match, game);
                             GameManager.addGames(Collections.singletonList(new Game(match.id(), totalFill)));
                         }else {
                             LOGGER.error("Game {} already exists", match.id());
