@@ -17,6 +17,7 @@ import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
 import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
+import com.unrealdinnerbone.apollostats.web.pages.stats.old.HostIn24HoursGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
 import com.unrealdinnerbone.config.ConfigManager;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
@@ -73,7 +74,8 @@ public class Stats {
                         new FillsGraphPage(),
                         new BingoPages.IDCard(),
                         new BingoPages.NewCard(),
-                        new TeamSizeGames()
+                        new TeamSizeGames(),
+                        new HostIn24HoursGen()
 
         )));
 

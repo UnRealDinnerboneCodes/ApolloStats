@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.apollostats.lib;
 
 import com.unrealdinnerbone.config.IConfigCreator;
+import com.unrealdinnerbone.config.config.BooleanConfig;
 import com.unrealdinnerbone.config.config.IntegerConfig;
 import com.unrealdinnerbone.config.config.StringConfig;
 
@@ -15,6 +16,8 @@ public class Config {
 
     private final StringConfig DEFAULT_FREE_SPACE;
 
+    private final BooleanConfig ENABLE_MATCH_WATCHING;
+
     public Config(IConfigCreator configCreator) {
         this.PUSH_API_KEY = configCreator.createString("PUSH_API_KEY", "");
         this.DISCORD_WEBBOT_TOKEN = configCreator.createString("DISCORD_TOKEN", "");
@@ -22,6 +25,7 @@ public class Config {
         this.SERVER_PORT = configCreator.createInteger("SERVER_PORT", 25565);
         this.MATCH_PAGE = configCreator.createString("MATCH_PAGE", "https://hosts.uhc.gg/m/");
         this.DEFAULT_FREE_SPACE = configCreator.createString("DEFAULT_FREE_SPACE", "Free Space!");
+        this.ENABLE_MATCH_WATCHING = configCreator.createBoolean("ENABLE_MATCH_WATCHING", true);
     }
 
     public String getPushApiKey() {
@@ -46,5 +50,9 @@ public class Config {
 
     public String getDefaultFreeSpace() {
         return DEFAULT_FREE_SPACE.getValue();
+    }
+
+    public boolean watchMatches() {
+        return ENABLE_MATCH_WATCHING.getValue();
     }
 }

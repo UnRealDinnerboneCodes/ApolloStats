@@ -45,18 +45,19 @@ public class MatchManger {
             List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
             LOGGER.info("{} has {} matches", staff, matches.size());
             matchesMap.put(staff, matches);
-            matches.stream()
-                    .filter(Predicate.not(Match::hasPlayed))
-                    .filter(Predicate.not(Match::removed))
-                    .filter(Predicate.not(match -> ids.contains(match.id())))
-                    .forEach(match -> {
-                        Instant opens = Instant.parse(match.opens());
-                        ids.add(match.id());
-                        if(opens.isAfter(Util.utcNow())) {
+            if(Stats.CONFIG.watchMatches()) {
+                matches.stream()
+                        .filter(Predicate.not(Match::removed))
+                        .filter(Predicate.not(Match::hasHappened))
+                        .filter(Predicate.not(match -> ids.contains(match.id())))
+                        .forEach(match -> {
+                            ids.add(match.id());
                             LOGGER.info("Scheduling match {}", match);
                             TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
-                        }
-                    });
+                        });
+            }else {
+                LOGGER.info("Not watching matches!");
+            }
         }
     }
 
