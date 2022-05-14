@@ -51,18 +51,10 @@ public class MatchManger {
                     .filter(Predicate.not(match -> ids.contains(match.id())))
                     .forEach(match -> {
                         Instant opens = Instant.parse(match.opens());
+                        ids.add(match.id());
                         if(opens.isAfter(Util.utcNow())) {
-                            ids.add(match.id());
                             LOGGER.info("Scheduling match {}", match);
-                            TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> {
-                                watchForFill(match);
-                                ids.remove((Object) match.id());
-                            });
-                        }else {
-                            if(opens.isBefore(Util.utcNow().plus(15, ChronoUnit.MINUTES))) {
-                                LOGGER.info("Match has passed but close to now, watching for fill {}", match);
-                                watchForFill(match);
-                            }
+                            TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
                         }
                     });
         }
@@ -131,7 +123,7 @@ public class MatchManger {
         PVP(s -> s.startsWith("Apollo » Meetup is in: ")),
         MEATUP(s -> s.startsWith("Apollo » Meetup is now!")),
 //        OVER(s -> false),
-        UNKNOWN(s -> false);
+        UNKNOWN(s -> false),
         ;
 
         private final Predicate<String> matches;

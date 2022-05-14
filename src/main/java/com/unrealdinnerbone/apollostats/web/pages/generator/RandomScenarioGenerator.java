@@ -20,14 +20,17 @@ import java.util.stream.IntStream;
 
 public class RandomScenarioGenerator implements IStatPage {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RandomScenarioGenerator.class);
     @Override
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         try {
             wrapper.html(RandomScenManger.getPage(Util.createID(), MathHelper.randomInt(3, 7)));
         }catch(SQLException e) {
+            LOGGER.error("Database Error", e);
             wrapper.error(HttpCode.INTERNAL_SERVER_ERROR, "Database error");
         }
         catch(Exception e) {
+            LOGGER.error("Error while create random scens", e);
             wrapper.error(HttpCode.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

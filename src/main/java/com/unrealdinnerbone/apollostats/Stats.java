@@ -17,6 +17,7 @@ import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
 import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
+import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
 import com.unrealdinnerbone.config.ConfigManager;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
@@ -65,7 +66,7 @@ public class Stats {
                 new PublicInstance(Arrays.asList(
                         new RandomScenarioGenerator(),
                         new RandomScenarioGenerator.IDPage(),
-                        new TopScenariosGen(),
+                        new TeamTypesGames(),
                         new LastPlayedGen(),
                         new AverageFillPage(),
                         new GameHostedGen(),
