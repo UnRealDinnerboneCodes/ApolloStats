@@ -47,16 +47,19 @@ public class MatchManger {
             matchesMap.put(staff, matches);
             if(Stats.CONFIG.watchMatches()) {
                 matches.stream()
+                        .filter(Predicate.not(Match::hasPlayed))
                         .filter(Predicate.not(Match::removed))
-                        .filter(Predicate.not(Match::hasHappened))
                         .filter(Predicate.not(match -> ids.contains(match.id())))
                         .forEach(match -> {
+                            Instant opens = Instant.parse(match.opens());
                             ids.add(match.id());
-                            LOGGER.info("Scheduling match {}", match);
-                            TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
+                            if(opens.isAfter(Util.utcNow())) {
+                                LOGGER.info("Scheduling match {}", match);
+                                TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
+                            }
                         });
             }else {
-                LOGGER.info("Not watching matches!");
+                LOGGER.info("Not watching matches");
             }
         }
     }
