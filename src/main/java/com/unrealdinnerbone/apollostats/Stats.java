@@ -23,6 +23,7 @@ import com.unrealdinnerbone.config.ConfigManager;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LazyValue;
+import com.unrealdinnerbone.unreallib.ShutdownUtils;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
@@ -116,6 +117,7 @@ public class Stats {
             }
         });
         LOGGER.info("Started ApolloStats");
+        ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
 
     }
 
