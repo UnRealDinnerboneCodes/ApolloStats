@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,42 +26,54 @@ public class MatchManger {
 
     private static final Map<Staff, List<Match>> matchesMap = new HashMap<>();
 
-    private static final List<Integer> ids = new ArrayList<>();
+    private static final Map<Match, TimerTask> trackedMatches = new HashMap<>();
 
     public static CompletableFuture<Void> init() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-            TaskScheduler.scheduleRepeatingTaskExpectantly(10, TimeUnit.MINUTES, task -> {
-                loadMatchData();
-                if(!future.isDone()) {
-                    future.complete(null);
+        CompletableFuture<Void> staffTracker = new CompletableFuture<>();
+        TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> {
+            loadStaffMatchBacklog();
+            if(!staffTracker.isDone()) {
+                staffTracker.complete(null);
+            }
+        }, staffTracker::completeExceptionally);
+
+        CompletableFuture<Void> upcoming = new CompletableFuture<>();
+
+        if(Stats.CONFIG.watchMatches()) {
+            TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.MINUTES, task -> {
+                List<Match> matches = getUpcomingMatches().stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).toList();
+                for(Match match : matches) {
+                    if(match.removed()) {
+                        if(trackedMatches.containsKey(match)) {
+                            trackedMatches.get(match).cancel();
+                            trackedMatches.remove(match);
+                        }
+                    }else {
+                        if(!trackedMatches.containsKey(match)) {
+                            LOGGER.info("Scheduling match {}", match);
+                            AlertManager.gameFound(match);
+                            TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
+                            trackedMatches.put(match, timerTask);
+                        }
+                    }
                 }
-            }, e -> LOGGER.error("Error loading match data", e));
-            return future;
+
+                if(!upcoming.isDone()) {
+                    upcoming.complete(null);
+                }
+
+            }, upcoming::completeExceptionally);
+        }else {
+            upcoming.complete(null);
+        }
+        return TaskScheduler.allAsync(List.of(staffTracker, upcoming));
     }
 
-
-    private static void loadMatchData() throws Exception {
+    private static void loadStaffMatchBacklog() throws Exception {
         for(Staff staff : StaffManager.getStaff()) {
             List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
-            LOGGER.info("{} has {} matches", staff, matches.size());
+            LOGGER.info("Loaded {} matches for {}", matches.size(), staff.displayName());
             matchesMap.put(staff, matches);
-            if(Stats.CONFIG.watchMatches()) {
-                matches.stream()
-                        .filter(Predicate.not(Match::hasPlayed))
-                        .filter(Predicate.not(Match::removed))
-                        .filter(Predicate.not(match -> ids.contains(match.id())))
-                        .forEach(match -> {
-                            Instant opens = Instant.parse(match.opens());
-                            ids.add(match.id());
-                            if(opens.isAfter(Util.utcNow())) {
-                                LOGGER.info("Scheduling match {}", match);
-                                AlertManager.gameFound(match);
-                                TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
-                            }
-                        });
-            }else {
-                LOGGER.info("Not watching matches");
-            }
         }
     }
 
@@ -79,22 +91,32 @@ public class MatchManger {
         }
     }
 
-    public static void watchForFill(Match match) {
+    public static List<Match> getUpcomingMatches() throws Exception {
+        String json = HttpUtils.get("https://hosts.uhc.gg/api/matches/upcoming").body();
+        return Arrays.stream(JsonUtil.DEFAULT.parse(Match[].class, json)).collect(Collectors.toList());
+    }
+
+    public static TimerTask watchForFill(Match match) {
         LOGGER.warn("Watching for fill for match {}", match.id());
+        AtomicBoolean hasGoneFromIdol = new AtomicBoolean(false);
         AtomicInteger fill = new AtomicInteger(0);
-        TaskScheduler.scheduleRepeatingTask(30, TimeUnit.SECONDS, task -> {
+        return TaskScheduler.scheduleRepeatingTask(30, TimeUnit.SECONDS, task -> {
             MCPing.ping(Stats.CONFIG.getServerIp(), Stats.CONFIG.getServerPort()).whenComplete((result, throwable) -> {
                 if(throwable == null) {
                     String message = Util.getMotdMessage(result);
                     GameState state = GameState.getState(message);
-                    LOGGER.info("Server State: {}", state);
+                        if(state == GameState.LOBBY) {
+                           hasGoneFromIdol.set(true);
+                        }
                     if(state == GameState.PRE_PVP) {
+                        hasGoneFromIdol.set(true);
                         int online = result.players().online();
                         if(online > fill.get()) {
-                            LOGGER.info("{} players online, filling match {}", online, match.id());
+                            LOGGER.info("New Fill {} for {}", online, match.id());
                             fill.set(online);
                         }
                     }else if(state == GameState.PVP || state == GameState.MEATUP) {
+                        hasGoneFromIdol.set(true);
                         int totalFill = (fill.get() == 0 ? result.players().online() : fill.get()) - 1;
                         LOGGER.info("Game {} fill is {}", match.id(), totalFill);
                         Game game = new Game(match.id(), totalFill);
@@ -106,11 +128,14 @@ public class MatchManger {
                         }
                         task.cancel();
                     }else if(state == GameState.IDLE) {
-                        LOGGER.info("Match {} is idle at fill {}", match.id(), fill.get());
-                        task.cancel();
+                        if(hasGoneFromIdol.get()) {
+                            LOGGER.info("Match {} is idle at fill {}", match.id(), fill.get());
+                            task.cancel();
+                        }
                     }else {
                         LOGGER.info("Game {} is {} at {}", match.id(), state, result.players().online());
                     }
+                    LOGGER.info("Server State: {} Has Opened {}", state, hasGoneFromIdol.get());
                 }else {
                     LOGGER.error("Error while pinging", throwable);
                 }

@@ -36,7 +36,7 @@ public class AlertManager
         try {
             DiscordWebhook.of(Stats.CONFIG.getDiscordWebBotToken())
                     .addEmbed(EmbedObject.builder()
-                            .color(Color.GREEN)
+                            .color(Color.YELLOW)
                             .author(new EmbedObject.Author(match.findStaff().map(Staff::displayName).orElse("Unknown"), match.getUrl(), null))
                             .footer(EmbedObject.Footer.of("New Game: " + match.displayName(), null))
                             .description("Time: <t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).toEpochMilli()/ 1000)))
