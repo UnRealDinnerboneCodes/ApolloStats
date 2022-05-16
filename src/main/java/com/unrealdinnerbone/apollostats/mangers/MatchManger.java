@@ -30,7 +30,7 @@ public class MatchManger {
 
     public static CompletableFuture<Void> init() {
         CompletableFuture<Void> future = new CompletableFuture<>();
-            TaskScheduler.scheduleRepeatingTaskExpectantly(15, TimeUnit.MINUTES, task -> {
+            TaskScheduler.scheduleRepeatingTaskExpectantly(10, TimeUnit.MINUTES, task -> {
                 loadMatchData();
                 if(!future.isDone()) {
                     future.complete(null);

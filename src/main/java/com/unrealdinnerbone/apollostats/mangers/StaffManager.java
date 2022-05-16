@@ -41,7 +41,7 @@ public class StaffManager
     }
 
     public static Optional<Staff> findStaff(String name) {
-        return staff.stream().filter(staff -> staff.username().equalsIgnoreCase(name) || staff.displayName().equals(name)).findFirst();
+        return staff.stream().filter(staff -> staff.username().equalsIgnoreCase(name) || staff.displayName().equalsIgnoreCase(name)).findFirst();
     }
 
     public static List<Staff> getStaff() {
