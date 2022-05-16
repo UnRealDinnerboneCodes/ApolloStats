@@ -17,7 +17,7 @@ public interface IStatPage extends IWebPage{
     //Todo add caching
     @Override
     default void getPage(Context handler) {
-        Map<Staff, List<Match>> hostMap = MatchManger.getMap();
+        Map<Staff, List<Match>> hostMap = new HashMap<>(MatchManger.getMap());
         String host = handler.queryParam("hosts");
         if(host != null) {
             String[] hosts = host.split(",");
