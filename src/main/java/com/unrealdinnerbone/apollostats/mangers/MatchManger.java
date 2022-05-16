@@ -87,6 +87,7 @@ public class MatchManger {
                 if(throwable == null) {
                     String message = Util.getMotdMessage(result);
                     GameState state = GameState.getState(message);
+                    LOGGER.info("Server State: {}", state);
                     if(state == GameState.PRE_PVP) {
                         int online = result.players().online();
                         if(online > fill.get()) {
