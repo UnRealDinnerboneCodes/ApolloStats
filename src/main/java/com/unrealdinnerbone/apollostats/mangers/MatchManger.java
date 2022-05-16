@@ -55,6 +55,7 @@ public class MatchManger {
                             ids.add(match.id());
                             if(opens.isAfter(Util.utcNow())) {
                                 LOGGER.info("Scheduling match {}", match);
+                                AlertManager.gameFound(match);
                                 TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
                             }
                         });

@@ -23,7 +23,23 @@ public class AlertManager
                             .color(Color.GREEN)
                             .author(new EmbedObject.Author(match.findStaff().map(Staff::displayName).orElse("Unknown"), match.getUrl(), null))
                             .footer(EmbedObject.Footer.of("Fill: " + game.fill(), null))
-                            .description("Time: <t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).toEpochMilli())))
+                            .description("Time: <t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).toEpochMilli() / 1000)))
+                            .build())
+                    .execute();
+
+        }catch(IOException | InterruptedException e) {
+            LOGGER.error("Error sending discord message", e);
+        }
+    }
+
+    public static void gameFound(Match match) {
+        try {
+            DiscordWebhook.of(Stats.CONFIG.getDiscordWebBotToken())
+                    .addEmbed(EmbedObject.builder()
+                            .color(Color.GREEN)
+                            .author(new EmbedObject.Author(match.findStaff().map(Staff::displayName).orElse("Unknown"), match.getUrl(), null))
+                            .footer(EmbedObject.Footer.of("New Game: " + match.displayName(), null))
+                            .description("Time: <t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).toEpochMilli()/ 1000)))
                             .build())
                     .execute();
 
