@@ -92,7 +92,7 @@ public class MatchManger {
                             LOGGER.info("{} players online, filling match {}", online, match.id());
                             fill.set(online);
                         }
-                    }else if(state == GameState.PVP) {
+                    }else if(state == GameState.PVP || state == GameState.MEATUP) {
                         int totalFill = (fill.get() == 0 ? result.players().online() : fill.get()) - 1;
                         LOGGER.info("Game {} fill is {}", match.id(), totalFill);
                         Game game = new Game(match.id(), totalFill);
@@ -103,7 +103,8 @@ public class MatchManger {
                             LOGGER.error("Game {} already exists", match.id());
                         }
                         task.cancel();
-                    }else if(state == GameState.IDLE || state == GameState.MEATUP) {
+                    }else if(state == GameState.IDLE) {
+                        LOGGER.info("Match {} is idle at fill {}", match.id(), fill.get());
                         task.cancel();
                     }else {
                         LOGGER.info("Game {} is {} at {}", match.id(), state, result.players().online());

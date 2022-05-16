@@ -30,6 +30,7 @@ public class HostIn24HoursGen implements IStatPage {
 
 
         Map<Staff, AtomicInteger> max = hostMatchMap.keySet().stream().collect(Collectors.toMap(s -> s, s -> new AtomicInteger(0), (a, b) -> b));
+        AtomicInteger apollo = new AtomicInteger(0);
 
         for (Map.Entry<Staff, List<Instant>> stringListEntry : plays.entrySet()) {
             List<Instant> times = new ArrayList<>(stringListEntry.getValue());
@@ -55,11 +56,15 @@ public class HostIn24HoursGen implements IStatPage {
                         }
                 }
                 max.get(stringListEntry.getKey()).set(Math.max(max.get(stringListEntry.getKey()).get(), theTimes));
+                apollo.set(Math.max(apollo.get(), theTimes));
             }
         }
 
-        List<HostData> cake = max.entrySet().stream().map(entry -> new HostData(entry.getKey().displayName(), entry.getValue().get())).toList();
 
+
+
+        List<HostData> cake = new ArrayList<>(max.entrySet().stream().map(entry -> new HostData(entry.getKey().displayName(), entry.getValue().get())).toList());
+        cake.add(new HostData("Apollo", apollo.get()));
 
         wrapper.html(WebUtils.makeHTML("Hosts in 24 hours", "https://unreal.codes/kevStonk.png", Arrays.asList("Host", "Times"), cake));
     }
