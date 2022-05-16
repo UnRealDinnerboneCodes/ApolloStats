@@ -52,6 +52,7 @@ public class Stats {
     private static final LazyValue<PostgressHandler> HANDLER;
 
     static {
+        LOGGER.info("Starting ApolloStats");
         ConfigManager configManager = ConfigManager.createSimpleEnvPropertyConfigManger();
         CONFIG = configManager.loadConfig("apollo", Config::new);
         POSTGRES_CONFIG = configManager.loadConfig("postgres", PostgresConfig::new);
@@ -98,6 +99,7 @@ public class Stats {
                 for(WebInstance<?> instance : instances) {
                     Javalin javalin = Javalin.create(javalinConfig -> {
                         javalinConfig.accessManager(new WebAccessManger());
+                        javalinConfig.showJavalinBanner = false;
                         instance.getConfig().accept(javalinConfig);
                     }).start(instance.getPort());
 
@@ -113,6 +115,7 @@ public class Stats {
                 }
             }
         });
+        LOGGER.info("Started ApolloStats");
 
     }
 
