@@ -161,7 +161,7 @@ public class MatchManger {
 
     public enum GameState {
         IDLE(s -> s.equalsIgnoreCase("Apollo » No game is running.\nWhitelist is on.")),
-        LOBBY(s -> s.startsWith("Apollo » No game is running.") || s.contains("Arena is")),
+        LOBBY(s -> s.startsWith("Apollo » No game is running.") && s.contains("Arena is")),
         PRE_PVP(s -> s.startsWith("Apollo » PvP is in: ")),
         PVP(s -> s.startsWith("Apollo » Meetup is in: ")),
         MEATUP(s -> s.startsWith("Apollo » Meetup is now!")),
