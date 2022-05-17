@@ -1,22 +1,18 @@
 package com.unrealdinnerbone.apollostats;
 
-import com.unrealdinnerbone.apollostats.api.BingoValue;
-import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
-import com.unrealdinnerbone.apollostats.api.IWebPage;
 import com.unrealdinnerbone.apollostats.api.WebInstance;
 import com.unrealdinnerbone.apollostats.instacnes.APIInstance;
 import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
 import com.unrealdinnerbone.apollostats.lib.Config;
-import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.mangers.*;
-import com.unrealdinnerbone.apollostats.web.ApolloRole;
-import com.unrealdinnerbone.apollostats.web.Results;
 import com.unrealdinnerbone.apollostats.web.WebAccessManger;
 import com.unrealdinnerbone.apollostats.web.pages.bingo.BingoPages;
+import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
-import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
-import com.unrealdinnerbone.apollostats.web.pages.stats.*;
+import com.unrealdinnerbone.apollostats.web.pages.stats.AverageFillPage;
+import com.unrealdinnerbone.apollostats.web.pages.stats.LastPlayedGen;
+import com.unrealdinnerbone.apollostats.web.pages.stats.TeamSizeGames;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.HostIn24HoursGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
 import com.unrealdinnerbone.config.ConfigManager;
@@ -25,19 +21,17 @@ import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LazyValue;
 import com.unrealdinnerbone.unreallib.ShutdownUtils;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
-import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
-import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import io.javalin.Javalin;
-import io.javalin.http.HttpCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -125,11 +119,6 @@ public class Stats {
     public static PostgressHandler getPostgresHandler() {
         return HANDLER.get();
     }
-
-
-
-
-
 
     public static String getResourceAsString(String thePath) {
         return new BufferedReader(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(thePath), StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));

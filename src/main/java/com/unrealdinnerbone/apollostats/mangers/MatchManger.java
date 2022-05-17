@@ -104,6 +104,17 @@ public class MatchManger {
             MCPing.ping(Stats.CONFIG.getServerIp(), Stats.CONFIG.getServerPort()).whenComplete((result, throwable) -> {
                 if(throwable == null) {
                     String message = Util.getMotdMessage(result);
+
+                    TaskScheduler.handleTaskOnThread(() -> {
+                        Stats.getPostgresHandler().executeUpdate("INSERT INTO public.ping (time, players, motd, game) VALUES (?, ?, ?, ?)", handler -> {
+                            handler.setLong(1, Instant.now().toEpochMilli() / 1000);
+                            handler.setInt(2, result.players().online());
+                            handler.setString(3, message);
+                            handler.setInt(4, match.id());
+                        });
+                    });
+
+
                     GameState state = GameState.getState(message);
                         if(state == GameState.LOBBY) {
                            hasGoneFromIdol.set(true);
@@ -150,7 +161,7 @@ public class MatchManger {
 
     public enum GameState {
         IDLE(s -> s.equalsIgnoreCase("Apollo » No game is running.\nWhitelist is on.")),
-        LOBBY(s -> s.startsWith("Apollo » No game is running.\nWhitelist is off. Arena is")),
+        LOBBY(s -> s.startsWith("Apollo » No game is running.") || s.contains("Arena is")),
         PRE_PVP(s -> s.startsWith("Apollo » PvP is in: ")),
         PVP(s -> s.startsWith("Apollo » Meetup is in: ")),
         MEATUP(s -> s.startsWith("Apollo » Meetup is now!")),
