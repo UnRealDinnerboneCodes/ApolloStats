@@ -25,7 +25,7 @@ public record Match(int id,
                     Integer size,
                     String customStyle,
                     int count,
-//                    String content,
+                    String content,
                     String region,
                     boolean removed,
                     String removedBy,
@@ -85,5 +85,19 @@ public record Match(int id,
 
     public String displayName() {
         return hostingName() != null ? hostingName() : author();
+    }
+
+    public Optional<String> getStaffDisplayName() {
+        return findStaff().map(Staff::displayName);
+    }
+
+    public boolean isNether() {
+        for(String s : content.split("\n")) {
+            if(s.startsWith("**NETHER**")) {
+                String[] split = s.split("|");
+                return split.length == 2 && split[1].replace(" ", "").equals("true");
+            }
+        }
+        return false;
     }
 }

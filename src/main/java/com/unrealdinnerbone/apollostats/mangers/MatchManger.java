@@ -41,10 +41,11 @@ public class MatchManger {
 
         if(Stats.CONFIG.watchMatches()) {
             TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.MINUTES, task -> {
-                List<Match> matches = getUpcomingMatches().stream().filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).toList();
+                List<Match> matches = getUpcomingMatches().stream().filter(Match::isApolloGame).toList();
                 for(Match match : matches) {
                     if(match.removed()) {
                         if(trackedMatches.containsKey(match)) {
+                            AlertManager.gameRemoved(match);
                             trackedMatches.get(match).cancel();
                             trackedMatches.remove(match);
                         }
