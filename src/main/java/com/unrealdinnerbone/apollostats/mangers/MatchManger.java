@@ -5,7 +5,9 @@ import com.unrealdinnerbone.apollostats.api.Game;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.apollostats.lib.Util;
+import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
+import com.unrealdinnerbone.unreallib.exception.ExceptionConsumer;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.minecraft.ping.MCPing;
 import com.unrealdinnerbone.unreallib.web.HttpUtils;
@@ -32,6 +34,10 @@ public class MatchManger {
         CompletableFuture<Void> staffTracker = new CompletableFuture<>();
         TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> {
             loadStaffMatchBacklog();
+
+
+
+
             if(!staffTracker.isDone()) {
                 staffTracker.complete(null);
             }
@@ -186,3 +192,49 @@ public class MatchManger {
     }
 }
 
+//    String statement = "INSERT INTO public.match (id, author, opens, address, ip, scenarios, tags, teams, size, custom_style, count, content, region, removed, removed_by, removed_reason, created, location, main_version, version, slots, length, mapSize, pvp_enabled_at, approved_by, hostingName, tournament, roles) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
+//            " on conflict (id) do update removed = excluded.removed";
+//    List<PostgresConsumer> postgresConsumers = new ArrayList<>();
+//
+//            matchesMap.values().stream().flatMap(Collection::stream).forEach(match -> {
+//                    postgresConsumers.add(pStm -> {
+//                    pStm.setString(1, match.ip());
+//                    pStm.setString(2, match.author());
+//                    pStm.setString(3, String.valueOf(Instant.parse(match.opens()).getEpochSecond()));
+//                    pStm.setString(4, match.address());
+//                    pStm.setString(5, match.ip());
+//                    pStm.setString(6, String.join(";", match.scenarios()));
+//                    pStm.setString(7, String.join(";", match.tags()));
+//                    pStm.setString(8, String.join(";", match.teams()));
+//                    pStm.setInt(9, match.size() != null ? match.size() : -1);
+//                    pStm.setString(10, match.customStyle());
+//                    pStm.setInt(11, match.count());
+//                    pStm.setString(12, match.content());
+//                    pStm.setString(13, match.region());
+//                    pStm.setBoolean(14, match.removed());
+//                    pStm.setString(15, match.removedBy());
+//                    pStm.setString(16, match.removedReason());
+//                    pStm.setString(17, String.valueOf(Instant.parse(match.created()).getEpochSecond()));
+//                    pStm.setString(18, match.location());
+//                    pStm.setString(19, match.mainVersion());
+//                    pStm.setString(20, match.version());
+//                    pStm.setInt(21, match.slots());
+//                    pStm.setInt(22, match.length());
+//                    pStm.setInt(23, match.mapSize());
+//                    pStm.setInt(24, match.pvpEnabledAt());
+//                    pStm.setString(25, match.approvedBy());
+//                    pStm.setString(26, match.hostingName());
+//                    pStm.setBoolean(27, match.tournament());
+//                    pStm.setString(28, String.join(";", match.roles()));
+//                    });
+//
+//                    });
+//     TaskScheduler.handleTaskOnThread(() -> {
+//             LOGGER.info("Saving {} matches to database", postgresConsumers.size());
+//             try {
+//             Stats.getPostgresHandler().executeBatchUpdate(statement, postgresConsumers);
+//             }catch(Exception e){
+//             LOGGER.error("Failed to save matches to database", e);
+//             }
+//             LOGGER.info("Saved {} matches to database", postgresConsumers.size());
+//             });

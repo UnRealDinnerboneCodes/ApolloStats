@@ -4,6 +4,7 @@ import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.mangers.GameManager;
 import com.unrealdinnerbone.apollostats.mangers.StaffManager;
 import com.unrealdinnerbone.apollostats.Stats;
+import com.unrealdinnerbone.unreallib.StringUtils;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -91,13 +92,27 @@ public record Match(int id,
         return findStaff().map(Staff::displayName);
     }
 
-    public boolean isNether() {
+    public String isNether() {
         for(String s : content.split("\n")) {
-            if(s.startsWith("**NETHER**")) {
+            if(s.startsWith("**Nether**")) {
                 String[] split = s.split("|");
-                return split.length == 2 && split[1].replace(" ", "").equals("true");
+                boolean enabled = split.length == 2 && split[1].replace(" ", "").equals("true");
+                return enabled ? "Enabled" : "Disabled";
             }
         }
-        return false;
+        return "Unknown";
+    }
+
+    public String getTeamFormat() {
+        if(teams().equalsIgnoreCase("FFA")) {
+            return "FFA";
+        }else {
+            String value = StringUtils.capitalizeFirstLetter(teams().toLowerCase());
+            if(size != null && size > 1) {
+                value += " (" + size + ")";
+            }
+            System.out.println(value);
+            return value;
+        }
     }
 }

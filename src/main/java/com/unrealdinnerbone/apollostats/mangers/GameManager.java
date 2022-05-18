@@ -2,6 +2,7 @@ package com.unrealdinnerbone.apollostats.mangers;
 
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.Game;
+import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.exception.ExceptionConsumer;
@@ -34,7 +35,7 @@ public class GameManager
 
     public static void addGames(List<Game> games) {
         GameManager.games.addAll(games);
-        Stats.getPostgresHandler().executeBatchUpdate("INSERT INTO public.games (id, fill) VALUES (?, ?)", games.stream().<ExceptionConsumer<PreparedStatement, SQLException>>map(game -> ps -> {
+        Stats.getPostgresHandler().executeBatchUpdate("INSERT INTO public.games (id, fill) VALUES (?, ?)", games.stream().<PostgresConsumer>map(game -> ps -> {
             ps.setInt(1, game.id());
             ps.setInt(2, game.fill());
         }).toList());
