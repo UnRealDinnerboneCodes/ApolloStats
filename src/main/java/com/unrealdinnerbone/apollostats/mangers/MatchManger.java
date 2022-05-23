@@ -54,6 +54,7 @@ public class MatchManger {
                             AlertManager.gameRemoved(match);
                             trackedMatches.get(match).cancel();
                             trackedMatches.remove(match);
+                            LOGGER.info("Removed match {}", match);
                         }
                     }else {
                         if(!trackedMatches.containsKey(match)) {
@@ -133,23 +134,22 @@ public class MatchManger {
                             LOGGER.info("New Fill {} for {}", online, match.id());
                             fill.set(online);
                         }
-                    }else if(state == GameState.PVP || state == GameState.MEATUP) {
-                        hasGoneFromIdol.set(true);
-                        int totalFill = (fill.get() == 0 ? result.players().online() : fill.get()) - 1;
-                        LOGGER.info("Game {} fill is {}", match.id(), totalFill);
-                        Game game = new Game(match.id(), totalFill);
-                        if(!GameManager.getGames().contains(game)) {
-                            AlertManager.gameSaved(match, game);
-                            GameManager.addGames(Collections.singletonList(new Game(match.id(), totalFill)));
-                        }else {
-                            LOGGER.error("Game {} already exists", match.id());
+                    }else if(state == GameState.PVP || state == GameState.MEATUP || state == GameState.IDLE) {
+                        if(state != GameState.IDLE) {
+                            hasGoneFromIdol.set(true);
+                        }
+                        if(hasGoneFromIdol.get()) {
+                            int totalFill = (fill.get() == 0 ? result.players().online() : fill.get()) - 1;
+                            LOGGER.info("Game {} fill is {}", match.id(), totalFill);
+                            Game game = new Game(match.id(), totalFill);
+                            if(!GameManager.getGames().contains(game)) {
+                                AlertManager.gameSaved(match, game);
+                                GameManager.addGames(Collections.singletonList(new Game(match.id(), totalFill)));
+                            }else {
+                                LOGGER.error("Game {} already exists", match.id());
+                            }
                         }
                         task.cancel();
-                    }else if(state == GameState.IDLE) {
-                        if(hasGoneFromIdol.get()) {
-                            LOGGER.info("Match {} is idle at fill {}", match.id(), fill.get());
-                            task.cancel();
-                        }
                     }else {
                         LOGGER.info("Game {} is {} at {}", match.id(), state, result.players().online());
                     }
