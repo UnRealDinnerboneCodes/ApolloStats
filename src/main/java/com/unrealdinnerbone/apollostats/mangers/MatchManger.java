@@ -59,7 +59,7 @@ public class MatchManger {
                             LOGGER.info("Match {} was removed but not tracked", match);
                         }
                     }else {
-                        if(!trackedMatches.containsKey(match)) {
+                        if(!trackedMatches.containsKey(match.id())) {
                             LOGGER.info("Scheduling match {}", match);
                             AlertManager.gameFound(match);
                             TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
