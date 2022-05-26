@@ -28,7 +28,7 @@ public class MatchManger {
 
     private static final Map<Staff, List<Match>> matchesMap = new HashMap<>();
 
-    private static final Map<Match, TimerTask> trackedMatches = new HashMap<>();
+    private static final Map<Integer, TimerTask> trackedMatches = new HashMap<>();
 
     public static CompletableFuture<Void> init() {
         CompletableFuture<Void> staffTracker = new CompletableFuture<>();
@@ -50,18 +50,20 @@ public class MatchManger {
                 List<Match> matches = getUpcomingMatches().stream().filter(Match::isApolloGame).toList();
                 for(Match match : matches) {
                     if(match.removed()) {
-                        if(trackedMatches.containsKey(match)) {
+                        if(trackedMatches.containsKey(match.id())) {
                             AlertManager.gameRemoved(match);
-                            trackedMatches.get(match).cancel();
-                            trackedMatches.remove(match);
+                            trackedMatches.get(match.id()).cancel();
+                            trackedMatches.remove(match.id());
                             LOGGER.info("Removed match {}", match);
+                        }else {
+                            LOGGER.info("Match {} was removed but not tracked", match);
                         }
                     }else {
                         if(!trackedMatches.containsKey(match)) {
                             LOGGER.info("Scheduling match {}", match);
                             AlertManager.gameFound(match);
                             TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
-                            trackedMatches.put(match, timerTask);
+                            trackedMatches.put(match.id(), timerTask);
                         }
                     }
                 }
@@ -124,9 +126,9 @@ public class MatchManger {
 
 
                     GameState state = GameState.getState(message);
-                        if(state == GameState.LOBBY) {
-                           hasGoneFromIdol.set(true);
-                        }
+                    if(state == GameState.LOBBY) {
+                        hasGoneFromIdol.set(true);
+                    }
                     if(state == GameState.PRE_PVP) {
                         hasGoneFromIdol.set(true);
                         int online = result.players().online();
@@ -159,7 +161,6 @@ public class MatchManger {
                 }
             });
         });
-
     }
 
     public static Map<Staff, List<Match>> getMap() {
