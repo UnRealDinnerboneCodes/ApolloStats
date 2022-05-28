@@ -61,7 +61,7 @@ public class AlertManager
             DiscordWebhook.of(Stats.CONFIG.getDiscordWebBotToken())
                     .addEmbed(EmbedObject.builder()
                             .color(Color.RED)
-                            .title("Game Removed: " + match.getStaffDisplayName() + " #" + match.count())
+                            .title("Game Removed: " + match.displayName() + " #" + match.count())
                             .description("Reason: " + match.removedReason())
                             .url(match.getUrl())
                             .build())
