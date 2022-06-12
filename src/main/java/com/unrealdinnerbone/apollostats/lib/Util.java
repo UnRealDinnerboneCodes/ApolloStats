@@ -1,16 +1,12 @@
 package com.unrealdinnerbone.apollostats.lib;
 
 import com.unrealdinnerbone.unreallib.MathHelper;
-import com.unrealdinnerbone.unreallib.Triplet;
 import com.unrealdinnerbone.unreallib.minecraft.ping.MCServerPingResponse;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

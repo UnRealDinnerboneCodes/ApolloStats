@@ -1,5 +1,6 @@
 package com.unrealdinnerbone.apollostats;
 
+import com.google.gson.annotations.Since;
 import com.unrealdinnerbone.apollostats.api.WebInstance;
 import com.unrealdinnerbone.apollostats.instacnes.APIInstance;
 import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
@@ -12,6 +13,7 @@ import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.AverageFillPage;
 import com.unrealdinnerbone.apollostats.web.pages.stats.LastPlayedGen;
+import com.unrealdinnerbone.apollostats.web.pages.stats.SinceHosted;
 import com.unrealdinnerbone.apollostats.web.pages.stats.TeamSizeGames;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.HostIn24HoursGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
@@ -71,7 +73,8 @@ public class Stats {
                         new BingoPages.IDCard(),
                         new BingoPages.NewCard(),
                         new TeamSizeGames(),
-                        new HostIn24HoursGen()
+                        new HostIn24HoursGen(),
+                        new SinceHosted()
 
         )));
 
