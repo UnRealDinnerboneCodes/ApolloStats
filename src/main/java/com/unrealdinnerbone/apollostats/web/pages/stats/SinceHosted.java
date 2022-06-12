@@ -60,9 +60,13 @@ public class SinceHosted implements IStatPage {
 
         @Override
         public List<String> get() {
-            long betweenFirst = ChronoUnit.DAYS.between( first, Util.utcNow());
-            long betweenLast = ChronoUnit.DAYS.between( last, Util.utcNow());
-            return Arrays.asList(name, formatter.format(first), formatter.format(last), "Days: " + String.format("%03d", betweenFirst), "Days: " + String.format("%03d", betweenLast));
+            if(first != null && last != null) {
+                long betweenFirst = ChronoUnit.DAYS.between( first, Util.utcNow());
+                long betweenLast = ChronoUnit.DAYS.between( last, Util.utcNow());
+                return Arrays.asList(name, formatter.format(first), formatter.format(last), "Days: " + String.format("%03d", betweenFirst), "Days: " + String.format("%03d", betweenLast));
+            }else {
+                return Arrays.asList(name, String.valueOf(-1), String.valueOf(-1), "Never", "Never");
+            }
         }
     }
 }
