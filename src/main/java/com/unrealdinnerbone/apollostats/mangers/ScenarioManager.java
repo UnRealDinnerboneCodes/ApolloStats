@@ -74,6 +74,7 @@ public class ScenarioManager
             Type type1 = Type.fromString(type);
             values.get(type1).add(new Scenario(name, id, isActive, official, type1));
         }
+        LOGGER.info("Loaded {} Scens", values.size());
 
     }
 
@@ -90,7 +91,8 @@ public class ScenarioManager
                 .map(ScenarioManager::remap)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .filter(cake::contains)
+                .filter(scenario -> cake.stream().anyMatch(scenario1 -> scenario1.name().equalsIgnoreCase(scenario.name())))
+//                .filter(cake::contains)
                 .filter(scenario -> scenario.type() == type)
                 .collect(Collectors.toList());
 
@@ -101,7 +103,7 @@ public class ScenarioManager
     }
 
     private static Optional<Scenario> remap(String scenario) {
-        return MAP.get(scenario);
+        return MAP.get(scenario.toLowerCase(Locale.ROOT));
     }
 
     public static List<Scenario> getValues(Type type) {

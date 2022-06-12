@@ -6,6 +6,8 @@ import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.time.Instant;
@@ -17,6 +19,7 @@ import java.util.function.Supplier;
 
 public class SinceHosted implements IStatPage {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SinceHosted.class);
     @Override
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         Map<Scenario, List<Instant>> hosted = new HashMap<>();
@@ -26,6 +29,9 @@ public class SinceHosted implements IStatPage {
                 .forEach(match -> ScenarioManager.fix(Type.SCENARIO, match.scenarios())
                         .stream()
                         .filter(Scenario::official)
+                        .peek(scenario -> {
+                            LOGGER.info("{}", scenario.name());
+                        })
                         .toList()
                         .forEach(scenario -> Maps.putIfAbsent(hosted, scenario, new ArrayList<>()).add(Instant.parse(match.opens()))));
 
@@ -38,6 +44,7 @@ public class SinceHosted implements IStatPage {
                 times.sort(Comparator.comparing(Instant::toEpochMilli));
                 stats.add(new Stats(name, times.get(0), times.get(times.size() -1)));
             }else {
+                LOGGER.info("Never Hosted: {}", name);
                 stats.add(new Stats(name, null, null));
             }
         });
