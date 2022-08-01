@@ -35,11 +35,23 @@ public class LastPlayedGen implements IStatPage {
 
         List<Stats> stats = new ArrayList<>();
 
-//        long totalScens = plays.values().stream().map(List::size).mapToInt(Integer::intValue).sum();
+
+        for(Scenario value : ScenarioManager.getValues(Type.SCENARIO)) {
+            if(value.official()) {
+                if(!plays.containsKey(value)) {
+                    plays.put(value, new ArrayList<>());
+                }
+            }
+        }
+
         plays.forEach((key, times) -> {
-            times.sort(Comparator.comparing(Pair::key));
-            double percent = times.size() / (double) totalGames.get();
-            stats.add(new Stats(key.name(), times.get(0), times.get(times.size() - 1), times.size(), percent));
+            if(times.size() == 0) {
+                stats.add(new Stats(key.name(), Pair.of(Instant.ofEpochMilli(0), "None"), Pair.of(Instant.ofEpochMilli(0), "None"), 0, 0));
+            }else {
+                times.sort(Comparator.comparing(Pair::key));
+                double percent = times.size() / (double) totalGames.get();
+                stats.add(new Stats(key.name(), times.get(0), times.get(times.size() - 1), times.size(), percent));
+            }
         });
 
         stats.sort(Comparator.comparing(stats1 -> stats1.last().key()));

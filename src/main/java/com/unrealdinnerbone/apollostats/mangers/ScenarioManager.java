@@ -74,7 +74,6 @@ public class ScenarioManager
             Type type1 = Type.fromString(type);
             values.get(type1).add(new Scenario(name, id, isActive, official, type1));
         }
-        LOGGER.info("Loaded {} Scens", values.size());
 
     }
 
