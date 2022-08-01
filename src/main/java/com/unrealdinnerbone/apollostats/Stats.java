@@ -49,6 +49,7 @@ public class Stats {
     private static final LazyValue<PostgressHandler> HANDLER;
 
     static {
+        LOGGER.info("Hi!");
         LOGGER.info("Starting ApolloStats");
         ConfigManager configManager = ConfigManager.createSimpleEnvPropertyConfigManger();
         CONFIG = configManager.loadConfig("apollo", Config::new);
@@ -117,7 +118,7 @@ public class Stats {
         ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
 
     }
-    
+
     public static PostgressHandler getPostgresHandler() {
         return HANDLER.get();
     }
