@@ -16,8 +16,8 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: unreal/apollostats
+        name: unreal/apollostatsnew
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: registry.unreal.codes
-        tag: "newest"
+        tag: "latest,${{ env.GITHUB_RUN_NUMBER }}"
