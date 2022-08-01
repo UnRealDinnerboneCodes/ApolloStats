@@ -117,8 +117,7 @@ public class Stats {
         ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
 
     }
-
-
+    
     public static PostgressHandler getPostgresHandler() {
         return HANDLER.get();
     }
