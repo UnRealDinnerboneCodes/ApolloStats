@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class GameManager
@@ -39,6 +40,10 @@ public class GameManager
             ps.setInt(1, game.id());
             ps.setInt(2, game.fill());
         }).toList());
+    }
+
+    public static Optional<Game> findGame(int id) {
+        return games.stream().filter(game -> game.id() == id).findFirst();
     }
 
     public static List<Game> getGames() {

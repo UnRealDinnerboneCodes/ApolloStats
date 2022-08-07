@@ -11,11 +11,8 @@ public class Config {
     private final StringConfig DISCORD_WEBBOT_TOKEN;
     private final StringConfig SERVER_IP;
     private final IntegerConfig SERVER_PORT;
-
     private final StringConfig MATCH_PAGE;
-
     private final StringConfig DEFAULT_FREE_SPACE;
-
     private final BooleanConfig ENABLE_MATCH_WATCHING;
 
     public Config(IConfigCreator configCreator) {
