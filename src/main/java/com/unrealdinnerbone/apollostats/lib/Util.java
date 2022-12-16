@@ -22,7 +22,7 @@ public class Util
     }
 
     public static String createID() {
-        return IntStream.range(0, 5).mapToObj(i -> String.valueOf(VAILD.charAt(MathHelper.randomInt(0, VAILD.length())))).collect(Collectors.joining());
+        return IntStream.range(0, 5).mapToObj(i -> String.valueOf(VAILD.charAt(MathHelper.randomInt(0, VAILD.length() - 1)))).collect(Collectors.joining());
     }
 
     public static Instant utcNow() {
