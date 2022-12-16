@@ -2,8 +2,7 @@ package com.unrealdinnerbone.apollostats.api;
 
 import com.unrealdinnerbone.apollostats.Stats;
 import io.javalin.http.Context;
-import io.javalin.http.HttpCode;
-import org.eclipse.jetty.http.HttpStatus;
+import io.javalin.http.HttpStatus;
 
 public interface ICTXWrapper {
     String queryParam(String param);
@@ -12,7 +11,7 @@ public interface ICTXWrapper {
 
     void html(String html);
 
-    void error(HttpCode status, String errorMessage);
+    void error(HttpStatus status, String errorMessage);
 
 
     static ICTXWrapper of(Context handler) {
@@ -32,9 +31,9 @@ public interface ICTXWrapper {
                 handler.html(html);
             }
             @Override
-            public void error(HttpCode status, String errorMessage) {
+            public void error(HttpStatus status, String errorMessage) {
                 handler.status(status).html(Stats.getResourceAsString("error.html")
-                        .replace("{Error_Code}", status.getStatus() + " (" + status.getMessage() + ")")
+                        .replace("{Error_Code}", status.getMessage() + " (" + status.getMessage() + ")")
                         .replace("{Error_Message}", errorMessage));
             }
         };

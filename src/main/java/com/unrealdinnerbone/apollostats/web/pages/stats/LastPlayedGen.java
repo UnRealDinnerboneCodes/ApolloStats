@@ -14,7 +14,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class LastPlayedGen implements IStatPage {
@@ -55,7 +54,7 @@ public class LastPlayedGen implements IStatPage {
         });
 
         stats.sort(Comparator.comparing(stats1 -> stats1.last().key()));
-        wrapper.html(WebUtils.makeHTML("Scenarios First / Last Played", "", Arrays.asList("Scenarios", "First Time", "Last Time", "First Host", "Last Host", "Days Since", "Times Hosted", "Percent Hosted"), stats));
+        wrapper.html(WebUtils.makeHTML("Scenarios First / Last Played", "", Arrays.asList("Scenario", "First Time", "Last Time", "First Host", "Last Host", "Days Since", "Times Hosted", "Percent Hosted"), stats));
     }
 
     @Override

@@ -1,14 +1,16 @@
 package com.unrealdinnerbone.apollostats.api;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.unrealdinnerbone.apollostats.mangers.MatchManger;
 import com.unrealdinnerbone.apollostats.mangers.StaffManager;
-import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public interface IStatPage extends IWebPage{
 

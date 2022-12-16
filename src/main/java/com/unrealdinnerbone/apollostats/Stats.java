@@ -1,6 +1,5 @@
 package com.unrealdinnerbone.apollostats;
 
-import com.google.gson.annotations.Since;
 import com.unrealdinnerbone.apollostats.api.WebInstance;
 import com.unrealdinnerbone.apollostats.instacnes.APIInstance;
 import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
@@ -54,7 +53,7 @@ public class Stats {
         HANDLER = new LazyValue<>(() -> {
             try {
                 return new PostgressHandler(POSTGRES_CONFIG);
-            }catch(SQLException | ClassNotFoundException e) {
+            }catch(SQLException e) {
                 LOGGER.error("Failed to create postgres handler", e);
                 return null;
             }
@@ -72,8 +71,8 @@ public class Stats {
                         new BingoPages.NewCard(),
                         new TeamSizeGames(),
                         new HostIn24HoursGen(),
-                        new SinceHosted(),
-                        new GameHistory()
+                        new GameHistory(),
+                        new FunnyScenNames()
 
         )));
 
@@ -112,6 +111,7 @@ public class Stats {
                 }
             }
         });
+        AlertManager.init();
         LOGGER.info("Started ApolloStats");
         ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
 

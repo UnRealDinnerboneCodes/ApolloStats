@@ -4,9 +4,8 @@ import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LazyHashMap;
-import com.unrealdinnerbone.unreallib.Pair;
+import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.Logger;
@@ -22,38 +21,50 @@ import java.util.stream.Collectors;
 public class ScenarioManager
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioManager.class);
+
+    private static final LevenshteinDistance LEVENSHTEIN_DISTANCE = LevenshteinDistance.getDefaultInstance();
     private static final Map<Type, List<Scenario>> values = new HashMap<>();
-    private static final LazyHashMap<String, Optional<Scenario>> MAP = new LazyHashMap<>(cache -> {
-        Map<Integer, List<Scenario>> values = new HashMap<>();
-        for(Scenario scenario : getAll()) {
-            if(isSimilar(scenario.name(), cache)) {
-                return Optional.of(scenario);
-            }else {
-                int id = LevenshteinDistance.getDefaultInstance().apply(scenario.name(), cache);
-                if(!values.containsKey(id)) {
-                    values.put(id, new ArrayList<>());
+    private static final Map<String, List<Scenario>> remap = new HashMap<>();
+    private static final LazyHashMap<String, List<Scenario>> MAP = new LazyHashMap<>(cache -> {
+        if(remap.containsKey(cache)) {
+            return remap.get(cache);
+        }else {
+            Map<Integer, List<Scenario>> values = new HashMap<>();
+            for(Scenario scenario : getAll()) {
+                if(isSimilar(scenario.name(), cache)) {
+                    return List.of(scenario);
+                }else {
+                    Maps.putIfAbsent(values, LEVENSHTEIN_DISTANCE.apply(Util.formalize(scenario.name()), Util.formalize(cache)), new ArrayList<>()).add(scenario);
                 }
-                values.get(id).add(scenario);
             }
+            List<Scenario> scenarios = values.keySet()
+                    .stream()
+                    .min(Integer::compareTo)
+                    .map(values::get)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .toList();
+            if(scenarios.size() > 0) {
+                LOGGER.info("Using Levenshtein Distance for {} -> {} [{}]", cache, scenarios, scenarios.stream().map(Scenario::id).collect(Collectors.toList()));
+            }else {
+                LOGGER.info("No Scenario found for {}", cache);
+            }
+            AlertManager.unknownSceneFound(cache, scenarios);
+            return scenarios;
         }
-        Optional<Pair<Integer, Optional<Scenario>>> lowestId = values.keySet()
-                .stream()
-                .min(Integer::compare)
-                .filter(id -> id <= 9)
-                .map(id -> Pair.of(id,Optional.of(values.get(id).get(0))));
-        Pair<Integer, Optional<Scenario>> returnValue = lowestId.orElse(Pair.of(-1,Optional.empty()));
-        LOGGER.info("{} -> {} ({})", cache, returnValue.value().map(Scenario::name).orElse("None"), returnValue.key());
-        return returnValue.value();
     });
 
-    private static boolean isSimilar(String name, String other) {
+
+
+    public static boolean isSimilar(String name, String other) {
         return Util.formalize(name).equalsIgnoreCase(Util.formalize(other));
     }
 
     public static CompletableFuture<Void> init() {
         CompletableFuture<Void> future = new CompletableFuture<>();
         TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> {
-            ScenarioManager.loadData();
+            ScenarioManager.loadScenData();
+            ScenarioManager.loadRemapData();
             if(!future.isDone()) {
                 future.complete(null);
             }
@@ -61,7 +72,7 @@ public class ScenarioManager
         return future;
     }
 
-    public static void loadData() throws SQLException {
+    public static void loadScenData() throws SQLException {
         values.clear();
         Arrays.stream(Type.values()).forEach(value -> values.put(value, new ArrayList<>()));
         ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.scenario");
@@ -77,21 +88,35 @@ public class ScenarioManager
 
     }
 
+    public static void loadRemapData() throws SQLException {
+        remap.clear();
+        ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.scen_remap");
+        while(resultSet.next()) {
+            int scen = resultSet.getInt("scenId");
+            String remap = resultSet.getString("name");
+            find(scen).ifPresentOrElse(scenario -> {
+                        Maps.putIfAbsent(ScenarioManager.remap, remap, new ArrayList<>());
+                        if(!ScenarioManager.remap.get(remap).contains(scenario)) {
+                            ScenarioManager.remap.get(remap).add(scenario);
+                        }
+                    },
+                    () -> LOGGER.error("Failed to find scenario with id {} for remap {}", scen, remap));
+        }
+
+    }
+
 
     public static List<Scenario> fix(Type type, List<String> fixed) {
         List<Scenario> cake = values.get(type)
                 .stream()
                 .map(Scenario::name)
                 .map(ScenarioManager::remap)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Collection::stream)
                 .toList();
         return fixed.stream()
                 .map(ScenarioManager::remap)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Collection::stream)
                 .filter(scenario -> cake.stream().anyMatch(scenario1 -> scenario1.name().equalsIgnoreCase(scenario.name())))
-//                .filter(cake::contains)
                 .filter(scenario -> scenario.type() == type)
                 .collect(Collectors.toList());
 
@@ -101,8 +126,8 @@ public class ScenarioManager
         return values.values().stream().flatMap(Collection::stream).filter(scenario -> scenario.id() == id).findFirst();
     }
 
-    private static Optional<Scenario> remap(String scenario) {
-        return MAP.get(scenario.toLowerCase(Locale.ROOT));
+    private static List<Scenario> remap(String scenario) {
+        return MAP.get(scenario);
     }
 
     public static List<Scenario> getValues(Type type) {
@@ -110,6 +135,14 @@ public class ScenarioManager
     }
 
     private static List<Scenario> getAll() {
-        return values.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        return values.values().stream().flatMap(List::stream).toList();
+    }
+
+    public static void resetCache() {
+        MAP.reset();
+    }
+
+    public static Map<String, List<Scenario>> getLazyMap() {
+        return MAP.getCurrentMap();
     }
 }

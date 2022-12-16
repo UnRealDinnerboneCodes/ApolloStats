@@ -12,7 +12,7 @@ public class PublicInstance extends WebInstance<IStatPage> {
     private final List<IStatPage> statPages;
 
     public PublicInstance(List<IStatPage> statPages) {
-        super(1000, javalinConfig -> javalinConfig.addStaticFiles("/web", Location.CLASSPATH));
+        super(1000, javalinConfig -> javalinConfig.staticFiles.add("/web", Location.CLASSPATH));
         this.statPages = statPages;
     }
 

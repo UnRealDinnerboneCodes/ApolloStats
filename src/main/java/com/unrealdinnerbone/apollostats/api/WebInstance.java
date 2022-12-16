@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.apollostats.api;
 
-import io.javalin.core.JavalinConfig;
+
+import io.javalin.config.JavalinConfig;
 
 import java.util.List;
 import java.util.Map;

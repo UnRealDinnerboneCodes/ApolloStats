@@ -21,6 +21,7 @@ public class GameHistory implements IStatPage {
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         List<Match> matches = hostMatchMap.values().stream()
                 .flatMap(List::stream)
+                .filter(Match::isGoodGame)
                 .filter(Match::isApolloGame)
                 .toList();
         List<GameStats> gameStats = new ArrayList<>();

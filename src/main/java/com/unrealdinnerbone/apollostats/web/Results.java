@@ -1,6 +1,5 @@
 package com.unrealdinnerbone.apollostats.web;
 
-import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 
 public class Results
