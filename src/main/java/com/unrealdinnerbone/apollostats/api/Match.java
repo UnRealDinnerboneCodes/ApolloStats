@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public record Match(int id,
                     String author,
@@ -105,11 +106,18 @@ public record Match(int id,
         if(teams().equalsIgnoreCase("FFA")) {
             return "FFA";
         }else {
-            String value = StringUtils.capitalizeFirstLetter(teams().equalsIgnoreCase("custom") ? customStyle().toLowerCase() : teams().toLowerCase());
+            String value = toSpacedCamelCase(teams().equalsIgnoreCase("custom") ? customStyle().toLowerCase() : teams().toLowerCase());
             if(size != null && size > 1) {
                 value += " (" + size + ")";
             }
             return value;
         }
     }
+
+    public static String toSpacedCamelCase(String s){
+        return Arrays.stream(s.split(" "))
+                .map(StringUtils::capitalizeFirstLetter)
+                .collect(Collectors.joining(" "));
+    }
+
 }
