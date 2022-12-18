@@ -1,15 +1,13 @@
 package com.unrealdinnerbone.apollostats.api;
 
+import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.mangers.GameManager;
 import com.unrealdinnerbone.apollostats.mangers.StaffManager;
-import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.unreallib.StringUtils;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -107,11 +105,10 @@ public record Match(int id,
         if(teams().equalsIgnoreCase("FFA")) {
             return "FFA";
         }else {
-            String value = StringUtils.capitalizeFirstLetter(teams().toLowerCase());
+            String value = StringUtils.capitalizeFirstLetter(teams().equalsIgnoreCase("custom") ? customStyle().toLowerCase() : teams().toLowerCase());
             if(size != null && size > 1) {
                 value += " (" + size + ")";
             }
-            System.out.println(value);
             return value;
         }
     }
