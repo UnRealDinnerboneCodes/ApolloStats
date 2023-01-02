@@ -159,7 +159,7 @@ public class TotalGameGen implements IStatPage {
                             
                                         function makeChart(players) {
                             
-                                            // var amount = players.map(function (d) { return +d.Amount; });
+                                             var amount = players.map(function (d) { return +d.Amount; });
                                             var time = players.map(function (d) { return d.Time; });
                             
                             
@@ -197,7 +197,7 @@ public class TotalGameGen implements IStatPage {
                             
                                         }
                             
-                                        d3.text('https://apollo.unreal.codes/data/total_games').then(makeChart);
+                                        d3.csv('https://apollo.unreal.codes/data/total_games').then(makeChart);
                                 //# sourceURL=pen.js
                                     </script>
                             
