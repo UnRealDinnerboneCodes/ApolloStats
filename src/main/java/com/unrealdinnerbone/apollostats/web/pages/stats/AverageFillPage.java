@@ -29,17 +29,17 @@ public class AverageFillPage implements IStatPage {
             int min = fill.stream().mapToInt(Integer::intValue).min().orElse(0);
             int max = fill.stream().mapToInt(Integer::intValue).max().orElse(0);
             int average = total / fill.size();
-            fillsList.add(new HostFill(stringListEntry.getKey().displayName(), min, max, average));
+            fillsList.add(new HostFill(stringListEntry.getKey().displayName(), min, max, average, fill.size()));
         }
 
-        wrapper.html(WebUtils.makeHTML("Fills", "", Arrays.asList("Host", "Smallest", "Largest", "Average"), fillsList));
+        wrapper.html(WebUtils.makeHTML("Fills", "", Arrays.asList("Host", "Smallest", "Largest", "Average", "Games"), fillsList));
     }
 
 
-    record HostFill(String host, int smallest, int largest, int average) implements Supplier<List<String>> {
+    record HostFill(String host, int smallest, int largest, int average, int gamesPlayed) implements Supplier<List<String>> {
         @Override
         public List<String> get() {
-            return Arrays.asList(host, String.valueOf(smallest), String.valueOf(largest), String.valueOf(average));
+            return Arrays.asList(host, String.valueOf(smallest), String.valueOf(largest), String.valueOf(average), String.valueOf(gamesPlayed));
         }
     }
 
