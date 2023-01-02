@@ -23,6 +23,7 @@ public class GameHistory implements IStatPage {
                 .flatMap(List::stream)
                 .filter(Match::isGoodGame)
                 .filter(Match::isApolloGame)
+                .sorted(Comparator.comparing(Match::getOpenTime).reversed())
                 .toList();
         List<GameStats> gameStats = new ArrayList<>();
         for(Match match : matches) {

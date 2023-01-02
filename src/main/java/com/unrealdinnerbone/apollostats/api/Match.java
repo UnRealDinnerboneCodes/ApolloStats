@@ -7,7 +7,6 @@ import com.unrealdinnerbone.apollostats.mangers.StaffManager;
 import com.unrealdinnerbone.unreallib.StringUtils;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -57,8 +56,8 @@ public record Match(int id,
         return Util.utcNow().isAfter(Instant.parse(opens()));
     }
 
-    public boolean hasPlayed() {
-        return Util.utcNow().minus(1, ChronoUnit.HOURS).isAfter(Instant.parse(opens()));
+    public Instant getOpenTime() {
+        return Instant.parse(opens());
     }
 
     @Override
