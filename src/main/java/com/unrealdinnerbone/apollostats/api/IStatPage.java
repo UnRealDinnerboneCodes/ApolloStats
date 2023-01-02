@@ -4,10 +4,7 @@ import com.unrealdinnerbone.apollostats.mangers.MatchManger;
 import com.unrealdinnerbone.apollostats.mangers.StaffManager;
 import io.javalin.http.Context;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface IStatPage extends IWebPage{
 
@@ -21,7 +18,7 @@ public interface IStatPage extends IWebPage{
         if(host != null) {
             String[] hosts = host.split(",");
             Map<Staff, List<Match>> map = new HashMap<>();
-            Arrays.stream(hosts).forEach(hostName -> StaffManager.findStaff(hostName).ifPresent(staff -> map.put(staff, hostMap.get(staff))));
+            Arrays.stream(hosts).forEach(hostName -> StaffManager.findStaff(hostName).ifPresent(staff -> map.put(staff, new ArrayList<>(hostMap.get(staff)))));
             hostMap.clear();
             hostMap.putAll(map);
         }
@@ -29,7 +26,7 @@ public interface IStatPage extends IWebPage{
         if(year != null) {
             Map<Staff, List<Match>> map = new HashMap<>();
             for (Map.Entry<Staff, List<Match>> staffListEntry : hostMap.entrySet()) {
-                List<Match> matches = staffListEntry.getValue();
+                List<Match> matches = new ArrayList<>(staffListEntry.getValue());
                 matches.removeIf(match -> !match.opens().split("-")[0].equals(year));
                 map.put(staffListEntry.getKey(), matches);
             }
