@@ -34,6 +34,10 @@ public class LastPlayedGen implements IStatPage {
 
         List<Stats> stats = new ArrayList<>();
 
+//        List<Pair<Instant, String>> totalGamesPlayed = plays.values().stream().flatMap(List::stream).sorted(Comparator.comparing(Pair::key)).toList();
+//        stats.add(new Stats("Total Games", totalGamesPlayed.get(0), totalGamesPlayed.get(totalGamesPlayed.size() - 1), totalGamesPlayed.size(), 1));
+
+        //total games played
 
         for(Scenario value : ScenarioManager.getValues(Type.SCENARIO)) {
             if(value.official()) {

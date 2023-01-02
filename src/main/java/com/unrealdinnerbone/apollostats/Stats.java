@@ -10,6 +10,7 @@ import com.unrealdinnerbone.apollostats.web.pages.bingo.BingoPages;
 import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
+import com.unrealdinnerbone.apollostats.web.pages.graph.TotalGameGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.HostIn24HoursGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
@@ -72,7 +73,9 @@ public class Stats {
                         new TeamSizeGames(),
                         new HostIn24HoursGen(),
                         new GameHistory(),
-                        new FunnyScenNames()
+                        new FunnyScenNames(),
+                        new TotalGameGen(),
+                        new TotalGameGen.Page()
 
         )));
 
