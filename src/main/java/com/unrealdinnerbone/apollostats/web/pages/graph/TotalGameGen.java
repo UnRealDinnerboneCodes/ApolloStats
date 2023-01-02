@@ -31,7 +31,7 @@ public class TotalGameGen implements IStatPage {
 
     @Override
     public String getPath() {
-        return "data/total_game.csv";
+        return "data/total_games";
     }
 
 
@@ -197,7 +197,7 @@ public class TotalGameGen implements IStatPage {
                             
                                         }
                             
-                                        d3.text('https://apollo.unreal.codes/data/total_game.csv').then(makeChart);
+                                        d3.text('https://apollo.unreal.codes/data/total_games').then(makeChart);
                                 //# sourceURL=pen.js
                                     </script>
                             
