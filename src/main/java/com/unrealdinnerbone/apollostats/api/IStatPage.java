@@ -1,7 +1,5 @@
 package com.unrealdinnerbone.apollostats.api;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.unrealdinnerbone.apollostats.mangers.MatchManger;
 import com.unrealdinnerbone.apollostats.mangers.StaffManager;
 import io.javalin.http.Context;
@@ -10,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public interface IStatPage extends IWebPage{
 
@@ -25,6 +22,17 @@ public interface IStatPage extends IWebPage{
             String[] hosts = host.split(",");
             Map<Staff, List<Match>> map = new HashMap<>();
             Arrays.stream(hosts).forEach(hostName -> StaffManager.findStaff(hostName).ifPresent(staff -> map.put(staff, hostMap.get(staff))));
+            hostMap.clear();
+            hostMap.putAll(map);
+        }
+        String year = handler.queryParam("year");
+        if(year != null) {
+            Map<Staff, List<Match>> map = new HashMap<>();
+            for (Map.Entry<Staff, List<Match>> staffListEntry : hostMap.entrySet()) {
+                List<Match> matches = staffListEntry.getValue();
+                matches.removeIf(match -> !match.opens().split("-")[0].equals(year));
+                map.put(staffListEntry.getKey(), matches);
+            }
             hostMap.clear();
             hostMap.putAll(map);
         }

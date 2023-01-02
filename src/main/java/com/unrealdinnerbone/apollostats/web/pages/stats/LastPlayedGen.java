@@ -54,7 +54,7 @@ public class LastPlayedGen implements IStatPage {
         });
 
         stats.sort(Comparator.comparing(stats1 -> stats1.last().key()));
-        wrapper.html(WebUtils.makeHTML("Scenarios First / Last Played", "", Arrays.asList("Scenario", "First Time", "Last Time", "First Host", "Last Host", "Days Since", "Times Hosted", "Percent Hosted"), stats));
+        wrapper.html(WebUtils.makeHTML("Scenarios First / Last Played (Total Games: "+ totalGames.get() + ")", "", Arrays.asList("Scenario", "First Time", "Last Time", "First Host", "Last Host", "Days Since", "Times Hosted", "Percent Hosted"), stats));
     }
 
     @Override
