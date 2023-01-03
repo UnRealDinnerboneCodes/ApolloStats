@@ -6,6 +6,7 @@ import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
 import com.unrealdinnerbone.apollostats.lib.Config;
 import com.unrealdinnerbone.apollostats.mangers.*;
 import com.unrealdinnerbone.apollostats.web.WebAccessManger;
+import com.unrealdinnerbone.apollostats.web.pages.MainPage;
 import com.unrealdinnerbone.apollostats.web.pages.bingo.BingoPages;
 import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
@@ -72,7 +73,8 @@ public class Stats {
                         new HostIn24HoursGen(),
                         new GameHistory(),
                         new FunnyScenNames(),
-                        new TotalGameGen()
+                        new TotalGameGen(),
+                        new MainPage()
         )));
 
         instances.add(
