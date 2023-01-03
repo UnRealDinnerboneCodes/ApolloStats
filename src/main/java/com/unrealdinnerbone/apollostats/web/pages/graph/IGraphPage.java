@@ -21,7 +21,7 @@ public interface IGraphPage extends IStatPage {
             List<MapData> mapData = dataSet.graphData().stream()
                     .map(graphData -> new MapData(graphData.time.toString(), graphData.amount()))
                     .toList();
-            dataData.add(new DataData(dataSet.label(), mapData, dataSet.backgroundColor()));
+            dataData.add(new DataData(dataSet.label(), mapData, "none", dataSet.backgroundColor()));
         }
         String page = Stats.getResourceAsString("graph.html");
         String json = JsonUtil.DEFAULT.toFancyJson(List.class, dataData);
@@ -35,5 +35,5 @@ public interface IGraphPage extends IStatPage {
 
     record MapData(String t, int y) {}
 
-    record DataData(String label, List<MapData> data, String backgroundColor) {}
+    record DataData(String label, List<MapData> data, String fill, String backgroundColor) {}
 }
