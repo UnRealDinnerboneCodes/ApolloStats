@@ -4,11 +4,7 @@ import com.unrealdinnerbone.apollostats.Stats;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
-public interface ICTXWrapper {
-    String queryParam(String param);
-
-    String pathParam(String param);
-
+public interface ICTXWrapper extends ICTXGetter {
     void html(String html);
 
     void error(HttpStatus status, String errorMessage);

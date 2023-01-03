@@ -1,53 +1,61 @@
 package com.unrealdinnerbone.apollostats.web.pages.graph;
 
-import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.api.ICTXGetter;
+import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.Staff;
+import com.unrealdinnerbone.unreallib.Maps;
+import com.unrealdinnerbone.unreallib.MathHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class GameHostedGen  implements IStatPage {
+public class GameHostedGen implements IGraphPage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GameHostedGen.class);
 
+
     @Override
-    public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
-        List<Instant> times  = hostMatchMap.values().stream().flatMap(List::stream).filter(Match::isApolloGame).filter(Predicate.not(Match::removed)).map(Match::opens).map(Instant::parse).sorted().toList();
-        StringBuilder builder = new StringBuilder("Time,Host,Amount\n");
-        Map<String, Integer> lastHostedAmount = new HashMap<>();
-        for(Staff s : hostMatchMap.keySet()) lastHostedAmount.put(s.displayName(), -1);
-        for(Instant time : times) {
-            time = time.plus(1, ChronoUnit.SECONDS);
-            Map<String, AtomicInteger> gamesHosted = new HashMap<>();
-            for(Map.Entry<Staff, List<Match>> stringListEntry : hostMatchMap.entrySet()) {
-                String host = stringListEntry.getKey().displayName();
-                gamesHosted.put(host, new AtomicInteger(0));
-                for(Match match : stringListEntry.getValue()) {
-                    if(match.isApolloGame() && !match.removed() && Instant.parse(match.opens()).isBefore(time)) {
-                        gamesHosted.get(host).incrementAndGet();
-                    }
-                }
-            }
-            for(Map.Entry<String, AtomicInteger> stringAtomicIntegerEntry : gamesHosted.entrySet()) {
-                if(lastHostedAmount.get(stringAtomicIntegerEntry.getKey()) != stringAtomicIntegerEntry.getValue().get()) {
-                    LOGGER.info("{} hosted {} games at {}", stringAtomicIntegerEntry.getKey(), stringAtomicIntegerEntry.getValue().get(), time);
-                    builder.append(time.toString()).append(",").append(stringAtomicIntegerEntry.getKey()).append(",").append(stringAtomicIntegerEntry.getValue().get()).append("\n");
-                }
-                lastHostedAmount.put(stringAtomicIntegerEntry.getKey(), stringAtomicIntegerEntry.getValue().get());
-            }
+    public List<DataSet> getGraphData(Map<Staff, List<Match>> hostMatchMap, ICTXGetter getter) {
+        List<DataSet> dataSets = new ArrayList<>();
+        for (Map.Entry<Staff, List<Match>> staffListEntry : hostMatchMap.entrySet()) {
+            Map<Instant, AtomicInteger> amountOfGames = new HashMap<>();
+            Color color = getColorForStaff(staffListEntry.getKey());
+            staffListEntry.getValue().stream()
+                    .filter(Match::isApolloGame)
+                    .filter(Predicate.not(Match::removed))
+                    .map(Match::opens)
+                    .map(Instant::parse)
+                    .map(instant -> instant.truncatedTo(java.time.temporal.ChronoUnit.DAYS))
+                    .forEach(instant -> Maps.putIfAbsent(amountOfGames, instant, new AtomicInteger()).incrementAndGet());
+
+            AtomicInteger totalGames = new AtomicInteger();
+            List<GraphData> graphData = amountOfGames.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .map(instantAtomicIntegerEntry -> new GraphData(instantAtomicIntegerEntry.getKey(), totalGames.addAndGet(instantAtomicIntegerEntry.getValue().get())))
+                    .toList();
+            dataSets.add(new DataSet(staffListEntry.getKey().displayName(), graphData, String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue())));
         }
-        wrapper.html(builder.toString());
+        return dataSets;
+    }
+
+
+    public static Color getColorForStaff(Staff staff) {
+        if(staff.displayName().equalsIgnoreCase("Logan")) {
+            return Color.CYAN;
+        }else {
+            return new Color(MathHelper.randomInt(0, 255), MathHelper.randomInt(0, 255), MathHelper.randomInt(0, 255));
+
+        }
     }
 
     @Override
     public String getPath() {
-        return "/data/games_hosted";
+        return "/graphs/games";
     }
 }

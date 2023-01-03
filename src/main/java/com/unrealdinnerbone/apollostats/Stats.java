@@ -8,7 +8,6 @@ import com.unrealdinnerbone.apollostats.mangers.*;
 import com.unrealdinnerbone.apollostats.web.WebAccessManger;
 import com.unrealdinnerbone.apollostats.web.pages.bingo.BingoPages;
 import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
-import com.unrealdinnerbone.apollostats.web.pages.graph.FillsGraphPage;
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
 import com.unrealdinnerbone.apollostats.web.pages.graph.TotalGameGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
@@ -67,16 +66,13 @@ public class Stats {
                         new LastPlayedGen(),
                         new AverageFillPage(),
                         new GameHostedGen(),
-                        new FillsGraphPage(),
                         new BingoPages.IDCard(),
                         new BingoPages.NewCard(),
                         new TeamSizeGames(),
                         new HostIn24HoursGen(),
                         new GameHistory(),
                         new FunnyScenNames(),
-                        new TotalGameGen(),
-                        new TotalGameGen.Page()
-
+                        new TotalGameGen()
         )));
 
         instances.add(

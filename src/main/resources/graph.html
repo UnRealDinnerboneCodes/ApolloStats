@@ -1,0 +1,62 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Stats</title>
+    <!-- <link href="https://fonts.googleapis.com/css?family=Merriweather|Roboto" rel="stylesheet"> -->
+    <link rel="stylesheet" href="css/graph.css">
+    <script>
+        window.console = window.console || function (t) {
+        };
+    </script>
+    <script>
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+    </script>
+</head>
+
+<body translate="no">
+<div id="title">Games Hosted</div>
+<div id="legend">
+<!--     <div class="item female">Women</div> -->
+<!--     <div class="item male">Men</div> -->
+</div>
+<div id="chart-wrapper">
+    <canvas id="chart"></canvas>
+</div>
+<script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-1b93190375e9ccc259df3a57c1abc0e64599724ae30d7ea4c6877eb615f89387.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/google-palette/1.1.0/palette.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js'></script>
+
+
+<script id="rendered-js">
+    Chart.defaults.global.defaultFontFamily = 'Roboto';
+    Chart.defaults.global.defaultFontColor = '#333';
+
+    let chart = new Chart('chart', {
+        type: 'line',
+        data: {
+            labels: ["2017", "2018", "2019", "2020", "2021", "2022", "2023"],
+            datasets: {"DATA"}
+        },
+        options: {
+            label: "Test",
+            color: "red",
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    distribution: 'linear'
+                }]
+            },
+            style: {
+                backgroundColor: 'red'
+            }
+        }
+    });
+</script>
+</body>
+
+</html>
