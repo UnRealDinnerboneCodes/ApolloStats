@@ -94,8 +94,11 @@ public record Match(int id,
         for(String s : content.split("\n")) {
             if(s.startsWith("**Nether**")) {
                 String[] split = s.split("|");
-                boolean enabled = split.length == 2 && split[1].replace(" ", "").equals("true");
-                return enabled ? "Enabled" : "Disabled";
+                if(split.length == 2) {
+                    return split[1].replace(" ", "");
+                }else {
+                    return "Unknown";
+                }
             }
         }
         return "Unknown";
