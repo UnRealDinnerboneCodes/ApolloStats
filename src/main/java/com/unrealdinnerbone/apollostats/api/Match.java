@@ -93,7 +93,7 @@ public record Match(int id,
     public String isNether() {
         for(String s : content.split("\n")) {
             if(s.startsWith("**Nether**")) {
-                String[] split = s.split("|");
+                String[] split = s.split("\\|");
                 if(split.length == 2) {
                     return split[1].replace(" ", "");
                 }else {
