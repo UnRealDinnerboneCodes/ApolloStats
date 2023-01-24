@@ -1,6 +1,9 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
-import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
+import com.unrealdinnerbone.apollostats.api.IStatPage;
+import com.unrealdinnerbone.apollostats.api.Match;
+import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.unreallib.Pair;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
@@ -10,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -32,7 +35,7 @@ public class HostIn24HoursGen implements IStatPage {
         }
 
 
-        Map<Staff, Pair<AtomicInteger, Instant>> max = hostMatchMap.keySet().stream().collect(Collectors.toMap(s -> s, s -> Pair.of(new AtomicInteger(0), Instant.EPOCH), (a, b) -> b));
+        Map<Staff, Pair<AtomicInteger, AtomicReference<Instant>>> max = hostMatchMap.keySet().stream().collect(Collectors.toMap(s -> s, s -> Pair.of(new AtomicInteger(0), new AtomicReference<>(Instant.EPOCH)), (a, b) -> b));
         Pair<Integer, Instant> apollo = Pair.of(0, Instant.EPOCH);
 
         for (Map.Entry<Staff, List<Instant>> stringListEntry : plays.entrySet()) {
@@ -55,7 +58,13 @@ public class HostIn24HoursGen implements IStatPage {
                     }
                 }
                 if(lastTime != null) {
-                    max.put(stringListEntry.getKey(), Pair.of(new AtomicInteger(theTimes), lastTime));
+                    if(!max.containsKey(stringListEntry.getKey())) {
+                        max.put(stringListEntry.getKey(), Pair.of(new AtomicInteger(0), new AtomicReference<>(Instant.EPOCH)));
+                    }
+                    if(theTimes > max.get(stringListEntry.getKey()).key().get()) {
+                        max.get(stringListEntry.getKey()).key().set(theTimes);
+                        max.get(stringListEntry.getKey()).value().set(lastTime);
+                    }
                     if(apollo.key() < theTimes) {
                         apollo = Pair.of(theTimes, lastTime);
                     }
@@ -66,10 +75,10 @@ public class HostIn24HoursGen implements IStatPage {
 
 
 
-        List<HostData> cake = new ArrayList<>(max.entrySet().stream().map(entry -> new HostData(entry.getKey().displayName(), entry.getValue().key().get(), entry.getValue().value())).toList());
+        List<HostData> cake = new ArrayList<>(max.entrySet().stream().map(entry -> new HostData(entry.getKey().displayName(), entry.getValue().key().get(), entry.getValue().value().get())).toList());
         cake.add(new HostData("Apollo", apollo.key(), apollo.value()));
 
-        wrapper.html(WebUtils.makeHTML("Hosts in 24 hours", "https://unreal.codes/kevStonk.png", Arrays.asList("Host", "Times"), cake));
+        wrapper.html(WebUtils.makeHTML("Hosts in 24 hours", "https://unreal.codes/kevStonk.png", Arrays.asList("Host", "Times", "Date"), cake));
     }
 
     public record HostData(String s, int i, Instant date) implements Supplier<List<String>> {
@@ -88,7 +97,7 @@ public class HostIn24HoursGen implements IStatPage {
 
     @Override
     public String getPath() {
-        return "cheese";
+        return "host24";
     }
 
 }
