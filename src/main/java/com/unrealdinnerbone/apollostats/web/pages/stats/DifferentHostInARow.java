@@ -17,6 +17,10 @@ public class DifferentHostInARow implements IStatPage {
 
     @Override
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
+        int limit = 5;
+        try {
+            limit = Integer.parseInt(wrapper.queryParam("limit"));
+        }catch (NumberFormatException ignored) {}
         List<List<Match>> differentHosts = new ArrayList<>();
         var ref = new Object() {
             List<Pair<Staff, Match>> staff = new ArrayList<>();
@@ -41,9 +45,11 @@ public class DifferentHostInARow implements IStatPage {
                     });
                 });
 
+        int finalLimit = limit;
         List<HostMatch> hostMatches = differentHosts.stream()
                 .map(HostMatch::new)
                 .sorted(Comparator.comparingInt(hostMatch -> hostMatch.matches().size()))
+                .filter(hostMatch -> hostMatch.matches().size() > finalLimit)
                 .toList();
         wrapper.html(WebUtils.makeHTML("Different Host In A Row", "", List.of("Start", "End", "Count", "Matches"), hostMatches));
     }
@@ -54,7 +60,7 @@ public class DifferentHostInARow implements IStatPage {
             Instant start = Instant.parse(matches.get(0).opens());
             Instant end = Instant.parse(matches.get(matches.size() - 1).opens());
             String names = matches.stream()
-                    .map(match -> WebUtils.formatAsClickableLink(match.getUrl(), match.getNumberedName()))
+                    .map(match -> WebUtils.formatAsClickableLink(match.getNumberedName(), match.getUrl()))
                     .collect(Collectors.joining(", "));
             return List.of(Util.formatData(start), Util.formatData(end), String.valueOf(matches.size()), names);
         }
