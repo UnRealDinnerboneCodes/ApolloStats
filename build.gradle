@@ -9,7 +9,7 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 
 dependencies {
-    shade 'com.unrealdinnerbone:UnRealLib:4.2.0+build.131'
+    shade 'com.unrealdinnerbone:UnRealLib:4.2.0+build.132'
     shade 'com.google.guava:guava:31.0.1-jre'
     shade "com.unrealdinnerbone:UnRealConfig:5.0.0+build.44"
     shade "com.unrealdinnerbone:PostgressLib:2.0.1+build.34"
