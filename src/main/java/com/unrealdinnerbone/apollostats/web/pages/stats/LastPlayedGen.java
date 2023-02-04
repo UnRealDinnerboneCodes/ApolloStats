@@ -24,7 +24,6 @@ public class LastPlayedGen implements IStatPage {
         AtomicInteger totalGames = new AtomicInteger();
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
-                .filter(Match::isGoodGame)
                 .peek(match -> totalGames.incrementAndGet())
                 .forEach(match -> ScenarioManager.fix(Type.SCENARIO, match.scenarios())
                         .stream()

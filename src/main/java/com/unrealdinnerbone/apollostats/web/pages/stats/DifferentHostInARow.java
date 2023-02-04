@@ -4,12 +4,14 @@ import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
 import com.unrealdinnerbone.apollostats.api.IStatPage;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Staff;
+import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.Pair;
+import com.unrealdinnerbone.unreallib.web.WebUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class DifferentHostInARow implements IStatPage {
 
@@ -21,8 +23,6 @@ public class DifferentHostInARow implements IStatPage {
         };
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
-                .filter(Match::isGoodGame)
-                .filter(Match::isApolloGame)
                 .sorted(Comparator.comparing(Match::opens))
                 .forEach(match -> {
                     match.findStaff().ifPresent(staff1 -> {
@@ -41,19 +41,23 @@ public class DifferentHostInARow implements IStatPage {
                     });
                 });
 
-        int maxSizeOfList = 0;
-        List<Match> maxList = new ArrayList<>();
-        for (List<Match> matchList : differentHosts) {
-            if(matchList.size() > maxSizeOfList) {
-                maxSizeOfList = matchList.size();
-                maxList = matchList;
-            }
+        List<HostMatch> hostMatches = differentHosts.stream()
+                .map(HostMatch::new)
+                .sorted(Comparator.comparingInt(hostMatch -> hostMatch.matches().size()))
+                .toList();
+        wrapper.html(WebUtils.makeHTML("Different Host In A Row", "", List.of("Start", "End", "Count", "Matches"), hostMatches));
+    }
+
+    public record HostMatch(List<Match> matches) implements Supplier<List<String>> {
+        @Override
+        public List<String> get() {
+            Instant start = Instant.parse(matches.get(0).opens());
+            Instant end = Instant.parse(matches.get(matches.size() - 1).opens());
+            String names = matches.stream()
+                    .map(match -> WebUtils.formatAsClickableLink(match.getUrl(), match.getNumberedName()))
+                    .collect(Collectors.joining(", "));
+            return List.of(Util.formatData(start), Util.formatData(end), String.valueOf(matches.size()), names);
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Match match : maxList) {
-            stringBuilder.append(match.getUrl()).append("\n");
-        }
-        wrapper.html(stringBuilder.toString());
     }
 
     @Override

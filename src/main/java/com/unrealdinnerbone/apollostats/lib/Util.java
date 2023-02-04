@@ -7,11 +7,18 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Util
 {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy MMM dd")
+            .withLocale(Locale.UK)
+            .withZone(ZoneId.of("UTC"));
+
     private static final String VAILD = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 
     public static String getMotdMessage(MCServerPingResponse result) {
@@ -28,4 +35,9 @@ public class Util
     public static Instant utcNow() {
         return Instant.now().atZone(ZoneId.of("UTC")).toInstant();
     }
+
+    public static String formatData(Instant instant) {
+        return FORMATTER.format(instant);
+    }
+
 }

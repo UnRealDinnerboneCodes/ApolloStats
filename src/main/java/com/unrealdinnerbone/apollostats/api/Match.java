@@ -90,6 +90,10 @@ public record Match(int id,
         return findStaff().map(Staff::displayName);
     }
 
+    public String getNumberedName() {
+        return getStaffDisplayName().orElse(displayName()) + "#" + id;
+    }
+
     public String isNether() {
         for(String s : content.split("\n")) {
             if(s.startsWith("**Nether**")) {

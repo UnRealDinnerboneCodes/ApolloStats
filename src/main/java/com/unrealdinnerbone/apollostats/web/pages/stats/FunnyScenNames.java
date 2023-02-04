@@ -20,8 +20,6 @@ public class FunnyScenNames implements IStatPage {
 
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
-                .filter(Match::isGoodGame)
-                .filter(Match::isApolloGame)
                 .map(Match::id)
                 .forEach(GameManager::findGame);
 

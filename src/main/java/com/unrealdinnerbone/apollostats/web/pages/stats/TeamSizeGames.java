@@ -23,13 +23,10 @@ public class TeamSizeGames implements IStatPage {
         hostMatchMap.forEach((host, matches) -> {
             Map<Integer, AtomicInteger> map = new HashMap<>();
             for(Match match : matches) {
-                if(match.isApolloGame() && !match.removed()) {
-                    int size = match.size() == null ? 0 : match.size();
-                    Maps.putIfAbsent(map, size, new AtomicInteger(0)).incrementAndGet();
-                    if(!typesList.contains(String.format("%03d", size))) {
-                        typesList.add(String.format("%03d", size));
-                    }
-
+                int size = match.size() == null ? 0 : match.size();
+                Maps.putIfAbsent(map, size, new AtomicInteger(0)).incrementAndGet();
+                if (!typesList.contains(String.format("%03d", size))) {
+                    typesList.add(String.format("%03d", size));
                 }
             }
             types.put(host, map);

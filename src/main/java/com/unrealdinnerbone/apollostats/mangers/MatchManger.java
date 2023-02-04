@@ -12,7 +12,7 @@ import com.unrealdinnerbone.unreallib.apiutils.WebResultException;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.json.api.JsonParseException;
 import com.unrealdinnerbone.unreallib.minecraft.ping.MCPing;
-import com.unrealdinnerbone.unreallib.web.HttpHelper;
+import com.unrealdinnerbone.unreallib.web.BasicHttpHelper;
 import org.slf4j.Logger;
 
 import java.time.Instant;
@@ -80,7 +80,7 @@ public class MatchManger {
     public static List<Match> getAllMatchesForHost(Staff staff, Optional<Integer> before) {
         List<Match> matches = new ArrayList<>();
         try {
-            String json = HttpHelper.DEFAULT.getOrThrow("https://hosts.uhc.gg/api/hosts/" + staff.username().replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse(""));
+            String json = BasicHttpHelper.DEFAULT.getOrThrow("https://hosts.uhc.gg/api/hosts/" + staff.username().replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse(""));
             List<Match> foundMatches = JsonUtil.DEFAULT.parseList(Match[].class, json);
             matches.addAll(foundMatches);
             if(foundMatches.size() == 50) {
@@ -95,7 +95,7 @@ public class MatchManger {
     }
 
     public static List<Match> getUpcomingMatches() throws Exception {
-        String json = HttpHelper.DEFAULT.get("https://hosts.uhc.gg/api/matches/upcoming").body();
+        String json = BasicHttpHelper.DEFAULT.get("https://hosts.uhc.gg/api/matches/upcoming").body();
         return JsonUtil.DEFAULT.parseList(Match[].class, json);
     }
 

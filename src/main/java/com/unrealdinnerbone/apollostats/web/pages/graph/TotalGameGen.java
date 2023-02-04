@@ -22,8 +22,6 @@ public class TotalGameGen implements IGraphPage {
         Color color = Color.CYAN.darker().darker().darker();
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
-                .filter(Match::isApolloGame)
-                .filter(Predicate.not(Match::removed))
                 .map(Match::opens)
                 .map(Instant::parse)
                 .map(instant -> instant.truncatedTo(java.time.temporal.ChronoUnit.DAYS))

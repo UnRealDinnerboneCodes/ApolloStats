@@ -1,14 +1,13 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
 import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.apollostats.mangers.GameManager;
 import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -21,8 +20,6 @@ public class GameHistory implements IStatPage {
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         List<Match> matches = hostMatchMap.values().stream()
                 .flatMap(List::stream)
-                .filter(Match::isGoodGame)
-                .filter(Match::isApolloGame)
                 .sorted(Comparator.comparing(Match::getOpenTime).reversed())
                 .toList();
         List<GameStats> gameStats = new ArrayList<>();
@@ -43,13 +40,11 @@ public class GameHistory implements IStatPage {
 
         private final static DecimalFormat df = new DecimalFormat("#.##");
 
-        private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MMM dd")
-                .withLocale(Locale.UK)
-                .withZone(ZoneId.of("UTC"));
+
 
         @Override
         public List<String> get() {
-            return Arrays.asList(host, formatter.format(time), scens.stream().map(Scenario::name).collect(Collectors.joining(", ")), df.format(fill));
+            return Arrays.asList(host, Util.formatData(time), scens.stream().map(Scenario::name).collect(Collectors.joining(", ")), df.format(fill));
         }
     }
 }

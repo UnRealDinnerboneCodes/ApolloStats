@@ -8,21 +8,17 @@ plugins {
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/base.gradle'
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 
-repositories {
-    maven {
-        url = uri("https://nurio.me/repo/mvn/")
-    }
-}
-
-version = "1.0.0"
-
 dependencies {
-    shade 'com.unrealdinnerbone:UnRealLib:4.1.0+build.129'
+    shade 'com.unrealdinnerbone:UnRealLib:4.2.0+build.131'
     shade 'com.google.guava:guava:31.0.1-jre'
     shade "com.unrealdinnerbone:UnRealConfig:5.0.0+build.44"
     shade "com.unrealdinnerbone:PostgressLib:2.0.1+build.34"
-    shade('io.javalin:javalin:5.2.0')
+    shade('io.javalin:javalin:5.3.2')
     shade 'org.apache.commons:commons-text:1.10.0'
     shade "net.kyori:adventure-text-serializer-gson:4.12.0"
     shade "net.kyori:adventure-text-serializer-plain:4.12.0"
+
+//    implementation 'net.sourceforge.tess4j:tess4j:5.6.0'
+
+//    implementation 'com.github.GoldenStack:ImmuTables:-SNAPSHOT'
 }
