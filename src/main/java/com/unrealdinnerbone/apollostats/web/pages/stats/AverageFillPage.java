@@ -23,11 +23,13 @@ public class AverageFillPage implements IStatPage {
         List<HostFill> fillsList = new ArrayList<>();
 
         fills.forEach((staff, fill) -> {
-            int total = fill.stream().mapToInt(Integer::intValue).sum();
-            int min = fill.stream().mapToInt(Integer::intValue).min().orElse(0);
-            int max = fill.stream().mapToInt(Integer::intValue).max().orElse(0);
-            int average = total / fill.size();
-            fillsList.add(new HostFill(staff.displayName(), min, max, average, fill.size()));
+            if(fill.size() != 0) {
+                int total = fill.stream().mapToInt(Integer::intValue).sum();
+                int min = fill.stream().mapToInt(Integer::intValue).min().orElse(0);
+                int max = fill.stream().mapToInt(Integer::intValue).max().orElse(0);
+                int average = total / fill.size();
+                fillsList.add(new HostFill(staff.displayName(), min, max, average, fill.size()));
+            }
         });
 
         wrapper.html(WebUtils.makeHTML("Fills", "", Arrays.asList("Host", "Smallest", "Largest", "Average", "Games"), fillsList));

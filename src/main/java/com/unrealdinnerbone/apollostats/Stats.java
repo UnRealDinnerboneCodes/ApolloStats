@@ -75,7 +75,8 @@ public class Stats {
                         new FunnyScenNames(),
                         new TotalGameGen(),
                         new MainPage(),
-                        new DifferentHostInARow()
+                        new DifferentHostInARow(),
+                        new GamesPage()
         )));
 
         instances.add(

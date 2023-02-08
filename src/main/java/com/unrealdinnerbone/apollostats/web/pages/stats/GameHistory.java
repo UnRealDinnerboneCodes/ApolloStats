@@ -32,7 +32,7 @@ public class GameHistory implements IStatPage {
 
     @Override
     public String getPath() {
-        return "games";
+        return "history";
     }
 
     public record GameStats(String host, Instant time, List<Scenario> scens, int fill) implements Supplier<List<String>> {
