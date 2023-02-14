@@ -76,7 +76,8 @@ public class Stats {
                         new TotalGameGen(),
                         new MainPage(),
                         new DifferentHostInARow(),
-                        new GamesPage()
+                        new GamesPage(),
+                        new NetherGamePage()
         )));
 
         instances.add(
