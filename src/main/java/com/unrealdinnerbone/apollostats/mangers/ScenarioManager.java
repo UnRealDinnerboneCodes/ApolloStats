@@ -5,11 +5,11 @@ import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.LazyHashMap;
+import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class ScenarioManager
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioManager.class);
+    private static final Logger LOGGER = LogHelper.getLogger();
 
     private static final LevenshteinDistance LEVENSHTEIN_DISTANCE = LevenshteinDistance.getDefaultInstance();
     private static final Map<Type, List<Scenario>> values = new HashMap<>();
@@ -82,8 +82,10 @@ public class ScenarioManager
             int id = resultSet.getInt("id");
             boolean isActive = resultSet.getBoolean("image");
             boolean official = resultSet.getBoolean("official");
+            Integer[] required = (Integer[]) resultSet.getArray("required").getArray();
+            Integer[] disallowed = (Integer[]) resultSet.getArray("disallowed").getArray();
             Type type1 = Type.fromString(type);
-            values.get(type1).add(new Scenario(name, id, isActive, official, type1));
+            values.get(type1).add(new Scenario(name, id, isActive, official, type1, Arrays.asList(required), Arrays.asList(disallowed)));
         }
 
     }
@@ -144,5 +146,14 @@ public class ScenarioManager
 
     public static Map<String, List<Scenario>> getLazyMap() {
         return MAP.getCurrentMap();
+    }
+
+    public static List<Scenario> getRequiredScenarios(Scenario scenario) {
+        return scenario.required()
+                .stream()
+                .map(ScenarioManager::find)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 }

@@ -14,11 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class RandomScenManger {
 
@@ -32,11 +33,36 @@ public class RandomScenManger {
     }
 
     private static RandomData createCard(String id, int amount) throws RuntimeException {
-        List<Scenario> scenarios = getList(Type.SCENARIO)
+        List<Scenario> scenarios = new ArrayList<>(getList(Type.SCENARIO)
                 .stream()
                 .sorted(ArrayUtil.shuffle())
                 .limit(amount)
-                .toList();
+                .toList());
+        //check to see if any disallowed scenarios are in the list
+        List<Scenario> filteredScenarios = new ArrayList<>();
+        List<Scenario> toRemove = new ArrayList<>();
+        for (Scenario scenario : scenarios) {
+            List<Scenario> toAdd = new ArrayList<>(scenarios);
+            boolean removed = false;
+            for (Scenario scenario11 : scenarios) {
+                if (scenario.isDisallowed(scenario11)) {
+                    LOGGER.info("Removing {} from {} because it is disallowed", scenario11, scenario);
+                    toRemove.add(scenario11);
+                    removed = true;
+                }
+            }
+            if(!removed) {
+                ScenarioManager.getRequiredScenarios(scenario)
+                        .stream()
+                        .filter(scenario1 -> !toAdd.contains(scenario1))
+                        .peek(scenario1 -> LOGGER.info("Adding {} to {} because it is required", scenario1, scenario))
+                        .forEach(toAdd::add);
+                toAdd.stream()
+                        .filter(scenario1 -> !filteredScenarios.contains(scenario1))
+                        .forEach(filteredScenarios::add);
+            }
+        }
+        filteredScenarios.removeAll(toRemove);
 
         Scenario team = getList(Type.TEAM)
                 .stream()
@@ -46,7 +72,7 @@ public class RandomScenManger {
         TaskScheduler.handleTaskOnThread(() -> {
             try {
                 Stats.getPostgresHandler().executeUpdate("INSERT INTO public.random_scen (scens, id, team) VALUES (?, ?, ?)", statement -> {
-                    statement.setString(1, scenarios.stream().map(Scenario::id).map(String::valueOf).collect(Collectors.joining(";")));
+                    statement.setString(1, filteredScenarios.stream().map(Scenario::id).map(String::valueOf).collect(Collectors.joining(";")));
                     statement.setString(2, id);
                     statement.setInt(3, team.id());
                 });
@@ -54,7 +80,7 @@ public class RandomScenManger {
                 LOGGER.error("Error while inserting random scen data", e);
             }
         });
-        return new RandomData(scenarios, id, team);
+        return new RandomData(filteredScenarios, id, team);
 
     }
 

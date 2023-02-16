@@ -4,9 +4,7 @@ import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
 import com.unrealdinnerbone.apollostats.api.IStatPage;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Staff;
-import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
-import org.slf4j.Logger;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -14,11 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public class NetherGamePage implements IStatPage {
-
-    private static final Logger LOGGER = LogHelper.getLogger();
-
-    private static final List<String> ON_TYPE = List.of("enabled", "enable", "on", "eeabled");
-    private static final List<String> OF_TYPE = List.of("disabled", "disable", "off", "discabled");
+    public static final List<String> ON_TYPE = List.of("enabled", "enable", "on", "eeabled");
+    public static final List<String> OF_TYPE = List.of("disabled", "disable", "off", "discabled");
     @Override
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         Map<Staff, AtomicInteger> netherOn = new HashMap<>();
@@ -28,7 +23,6 @@ public class NetherGamePage implements IStatPage {
             AtomicInteger on = new AtomicInteger();
             AtomicInteger off = new AtomicInteger();
             matches.forEach(match -> {
-                String netherType = match.isNether();
                 String type = match.isNether().toLowerCase();
                 if(ON_TYPE.contains(type)) {
                     on.incrementAndGet();
