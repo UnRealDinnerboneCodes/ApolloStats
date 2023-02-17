@@ -9,7 +9,7 @@ import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.ArrayUtil;
 import com.unrealdinnerbone.unreallib.MathHelper;
-import com.unrealdinnerbone.unreallib.RandomCollection;
+import com.unrealdinnerbone.apollostats.lib.RandomCollection;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
