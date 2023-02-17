@@ -7,7 +7,6 @@ import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,8 +14,8 @@ import java.util.stream.IntStream;
 public class GamesPage implements IStatPage {
 
     @Override
-    public Predicate<Match> filterMatches() {
-        return Match::isApolloGame;
+    public boolean filterMatches(Match match) {
+        return match.isApolloGame();
     }
 
     @Override

@@ -78,14 +78,15 @@ public class ScenarioManager
         ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.scenario");
         while(resultSet.next()) {
             String name = resultSet.getString("name");
-            String type = resultSet.getString("type");
+            Type type = Type.fromString(resultSet.getString("type"));
             int id = resultSet.getInt("id");
             boolean isActive = resultSet.getBoolean("image");
             boolean official = resultSet.getBoolean("official");
             Integer[] required = (Integer[]) resultSet.getArray("required").getArray();
             Integer[] disallowed = (Integer[]) resultSet.getArray("disallowed").getArray();
-            Type type1 = Type.fromString(type);
-            values.get(type1).add(new Scenario(name, id, isActive, official, type1, Arrays.asList(required), Arrays.asList(disallowed)));
+            boolean hostable = resultSet.getBoolean("hostable");
+            boolean isMeta = resultSet.getBoolean("meta");
+            values.get(type).add(new Scenario(name, id, isActive, official, type, Arrays.asList(required), Arrays.asList(disallowed), hostable, isMeta));
         }
 
     }
@@ -93,18 +94,17 @@ public class ScenarioManager
     public static void loadRemapData() throws SQLException {
         remap.clear();
         ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.scen_remap");
-        while(resultSet.next()) {
+        while (resultSet.next()) {
             int scen = resultSet.getInt("scenId");
             String remap = resultSet.getString("name");
             find(scen).ifPresentOrElse(scenario -> {
                         Maps.putIfAbsent(ScenarioManager.remap, remap, new ArrayList<>());
-                        if(!ScenarioManager.remap.get(remap).contains(scenario)) {
+                        if (!ScenarioManager.remap.get(remap).contains(scenario)) {
                             ScenarioManager.remap.get(remap).add(scenario);
                         }
                     },
                     () -> LOGGER.error("Failed to find scenario with id {} for remap {}", scen, remap));
         }
-
     }
 
 

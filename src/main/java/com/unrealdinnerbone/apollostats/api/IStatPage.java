@@ -5,24 +5,20 @@ import com.unrealdinnerbone.apollostats.mangers.StaffManager;
 import io.javalin.http.Context;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public interface IStatPage extends IWebPage{
 
     void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper);
 
-    default Predicate<Match> filterMatches() {
-        return Match::isGoodGame;
+    default boolean filterMatches(Match match) {
+        return match.isGoodGame();
     }
     //Todo add caching
     @Override
     default void getPage(Context handler) {
         Map<Staff, List<Match>> hostMap = new HashMap<>();
-        for (Map.Entry<Staff, List<Match>> staffListEntry : MatchManger.getMap().entrySet()) {
-            List<Match> matches = staffListEntry.getValue().stream().filter(filterMatches()).collect(Collectors.toList());
-            hostMap.put(staffListEntry.getKey(), matches);
-        }
+        MatchManger.getMap().forEach((key, value) -> hostMap.put(key, value.stream().filter(this::filterMatches).collect(Collectors.toList())));
         String host = handler.queryParam("hosts");
         if(host != null) {
             String[] hosts = host.split(",");

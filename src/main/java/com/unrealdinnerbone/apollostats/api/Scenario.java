@@ -2,7 +2,7 @@ package com.unrealdinnerbone.apollostats.api;
 
 import java.util.List;
 
-public record Scenario(String name, int id, boolean image, boolean official, Type type, List<Integer> required, List<Integer> disallowed) {
+public record Scenario(String name, int id, boolean image, boolean official, Type type, List<Integer> required, List<Integer> disallowed, boolean hostable, boolean meta) {
     @Override
     public String toString() {
         return name();

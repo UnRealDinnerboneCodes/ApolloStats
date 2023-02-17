@@ -8,6 +8,8 @@ import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.ArrayUtil;
+import com.unrealdinnerbone.unreallib.MathHelper;
+import com.unrealdinnerbone.unreallib.RandomCollection;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class RandomScenManger {
@@ -33,8 +36,12 @@ public class RandomScenManger {
     }
 
     private static RandomData createCard(String id, int amount) throws RuntimeException {
-        List<Scenario> scenarios = new ArrayList<>(getList(Type.SCENARIO)
+        List<Scenario> scenarios = new ArrayList<>();
+        scenarios.addAll(getMeta(MathHelper.randomBoolean(80)));
+        scenarios.addAll(getList(Type.SCENARIO)
                 .stream()
+                .filter(Scenario::hostable)
+                .filter(Predicate.not(Scenario::meta))
                 .sorted(ArrayUtil.shuffle())
                 .limit(amount)
                 .toList());
@@ -82,6 +89,33 @@ public class RandomScenManger {
         });
         return new RandomData(filteredScenarios, id, team);
 
+    }
+
+    private static List<Scenario> getMeta(boolean isNether) {
+        List<Scenario> metas =  ScenarioManager.getValues(Type.SCENARIO)
+                .stream()
+                .filter(Scenario::hostable)
+                .filter(scenario -> !(scenario.id() == 33 || scenario.id() == 39 || scenario.id() == 105))
+                .filter(Scenario::meta)
+                .collect(Collectors.toList());
+        ScenarioManager.find(getMineType(isNether)).ifPresent(metas::add);
+        return metas;
+
+    }
+
+    @Deprecated(forRemoval = true)
+    //Todo database this?
+    private static int getMineType(boolean isNether) {
+        RandomCollection<Integer> randomCollection = new RandomCollection<>();
+        if(isNether) {
+            randomCollection.add(75, 33);
+            randomCollection.add(1, 39);
+            randomCollection.add(24, 105);
+        }else {
+            randomCollection.add(99, 33);
+            randomCollection.add(1, 39);
+        }
+        return randomCollection.getRandom();
     }
 
     private static List<Scenario> getList(Type type) {
