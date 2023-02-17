@@ -37,7 +37,7 @@ public class RandomScenManger {
 
     private static RandomData createCard(String id, int amount) throws RuntimeException {
         List<Scenario> scenarios = new ArrayList<>();
-        scenarios.addAll(getMeta(MathHelper.randomBoolean(80)));
+        scenarios.addAll(getMeta(randomBoolean(80)));
         scenarios.addAll(getList(Type.SCENARIO)
                 .stream()
                 .filter(Scenario::hostable)
@@ -89,6 +89,10 @@ public class RandomScenManger {
         });
         return new RandomData(filteredScenarios, id, team);
 
+    }
+
+    public static boolean randomBoolean(int chance) {
+        return MathHelper.randomInt(0, 100) <= chance;
     }
 
     private static List<Scenario> getMeta(boolean isNether) {
