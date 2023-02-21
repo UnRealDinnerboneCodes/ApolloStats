@@ -19,7 +19,7 @@ public class DifferentHostInARow implements IStatPage {
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
         int limit = 5;
         try {
-            limit = Integer.parseInt(wrapper.queryParam("limit"));
+            limit = wrapper.queryParam("limit").map(Integer::parseInt).orElse(5);
         }catch (NumberFormatException ignored) {}
         List<List<Match>> differentHosts = new ArrayList<>();
         var ref = new Object() {

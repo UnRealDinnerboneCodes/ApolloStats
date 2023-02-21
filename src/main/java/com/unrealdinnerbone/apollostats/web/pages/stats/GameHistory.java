@@ -1,9 +1,8 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
+import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.apollostats.mangers.GameManager;
-import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.text.DecimalFormat;
@@ -24,8 +23,8 @@ public class GameHistory implements IStatPage {
                 .toList();
         List<GameStats> gameStats = new ArrayList<>();
         for(Match match : matches) {
-            Game game = GameManager.findGame(match.id()).orElse(UNKNOWN);
-            gameStats.add(new GameStats(match.hostingName(), Instant.parse(match.opens()), ScenarioManager.fix(Type.SCENARIO, match.scenarios()), game.fill()));
+            Game game = Stats.INSTANCE.getGameManager().findGame(match.id()).orElse(UNKNOWN);
+            gameStats.add(new GameStats(match.hostingName(), Instant.parse(match.opens()), Stats.INSTANCE.getScenarioManager().fix(Type.SCENARIO, match.scenarios()), game.fill()));
         }
         wrapper.html(WebUtils.makeHTML("Match History", "", Arrays.asList("Host", "Time", "Scens", "Fill"), gameStats));
     }

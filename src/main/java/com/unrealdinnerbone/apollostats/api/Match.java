@@ -2,8 +2,6 @@ package com.unrealdinnerbone.apollostats.api;
 
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.apollostats.mangers.GameManager;
-import com.unrealdinnerbone.apollostats.mangers.StaffManager;
 import com.unrealdinnerbone.unreallib.StringUtils;
 
 import java.time.Instant;
@@ -71,15 +69,15 @@ public record Match(int id,
     }
 
     public Optional<Game> findGameData() {
-        return GameManager.getGames().stream().filter(game -> game.id() == id).findFirst();
+        return Stats.INSTANCE.getGameManager().getGames().stream().filter(game -> game.id() == id).findFirst();
     }
 
     public Optional<Staff> findStaff() {
-        return StaffManager.getStaff().stream().filter(staff -> staff.username().equals(author)).findFirst();
+        return Stats.INSTANCE.getStaffManager().getStaff().stream().filter(staff -> staff.username().equals(author)).findFirst();
     }
 
     public String getUrl() {
-        return Stats.CONFIG.getMatchPage() + id;
+        return Stats.INSTANCE.getStatsConfig().getMatchPage() + id;
     }
 
     public String displayName() {

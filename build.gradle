@@ -11,7 +11,8 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 version = '1.0.0'
 
 dependencies {
-    shade "com.unrealdinnerbone:PostgressLib:2.0.1+build.35"
+    shade "com.unrealdinnerbone:PostgressLib:2.0.1+build.36"
+    shade "com.unrealdinnerbone:UnRealLib:5.0.0+build.135"
     shade 'com.google.guava:guava:31.0.1-jre'
     shade('io.javalin:javalin:5.3.2')
     shade 'org.apache.commons:commons-text:1.10.0'

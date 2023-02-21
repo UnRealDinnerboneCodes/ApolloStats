@@ -3,7 +3,7 @@ package com.unrealdinnerbone.apollostats.web.pages.graph;
 import com.unrealdinnerbone.apollostats.api.ICTXGetter;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Staff;
-import com.unrealdinnerbone.unreallib.Maps;
+import com.unrealdinnerbone.unreallib.list.Maps;
 import com.unrealdinnerbone.unreallib.MathHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

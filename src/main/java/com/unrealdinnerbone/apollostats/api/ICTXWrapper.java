@@ -4,6 +4,8 @@ import com.unrealdinnerbone.apollostats.Stats;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
+import java.util.Optional;
+
 public interface ICTXWrapper extends ICTXGetter {
     void html(String html);
 
@@ -13,8 +15,8 @@ public interface ICTXWrapper extends ICTXGetter {
     static ICTXWrapper of(Context handler) {
         return new ICTXWrapper() {
             @Override
-            public String queryParam(String param) {
-                return handler.queryParam(param);
+            public Optional<String> queryParam(String param) {
+                return Optional.ofNullable(handler.queryParam(param));
             }
 
             @Override

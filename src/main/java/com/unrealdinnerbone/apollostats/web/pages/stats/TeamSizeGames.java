@@ -4,7 +4,7 @@ import com.unrealdinnerbone.apollostats.api.ICTXWrapper;
 import com.unrealdinnerbone.apollostats.api.IStatPage;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Staff;
-import com.unrealdinnerbone.unreallib.Maps;
+import com.unrealdinnerbone.unreallib.list.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.util.*;

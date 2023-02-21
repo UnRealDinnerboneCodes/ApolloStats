@@ -1,10 +1,9 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
+import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.*;
-import com.unrealdinnerbone.apollostats.mangers.GameManager;
-import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
 import com.unrealdinnerbone.unreallib.LogHelper;
-import com.unrealdinnerbone.unreallib.Maps;
+import com.unrealdinnerbone.unreallib.list.Maps;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -21,17 +20,17 @@ public class FunnyScenNames implements IStatPage {
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
                 .map(Match::id)
-                .forEach(GameManager::findGame);
+                .forEach(Stats.INSTANCE.getGameManager()::findGame);
 
         Map<Scenario, List<String>> scenarioToNames = new HashMap<>();
-        for (Map.Entry<String, List<Scenario>> stringOptionalEntry : ScenarioManager.getLazyMap().entrySet()) {
+        for (Map.Entry<String, List<Scenario>> stringOptionalEntry : Stats.INSTANCE.getScenarioManager().getLazyMap().entrySet()) {
             stringOptionalEntry.getValue()
                     .forEach(scenario ->
                             Maps.putIfAbsent(scenarioToNames, scenario, new ArrayList<>()).add(stringOptionalEntry.getKey()));
         }
         for (Map.Entry<Scenario, List<String>> scenarioListEntry : scenarioToNames.entrySet()) {
             List<String> names = scenarioListEntry.getValue();
-            names.removeIf(name -> ScenarioManager.isSimilar(name, scenarioListEntry.getKey().name()));
+            names.removeIf(name -> Stats.INSTANCE.getScenarioManager().isSimilar(name, scenarioListEntry.getKey().name()));
             if(!names.isEmpty()) {
                 LOGGER.info("Scenario: {}: {}", scenarioListEntry.getKey().name(), names);
             }

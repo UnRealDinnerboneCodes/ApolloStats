@@ -3,7 +3,7 @@
 //import com.unrealdinnerbone.apollostats.api.*;
 //import com.unrealdinnerbone.apollostats.lib.Util;
 //import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
-//import com.unrealdinnerbone.unreallib.Maps;
+//import com.unrealdinnerbone.unreallib.list.Maps;
 //import com.unrealdinnerbone.unreallib.web.WebUtils;
 //import org.jetbrains.annotations.Nullable;
 //import org.slf4j.Logger;

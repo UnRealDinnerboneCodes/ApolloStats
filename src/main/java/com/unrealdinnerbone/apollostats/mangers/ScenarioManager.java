@@ -1,12 +1,13 @@
 package com.unrealdinnerbone.apollostats.mangers;
 
 import com.unrealdinnerbone.apollostats.Stats;
+import com.unrealdinnerbone.apollostats.api.IManger;
 import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.unreallib.LazyHashMap;
+import com.unrealdinnerbone.unreallib.list.LazyHashMap;
 import com.unrealdinnerbone.unreallib.LogHelper;
-import com.unrealdinnerbone.unreallib.Maps;
+import com.unrealdinnerbone.unreallib.list.Maps;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.slf4j.Logger;
@@ -18,14 +19,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class ScenarioManager
+public class ScenarioManager implements IManger
 {
     private static final Logger LOGGER = LogHelper.getLogger();
 
-    private static final LevenshteinDistance LEVENSHTEIN_DISTANCE = LevenshteinDistance.getDefaultInstance();
-    private static final Map<Type, List<Scenario>> values = new HashMap<>();
-    private static final Map<String, List<Scenario>> remap = new HashMap<>();
-    private static final LazyHashMap<String, List<Scenario>> MAP = new LazyHashMap<>(cache -> {
+    private final LevenshteinDistance LEVENSHTEIN_DISTANCE = LevenshteinDistance.getDefaultInstance();
+    private final Map<Type, List<Scenario>> values = new HashMap<>();
+    private final Map<String, List<Scenario>> remap = new HashMap<>();
+    private final LazyHashMap<String, List<Scenario>> MAP = new LazyHashMap<>(cache -> {
         if(remap.containsKey(cache)) {
             return remap.get(cache);
         }else {
@@ -56,26 +57,15 @@ public class ScenarioManager
 
 
 
-    public static boolean isSimilar(String name, String other) {
+    public boolean isSimilar(String name, String other) {
         return Util.formalize(name).equalsIgnoreCase(Util.formalize(other));
     }
 
-    public static CompletableFuture<Void> init() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> {
-            ScenarioManager.loadScenData();
-            ScenarioManager.loadRemapData();
-            if(!future.isDone()) {
-                future.complete(null);
-            }
-        }, e -> LOGGER.error("Failed to load scenarios", e));
-        return future;
-    }
 
-    public static void loadScenData() throws SQLException {
+    public void loadScenData() throws SQLException {
         values.clear();
         Arrays.stream(Type.values()).forEach(value -> values.put(value, new ArrayList<>()));
-        ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.scenario");
+        ResultSet resultSet = Stats.INSTANCE.getPostgresHandler().getSet("SELECT * FROM public.scenario");
         while(resultSet.next()) {
             String name = resultSet.getString("name");
             Type type = Type.fromString(resultSet.getString("type"));
@@ -91,16 +81,16 @@ public class ScenarioManager
 
     }
 
-    public static void loadRemapData() throws SQLException {
+    public void loadRemapData() throws SQLException {
         remap.clear();
-        ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.scen_remap");
+        ResultSet resultSet = Stats.INSTANCE.getPostgresHandler().getSet("SELECT * FROM public.scen_remap");
         while (resultSet.next()) {
             int scen = resultSet.getInt("scenId");
             String remap = resultSet.getString("name");
             find(scen).ifPresentOrElse(scenario -> {
-                        Maps.putIfAbsent(ScenarioManager.remap, remap, new ArrayList<>());
-                        if (!ScenarioManager.remap.get(remap).contains(scenario)) {
-                            ScenarioManager.remap.get(remap).add(scenario);
+                        Maps.putIfAbsent(this.remap, remap, new ArrayList<>());
+                        if (!this.remap.get(remap).contains(scenario)) {
+                            this.remap.get(remap).add(scenario);
                         }
                     },
                     () -> LOGGER.error("Failed to find scenario with id {} for remap {}", scen, remap));
@@ -108,15 +98,15 @@ public class ScenarioManager
     }
 
 
-    public static List<Scenario> fix(Type type, List<String> fixed) {
+    public List<Scenario> fix(Type type, List<String> fixed) {
         List<Scenario> cake = values.get(type)
                 .stream()
                 .map(Scenario::name)
-                .map(ScenarioManager::remap)
+                .map(this::remap)
                 .flatMap(Collection::stream)
                 .toList();
         return fixed.stream()
-                .map(ScenarioManager::remap)
+                .map(this::remap)
                 .flatMap(Collection::stream)
                 .filter(scenario -> cake.stream().anyMatch(scenario1 -> scenario1.name().equalsIgnoreCase(scenario.name())))
                 .filter(scenario -> scenario.type() == type)
@@ -124,36 +114,54 @@ public class ScenarioManager
 
     }
 
-    public static Optional<Scenario> find(int id) {
+    public Optional<Scenario> find(int id) {
         return values.values().stream().flatMap(Collection::stream).filter(scenario -> scenario.id() == id).findFirst();
     }
 
-    private static List<Scenario> remap(String scenario) {
+    private List<Scenario> remap(String scenario) {
         return MAP.get(scenario);
     }
 
-    public static List<Scenario> getValues(Type type) {
+    public List<Scenario> getValues(Type type) {
         return values.get(type);
     }
 
-    private static List<Scenario> getAll() {
+    private List<Scenario> getAll() {
         return values.values().stream().flatMap(List::stream).toList();
     }
 
-    public static void resetCache() {
+    public void resetCache() {
         MAP.reset();
     }
 
-    public static Map<String, List<Scenario>> getLazyMap() {
+    public Map<String, List<Scenario>> getLazyMap() {
         return MAP.getCurrentMap();
     }
 
-    public static List<Scenario> getRequiredScenarios(Scenario scenario) {
+    public List<Scenario> getRequiredScenarios(Scenario scenario) {
         return scenario.required()
                 .stream()
-                .map(ScenarioManager::find)
+                .map(this::find)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+    }
+
+    @Override
+    public CompletableFuture<Void> start() {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> {
+            loadScenData();
+            loadRemapData();
+            if(!future.isDone()) {
+                future.complete(null);
+            }
+        }, e -> LOGGER.error("Failed to load scenarios", e));
+        return future;
+    }
+
+    @Override
+    public String getName() {
+        return "Scenario Manager";
     }
 }

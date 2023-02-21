@@ -14,8 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -30,7 +31,7 @@ public class AlertManager
             DiscordWebhook discordWebhook = WEBHOOKS.poll();
             if(discordWebhook != null) {
                 try {
-                    discordWebhook.execute();
+                    discordWebhook.post(Stats.INSTANCE.getStatsConfig().getDiscordWebBotToken());
                 } catch (InterruptedException | IOException e) {
                     LOGGER.error("Failed to send webhook", e);
                 }
@@ -40,8 +41,8 @@ public class AlertManager
     public static void gameSaved(Match match, Game game) {
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
                 .color(Color.YELLOW)
-                .author(new EmbedObject.Author(match.findStaff().map(Staff::displayName).orElse("Unknown"), match.getUrl(), null))
-                .footer(EmbedObject.Footer.of("Fill: " + game.fill(), null))
+                .author(match.findStaff().map(Staff::displayName).orElse("Unknown"), match.getUrl())
+                .footer("Fill: " + game.fill())
                 .description("Time: <t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).toEpochMilli() / 1000)))
                 .build()));
     }
@@ -57,14 +58,14 @@ public class AlertManager
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
                 .color(Color.GREEN)
                 .title("New Game: " + match.displayName() + " #" + match.count())
-                .field(EmbedObject.Field.of("Meetup", String.valueOf(match.length()), true))
-                .field(EmbedObject.Field.of("Nether", match.isNether(), true))
-                .field(EmbedObject.Field.of("PvP", String.valueOf(match.pvpEnabledAt()), true))
-                .field(EmbedObject.Field.of("Border", String.valueOf(match.mapSize()), true))
-                .field(EmbedObject.Field.of("Team", String.valueOf(match.getTeamFormat()), true))
-                .field(EmbedObject.Field.of("Opens", "<t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).getEpochSecond())), true))
+                .field("Meetup", String.valueOf(match.length()), true)
+                .field("Nether", match.isNether(), true)
+                .field("PvP", String.valueOf(match.pvpEnabledAt()), true)
+                .field("Border", String.valueOf(match.mapSize()), true)
+                .field("Team", String.valueOf(match.getTeamFormat()), true)
+                .field("Opens", "<t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).getEpochSecond())), true)
                 .url(match.getUrl())
-                .footer(EmbedObject.Footer.of(String.join(", ", match.scenarios()), null))
+                .footer(String.join(", ", match.scenarios()), null)
                 .build()));
     }
 
@@ -79,7 +80,7 @@ public class AlertManager
     }
 
     private static void addWebhook(Consumer<DiscordWebhook> consumer) {
-        DiscordWebhook webhook = DiscordWebhook.of(Stats.CONFIG.getDiscordWebBotToken());
+        DiscordWebhook webhook = DiscordWebhook.builder();
         consumer.accept(webhook);
         WEBHOOKS.add(webhook);
     }

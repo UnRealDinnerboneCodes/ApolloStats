@@ -2,9 +2,8 @@ package com.unrealdinnerbone.apollostats.web.pages.stats;
 
 import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.apollostats.mangers.ScenarioManager;
-import com.unrealdinnerbone.unreallib.Maps;
 import com.unrealdinnerbone.unreallib.Pair;
+import com.unrealdinnerbone.unreallib.list.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.text.DecimalFormat;
@@ -25,7 +24,7 @@ public class LastPlayedGen implements IStatPage {
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
                 .peek(match -> totalGames.incrementAndGet())
-                .forEach(match -> ScenarioManager.fix(Type.SCENARIO, match.scenarios())
+                .forEach(match -> com.unrealdinnerbone.apollostats.Stats.INSTANCE.getScenarioManager().fix(Type.SCENARIO, match.scenarios())
                         .stream()
                         .filter(Scenario::official)
                         .toList()
@@ -38,7 +37,7 @@ public class LastPlayedGen implements IStatPage {
 
         //total games played
 
-        for(Scenario value : ScenarioManager.getValues(Type.SCENARIO)) {
+        for(Scenario value : com.unrealdinnerbone.apollostats.Stats.INSTANCE.getScenarioManager().getValues(Type.SCENARIO)) {
             if(value.official()) {
                 if(!plays.containsKey(value)) {
                     plays.put(value, new ArrayList<>());

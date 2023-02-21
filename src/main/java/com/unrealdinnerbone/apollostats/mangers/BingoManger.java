@@ -4,7 +4,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.BingoValue;
-import com.unrealdinnerbone.unreallib.ArrayUtil;
+import com.unrealdinnerbone.apollostats.api.IManger;
+import com.unrealdinnerbone.unreallib.list.ArrayUtil;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,30 +21,29 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class BingoManger {
+public class BingoManger implements IManger {
     private static final Logger LOGGER = LoggerFactory.getLogger(BingoManger.class);
-    private static final Cache<String, String> BINGO_CACHE = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
+    private final Cache<String, String> bingoCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
+    private final List<BingoValue> bingoValues = new ArrayList<>();
 
-    private static final List<BingoValue> BINGO_VALUES = new ArrayList<>();
+    public List<BingoValue> getBingoValues() {
+        return bingoValues;
+    }
 
-
-    public static CompletableFuture<Void> init() {
+    @Override
+    public CompletableFuture<Void> start() {
         return TaskScheduler.runAsync(() -> {
-            BINGO_VALUES.clear();
-            ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.bingo");
+            bingoValues.clear();
+            ResultSet resultSet = Stats.INSTANCE.getPostgresHandler().getSet("SELECT * FROM public.bingo");
             while(resultSet.next()) {
-                BINGO_VALUES.add(new BingoValue(resultSet.getString("bingo"), resultSet.getBoolean("auto_win"), resultSet.getBoolean("is_player")));
+                bingoValues.add(new BingoValue(resultSet.getString("bingo"), resultSet.getBoolean("auto_win"), resultSet.getBoolean("is_player")));
             }
         });
     }
 
-    public static List<BingoValue> getBingoValues() {
-        return BINGO_VALUES;
-    }
-
-    public static String getBingoCard(String id, boolean players, String freeSpace) {
+    public String getBingoCard(String id, boolean players, String freeSpace) {
         try {
-            return BINGO_CACHE.get(id, () -> findBingoData(id)
+            return bingoCache.get(id, () -> findBingoData(id)
                     .or(() -> createCard(id, players, freeSpace))
                     .map(BingoData::toHtml)
                     .orElseThrow(() -> new RuntimeException("Could not create bingo card")));
@@ -53,13 +53,13 @@ public class BingoManger {
         }
     }
 
-    public static Optional<String> findCard(String id) {
-        return Optional.ofNullable(BINGO_CACHE.getIfPresent(id)).or(() -> findBingoData(id).map(BingoData::toHtml));
+    public Optional<String> findCard(String id) {
+        return Optional.ofNullable(bingoCache.getIfPresent(id)).or(() -> findBingoData(id).map(BingoData::toHtml));
     }
 
 
-    private static Optional<BingoData> createCard(String id, boolean includePlayers, String freeSpace) {
-        List<BingoValue> values = new ArrayList<>(BINGO_VALUES.stream().filter(bingoValue -> includePlayers || bingoValue.isPlayer()).toList());
+    private Optional<BingoData> createCard(String id, boolean includePlayers, String freeSpace) {
+        List<BingoValue> values = new ArrayList<>(bingoValues.stream().filter(bingoValue -> includePlayers || bingoValue.isPlayer()).toList());
         if(values.size() >= 25) {
             Random random = new Random(id.hashCode());
             List<String> list = new ArrayList<>();
@@ -73,7 +73,7 @@ public class BingoManger {
             }
             TaskScheduler.handleTaskOnThread(() -> {
                 try {
-                    Stats.getPostgresHandler().executeUpdate("INSERT INTO public.cards (id, values, freespace, bingos) VALUES (?, ?, ?, ?)", statement -> {
+                    Stats.INSTANCE.getPostgresHandler().executeUpdate("INSERT INTO public.cards (id, values, freespace, bingos) VALUES (?, ?, ?, ?)", statement -> {
                         statement.setString(1, id);
                         statement.setString(2, String.join(";", list));
                         statement.setString(3, freeSpace);
@@ -91,7 +91,7 @@ public class BingoManger {
 
 
     private static Optional<BingoData> findBingoData(String id) {
-        ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.cards where id = ?", statement -> statement.setString(1, id));
+        ResultSet resultSet = Stats.INSTANCE.getPostgresHandler().getSet("SELECT * FROM public.cards where id = ?", statement -> statement.setString(1, id));
         try {
             if(resultSet.next()) {
                 String values = resultSet.getString("values");
@@ -110,6 +110,11 @@ public class BingoManger {
 
     public static String format(List<String> values) {
         return values.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(","));
+    }
+
+    @Override
+    public String getName() {
+        return "Bingo Manager";
     }
 
     public record BingoData(List<String> values, List<String> forced, String freeSpace, String id) {

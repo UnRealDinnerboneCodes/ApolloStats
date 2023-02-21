@@ -1,128 +1,114 @@
 package com.unrealdinnerbone.apollostats;
 
-import com.unrealdinnerbone.apollostats.api.WebInstance;
-import com.unrealdinnerbone.apollostats.instacnes.APIInstance;
-import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
+import com.unrealdinnerbone.apollostats.api.IManger;
 import com.unrealdinnerbone.apollostats.lib.Config;
 import com.unrealdinnerbone.apollostats.mangers.*;
-import com.unrealdinnerbone.apollostats.web.WebAccessManger;
-import com.unrealdinnerbone.apollostats.web.pages.MainPage;
-import com.unrealdinnerbone.apollostats.web.pages.bingo.BingoPages;
-import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
-import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
-import com.unrealdinnerbone.apollostats.web.pages.graph.TotalGameGen;
-import com.unrealdinnerbone.apollostats.web.pages.stats.*;
-import com.unrealdinnerbone.apollostats.web.pages.stats.old.HostIn24HoursGen;
-import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
 import com.unrealdinnerbone.config.ConfigManager;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.LazyValue;
-import com.unrealdinnerbone.unreallib.ShutdownUtils;
+import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
-import io.javalin.Javalin;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Stats {
-    private static final Logger LOGGER = LoggerFactory.getLogger("Stats");
-    private static final List<WebInstance<?>> instances = new ArrayList<>();
-    private static final List<Supplier<CompletableFuture<Void>>> futures = new ArrayList<>();
+    private static final Logger LOGGER = LogHelper.getLogger();
 
-    public static final Config CONFIG;
-    private static final PostgresConfig POSTGRES_CONFIG;
+    private static final List<IManger> futures = new ArrayList<>();
 
-    private static final LazyValue<PostgressHandler> HANDLER;
+    public static Stats INSTANCE;
 
-    static {
-        LOGGER.info("Hi!");
-        LOGGER.info("Starting ApolloStats");
+    private final Config statsConfig;
+    private final PostgressHandler postgressHandler;
+    private final StaffManager staffManager;
+    private final BingoManger bingoManger;
+    private final ScenarioManager scenarioManager;
+    private final GameManager gameManager;
+
+    private final MatchManger matchManger;
+
+    private final PageManger pageManger;
+
+    public Stats() throws IllegalStateException {
         ConfigManager configManager = ConfigManager.createSimpleEnvPropertyConfigManger();
-        CONFIG = configManager.loadConfig("apollo", Config::new);
-        POSTGRES_CONFIG = configManager.loadConfig("postgres", PostgresConfig::new);
-        HANDLER = new LazyValue<>(() -> {
-            try {
-                return new PostgressHandler(POSTGRES_CONFIG);
-            }catch(SQLException e) {
-                LOGGER.error("Failed to create postgres handler", e);
-                return null;
-            }
-        });
-        instances.add(
-                new PublicInstance(Arrays.asList(
-                        new RandomScenarioGenerator(),
-                        new RandomScenarioGenerator.IDPage(),
-                        new TeamTypesGames(),
-                        new LastPlayedGen(),
-                        new AverageFillPage(),
-                        new GameHostedGen(),
-                        new BingoPages.IDCard(),
-                        new BingoPages.NewCard(),
-                        new TeamSizeGames(),
-                        new HostIn24HoursGen(),
-                        new GameHistory(),
-                        new FunnyScenNames(),
-                        new TotalGameGen(),
-                        new MainPage(),
-                        new DifferentHostInARow(),
-                        new GamesPage(),
-                        new NetherGamePage()
-        )));
-
-        instances.add(
-                new APIInstance(Arrays.asList(new BingoPages.Add())
-        ));
-
-        futures.add(BingoManger::init);
-        futures.add(ScenarioManager::init);
-        futures.add(StaffManager::load);
-        futures.add(GameManager::init);
-        futures.add(MatchManger::init);
+        statsConfig = configManager.loadConfig("apollo", Config::new);
+        PostgresConfig postgresConfig = configManager.loadConfig("postgres", PostgresConfig::new);
+        LOGGER.info("Connecting to database...");
+        try {
+            postgressHandler = new PostgressHandler(postgresConfig);
+        }catch (SQLException e) {
+            LOGGER.error("Failed to connect to database", e);
+            throw new IllegalStateException(e);
+        }
+        staffManager = register(new StaffManager());
+        bingoManger = register(new BingoManger());
+        scenarioManager = register(new ScenarioManager());
+        gameManager = register(new GameManager());
+        matchManger = new MatchManger();
+        pageManger = new PageManger();
     }
 
-    public static void main(String[] args) {
-        TaskScheduler.allAsync(futures.stream().map(Supplier::get).toList()).whenComplete((v, t) -> {
-            if (t != null) {
-                LOGGER.error("Failed to load data", t);
-            }else {
-                for(WebInstance<?> instance : instances) {
-                    Javalin javalin = Javalin.create(javalinConfig -> {
-                        javalinConfig.accessManager(new WebAccessManger());
-                        javalinConfig.showJavalinBanner = false;
-                        instance.getConfig().accept(javalinConfig);
-                    }).start(instance.getPort());
+    private <T extends IManger> T register(T t) {
+        futures.add(t);
+        return t;
+    }
+    public void register() {
 
-                    instance.getPages().forEach((key, value) -> value.forEach(iWebPage -> {
-                        if(key == WebInstance.Type.GET) {
-                            LOGGER.info("Registering GET page {}", iWebPage.getPath());
-                            javalin.get(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
-                        }else if(key == WebInstance.Type.POST) {
-                            LOGGER.info("Registering POST page {}", iWebPage.getPath());
-                            javalin.post(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
-                        }
-                    }));
-                }
-            }
-        });
+
+    }
+
+    public CompletableFuture<Void> start() {
         AlertManager.init();
-        LOGGER.info("Started ApolloStats");
-        ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
-
+        return TaskScheduler.allAsync(futures.stream().map(this::map).toList())
+                .thenCompose((v) -> map(matchManger))
+                .thenCompose((v) -> map(pageManger));
     }
 
-    public static PostgressHandler getPostgresHandler() {
-        return HANDLER.get();
+    private CompletableFuture<Void> map(IManger manger) {
+        return manger.start().whenComplete((v, e) -> {
+            if (e != null) {
+                LOGGER.error("Failed to start {}", manger.getName(), e);
+            }else {
+                LOGGER.info("Started {}", manger.getName());
+            }
+        });
+    }
+
+
+    public PostgressHandler getPostgresHandler() {
+        return postgressHandler;
+    }
+
+    public Config getStatsConfig() {
+        return statsConfig;
+    }
+
+    public BingoManger getBingoManger() {
+        return bingoManger;
+    }
+
+    public GameManager getGameManager() {
+        return gameManager;
+    }
+
+    public MatchManger getMatchManger() {
+        return matchManger;
+    }
+
+    public ScenarioManager getScenarioManager() {
+        return scenarioManager;
+    }
+
+    public StaffManager getStaffManager() {
+        return staffManager;
     }
 
     public static String getResourceAsString(String thePath) {

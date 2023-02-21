@@ -3,7 +3,6 @@ package com.unrealdinnerbone.apollostats.web.pages.bingo;
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.apollostats.mangers.BingoManger;
 import com.unrealdinnerbone.apollostats.web.ApolloRole;
 import com.unrealdinnerbone.apollostats.web.Results;
 import com.unrealdinnerbone.unreallib.LogHelper;
@@ -22,17 +21,9 @@ public class BingoPages
 
         @Override
         public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) {
-            boolean players = true;
-            String defaultFreeSpace = Stats.CONFIG.getDefaultFreeSpace();
-            String perm = wrapper.queryParam("players");
-            if(perm != null && perm.equalsIgnoreCase("false")) {
-                players = false;
-            }
-            String freespace = wrapper.queryParam("freespace");
-            if(freespace != null) {
-                defaultFreeSpace = freespace;
-            }
-            wrapper.html(BingoManger.getBingoCard(Util.createID(), players, defaultFreeSpace));
+            boolean players = wrapper.queryParam("players").map(Boolean::parseBoolean).orElse(true);
+            String freespace = wrapper.queryParam("freespace").orElse(Stats.INSTANCE.getStatsConfig().getDefaultFreeSpace());
+            wrapper.html(Stats.INSTANCE.getBingoManger().getBingoCard(Util.createID(), players, freespace));
         }
 
         @Override
@@ -46,7 +37,7 @@ public class BingoPages
         @Override
         public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper ctx) {
             String id = ctx.pathParam("id");
-            ctx.html(BingoManger.findCard(id).orElse(Stats.getResourceAsString("/error.html")));
+            ctx.html(Stats.INSTANCE.getBingoManger().findCard(id).orElse(Stats.getResourceAsString("/error.html")));
         }
 
         @Override
@@ -73,12 +64,12 @@ public class BingoPages
                     if(value.bingo() == null) {
                         handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Bingo value is null"));
                     }else {
-                        if(BingoManger.getBingoValues().contains(value)) {
+                        if(Stats.INSTANCE.getBingoManger().getBingoValues().contains(value)) {
                             handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Bingo value already exists"));
                         }else {
-                            BingoManger.getBingoValues().add(value);
+                            Stats.INSTANCE.getBingoManger().getBingoValues().add(value);
                             LOGGER.info("Added {}", value);
-                            Stats.getPostgresHandler().executeUpdate("INSERT INTO public.bingo (bingo, auto_win, is_player) VALUES (?, ?, ?)", statement -> {
+                            Stats.INSTANCE.getPostgresHandler().executeUpdate("INSERT INTO public.bingo (bingo, auto_win, is_player) VALUES (?, ?, ?)", statement -> {
                                 statement.setString(1, value.bingo());
                                 statement.setBoolean(2, value.isBingo());
                                 statement.setBoolean(3, value.isPlayer());

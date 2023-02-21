@@ -15,7 +15,7 @@ public class WebAccessManger implements AccessManager {
     ApolloRole getUserRole(Context ctx) {
         String credentials = ctx.header("Password");
         if(credentials != null) {
-            if(credentials.equals(Stats.CONFIG.getPushApiKey())) {
+            if(credentials.equals(Stats.INSTANCE.getStatsConfig().getPushApiKey())) {
                 return ApolloRole.POST_API;
             }else {
                 return ApolloRole.EVERYONE;

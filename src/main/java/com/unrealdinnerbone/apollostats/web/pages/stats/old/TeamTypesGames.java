@@ -1,7 +1,7 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats.old;
 
 import com.unrealdinnerbone.apollostats.api.*;
-import com.unrealdinnerbone.unreallib.Maps;
+import com.unrealdinnerbone.unreallib.list.Maps;
 import com.unrealdinnerbone.unreallib.Pair;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 import org.slf4j.Logger;
@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class TeamTypesGames implements IStatPage {

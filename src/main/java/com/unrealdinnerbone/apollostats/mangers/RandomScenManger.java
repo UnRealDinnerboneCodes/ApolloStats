@@ -7,9 +7,9 @@ import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.unreallib.ArrayUtil;
+import com.unrealdinnerbone.unreallib.list.ArrayUtil;
 import com.unrealdinnerbone.unreallib.MathHelper;
-import com.unrealdinnerbone.apollostats.lib.RandomCollection;
+import com.unrealdinnerbone.unreallib.list.WeightedList;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class RandomScenManger {
                 }
             }
             if(!removed) {
-                ScenarioManager.getRequiredScenarios(scenario)
+                Stats.INSTANCE.getScenarioManager().getRequiredScenarios(scenario)
                         .stream()
                         .filter(scenario1 -> !toAdd.contains(scenario1))
                         .peek(scenario1 -> LOGGER.info("Adding {} to {} because it is required", scenario1, scenario))
@@ -78,7 +78,7 @@ public class RandomScenManger {
 
         TaskScheduler.handleTaskOnThread(() -> {
             try {
-                Stats.getPostgresHandler().executeUpdate("INSERT INTO public.random_scen (scens, id, team) VALUES (?, ?, ?)", statement -> {
+                Stats.INSTANCE.getPostgresHandler().executeUpdate("INSERT INTO public.random_scen (scens, id, team) VALUES (?, ?, ?)", statement -> {
                     statement.setString(1, filteredScenarios.stream().map(Scenario::id).map(String::valueOf).collect(Collectors.joining(";")));
                     statement.setString(2, id);
                     statement.setInt(3, team.id());
@@ -96,13 +96,13 @@ public class RandomScenManger {
     }
 
     private static List<Scenario> getMeta(boolean isNether) {
-        List<Scenario> metas =  ScenarioManager.getValues(Type.SCENARIO)
+        List<Scenario> metas =  Stats.INSTANCE.getScenarioManager().getValues(Type.SCENARIO)
                 .stream()
                 .filter(Scenario::hostable)
                 .filter(scenario -> !(scenario.id() == 33 || scenario.id() == 39 || scenario.id() == 105))
                 .filter(Scenario::meta)
                 .collect(Collectors.toList());
-        ScenarioManager.find(getMineType(isNether)).ifPresent(metas::add);
+        Stats.INSTANCE.getScenarioManager().find(getMineType(isNether)).ifPresent(metas::add);
         return metas;
 
     }
@@ -110,7 +110,7 @@ public class RandomScenManger {
     @Deprecated(forRemoval = true)
     //Todo database this?
     private static int getMineType(boolean isNether) {
-        RandomCollection<Integer> randomCollection = new RandomCollection<>();
+        WeightedList<Integer> randomCollection = new WeightedList<>();
         if(isNether) {
             randomCollection.add(75, 33);
             randomCollection.add(1, 39);
@@ -123,7 +123,7 @@ public class RandomScenManger {
     }
 
     private static List<Scenario> getList(Type type) {
-        return ScenarioManager.getValues(type)
+        return Stats.INSTANCE.getScenarioManager().getValues(type)
                 .stream()
                 .filter(Scenario::official)
                 .filter(Scenario::image)
@@ -135,14 +135,14 @@ public class RandomScenManger {
     }
 
     private static Optional<RandomData> findCardData(String id) throws SQLException, RuntimeException {
-        ResultSet resultSet = Stats.getPostgresHandler().getSet("SELECT * FROM public.random_scen where id = ?", statement -> statement.setString(1, id));
+        ResultSet resultSet = Stats.INSTANCE.getPostgresHandler().getSet("SELECT * FROM public.random_scen where id = ?", statement -> statement.setString(1, id));
         if(resultSet.next()) {
             String values = resultSet.getString("scens");
             int team = resultSet.getInt("team");
-            Scenario teamScen = ScenarioManager.find(team).orElseThrow(() -> new RuntimeException("Can't find Team scenario with id " + team));
+            Scenario teamScen = Stats.INSTANCE.getScenarioManager().find(team).orElseThrow(() -> new RuntimeException("Can't find Team scenario with id " + team));
             List<Scenario> scenarios = Arrays.stream(values.split(";"))
                     .map(Integer::parseInt)
-                    .map(ScenarioManager::find)
+                    .map(Stats.INSTANCE.getScenarioManager()::find)
                     .map(scenario -> scenario.orElseThrow(() -> new RuntimeException("Can't find scenario with id " + scenario)))
                     .toList();
             return Optional.of(new RandomData(scenarios, id, teamScen));

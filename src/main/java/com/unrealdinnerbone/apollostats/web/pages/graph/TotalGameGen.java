@@ -3,7 +3,7 @@ package com.unrealdinnerbone.apollostats.web.pages.graph;
 import com.unrealdinnerbone.apollostats.api.ICTXGetter;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Staff;
-import com.unrealdinnerbone.unreallib.Maps;
+import com.unrealdinnerbone.unreallib.list.Maps;
 
 import java.awt.*;
 import java.time.Instant;
@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 public class TotalGameGen implements IGraphPage {
 

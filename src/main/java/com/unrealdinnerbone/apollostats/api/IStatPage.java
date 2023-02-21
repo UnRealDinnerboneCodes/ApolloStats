@@ -1,7 +1,6 @@
 package com.unrealdinnerbone.apollostats.api;
 
-import com.unrealdinnerbone.apollostats.mangers.MatchManger;
-import com.unrealdinnerbone.apollostats.mangers.StaffManager;
+import com.unrealdinnerbone.apollostats.Stats;
 import io.javalin.http.Context;
 
 import java.util.*;
@@ -18,12 +17,12 @@ public interface IStatPage extends IWebPage{
     @Override
     default void getPage(Context handler) {
         Map<Staff, List<Match>> hostMap = new HashMap<>();
-        MatchManger.getMap().forEach((key, value) -> hostMap.put(key, value.stream().filter(this::filterMatches).collect(Collectors.toList())));
+        Stats.INSTANCE.getMatchManger().getMap().forEach((key, value) -> hostMap.put(key, value.stream().filter(this::filterMatches).collect(Collectors.toList())));
         String host = handler.queryParam("hosts");
         if(host != null) {
             String[] hosts = host.split(",");
             Map<Staff, List<Match>> map = new HashMap<>();
-            Arrays.stream(hosts).forEach(hostName -> StaffManager.findStaff(hostName).ifPresent(staff -> map.put(staff, new ArrayList<>(hostMap.get(staff)))));
+            Arrays.stream(hosts).forEach(hostName -> Stats.INSTANCE.getStaffManager().findStaff(hostName).ifPresent(staff -> map.put(staff, new ArrayList<>(hostMap.get(staff)))));
             hostMap.clear();
             hostMap.putAll(map);
         }
