@@ -1,8 +1,8 @@
 package com.unrealdinnerbone.apollostats.api;
 
 import com.unrealdinnerbone.apollostats.Stats;
-import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.StringUtils;
+import com.unrealdinnerbone.unreallib.TimeUtil;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public record Match(int id,
     }
 
     public boolean hasHappened() {
-        return Util.utcNow().isAfter(Instant.parse(opens()));
+        return TimeUtil.utcNow().isAfter(Instant.parse(opens()));
     }
 
     public Instant getOpenTime() {

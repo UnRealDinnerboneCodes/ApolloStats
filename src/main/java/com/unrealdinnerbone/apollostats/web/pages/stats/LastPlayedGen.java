@@ -1,8 +1,8 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
 import com.unrealdinnerbone.apollostats.api.*;
-import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.Pair;
+import com.unrealdinnerbone.unreallib.TimeUtil;
 import com.unrealdinnerbone.unreallib.list.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
@@ -75,7 +75,7 @@ public class LastPlayedGen implements IStatPage {
 
         @Override
         public List<String> get() {
-            long between = ChronoUnit.DAYS.between( last.key(), Util.utcNow());
+            long between = ChronoUnit.DAYS.between( last.key(), TimeUtil.utcNow());
             return Arrays.asList(name, formatter.format(first.key()), formatter.format(last.key()), first.value(), last.value(), "Days: " + String.format("%03d", between), String.valueOf(timesPlayed), df.format(percent * 100) + "%");
         }
     }

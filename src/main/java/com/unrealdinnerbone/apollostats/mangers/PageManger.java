@@ -47,7 +47,8 @@ public class PageManger implements IManger {
                         new MainPage(),
                         new DifferentHostInARow(),
                         new GamesPage(),
-                        new NetherGamePage()
+                        new NetherGamePage(),
+                        new DaysInARowPage()
                 )));
 
         instances.add(
@@ -73,8 +74,6 @@ public class PageManger implements IManger {
                         javalin.post(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
                     }
                 }));
-                throw new IllegalStateException("This is not a real manger");
-
             }
         });
     }

@@ -15,18 +15,18 @@ public interface StatsLauncher {
         LOGGER.info("Starting ApolloStats...");
         Stats stats = new Stats();
         Stats.INSTANCE = stats;
-        try {
-            stats.register();
-            stats.start().whenComplete((aVoid, throwable) -> {
-                if(throwable != null) {
-                    LOGGER.error("Failed to start ApolloStats", throwable);
-                }else {
-                    LOGGER.info("Started ApolloStats in {}s", stopwatch.stop().elapsed(TimeUnit.SECONDS));
-                }
-            });
-            ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
-        }catch (IllegalStateException e) {
-            LOGGER.error("Failed to start ApolloStats", e);
-        }
+        stats.register();
+        stats.start().whenComplete((aVoid, throwable) -> {
+            if (throwable != null) {
+                LOGGER.error("Failed to start ApolloStats", throwable.getCause() != null ? throwable.getCause() : throwable);
+            } else {
+                LOGGER.info("Started ApolloStats in {}s", stopwatch.stop().elapsed(TimeUnit.SECONDS));
+            }
+        });
+        ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
+    }
+
+    default void whenComplete(Void aVoid, Throwable throwable) {
+
     }
 }

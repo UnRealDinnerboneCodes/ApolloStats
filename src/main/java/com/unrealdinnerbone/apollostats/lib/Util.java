@@ -32,10 +32,6 @@ public class Util
         return IntStream.range(0, 5).mapToObj(i -> String.valueOf(VAILD.charAt(MathHelper.randomInt(0, VAILD.length() - 1)))).collect(Collectors.joining());
     }
 
-    public static Instant utcNow() {
-        return Instant.now().atZone(ZoneId.of("UTC")).toInstant();
-    }
-
     public static String formatData(Instant instant) {
         return FORMATTER.format(instant);
     }
