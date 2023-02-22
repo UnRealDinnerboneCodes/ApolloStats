@@ -25,8 +25,4 @@ public interface StatsLauncher {
         });
         ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
     }
-
-    default void whenComplete(Void aVoid, Throwable throwable) {
-
-    }
 }
