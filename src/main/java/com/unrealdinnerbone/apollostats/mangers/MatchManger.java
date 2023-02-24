@@ -9,9 +9,10 @@ import com.unrealdinnerbone.unreallib.apiutils.WebResultException;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.json.api.JsonParseException;
 import com.unrealdinnerbone.unreallib.minecraft.ping.MCPing;
-import com.unrealdinnerbone.unreallib.web.BasicHttpHelper;
+import com.unrealdinnerbone.unreallib.web.HttpHelper;
 import org.slf4j.Logger;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -36,7 +37,7 @@ public class MatchManger implements IManger {
     public List<Match> getAllMatchesForHost(Staff staff, Optional<Integer> before) {
         List<Match> matches = new ArrayList<>();
         try {
-            String json = BasicHttpHelper.DEFAULT.getOrThrow("https://hosts.uhc.gg/api/hosts/" + staff.username().replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse(""));
+            String json = HttpHelper.getOrThrow(URI.create("https://hosts.uhc.gg/api/hosts/" + staff.username().replace(" ", "%20/") + "/matches?count=50" + before.map(i -> "&before=" + i).orElse("")));
             List<Match> foundMatches = JsonUtil.DEFAULT.parseList(Match[].class, json);
             matches.addAll(foundMatches);
             if(foundMatches.size() == 50) {
@@ -51,7 +52,7 @@ public class MatchManger implements IManger {
     }
 
     public static List<Match> getUpcomingMatches() throws Exception {
-        String json = BasicHttpHelper.DEFAULT.get("https://hosts.uhc.gg/api/matches/upcoming").body();
+        String json = HttpHelper.getOrThrow(URI.create("https://hosts.uhc.gg/api/matches/upcoming"));
         return JsonUtil.DEFAULT.parseList(Match[].class, json);
     }
 

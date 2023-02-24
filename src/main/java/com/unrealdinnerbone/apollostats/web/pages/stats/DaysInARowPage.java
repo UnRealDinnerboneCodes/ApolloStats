@@ -5,6 +5,7 @@ import com.unrealdinnerbone.apollostats.api.IStatPage;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.unreallib.LogHelper;
+import com.unrealdinnerbone.unreallib.TimeUtil;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 import org.slf4j.Logger;
 
@@ -28,9 +29,7 @@ public class DaysInARowPage implements IStatPage {
                 Instant currentTime = match.getOpenTime();
                 for (Match match1 : matches.stream().sorted(Comparator.comparing(Match::getOpenTime)).toList()) {
                     if (match1.getOpenTime().isAfter(currentTime)) {
-                        int between = (int) ChronoUnit.HOURS.between(currentTime, match1.getOpenTime());
-                        between = Math.abs(between);
-                        if (between <= 24) {
+                        if (TimeUtil.isWithinFrom(currentTime, match1.getOpenTime(), 24, ChronoUnit.HOURS)) {
                             matchesAfter.add(match1);
                             currentTime = match1.getOpenTime();
                         }else {

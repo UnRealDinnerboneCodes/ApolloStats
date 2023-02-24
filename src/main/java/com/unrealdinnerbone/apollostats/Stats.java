@@ -17,6 +17,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class Stats {
@@ -36,6 +38,8 @@ public class Stats {
     private final MatchManger matchManger;
 
     private final PageManger pageManger;
+
+    private final Executor executor = Executors.newFixedThreadPool(5);
 
     public Stats() throws IllegalStateException {
         ConfigManager configManager = ConfigManager.createSimpleEnvPropertyConfigManger();
@@ -60,11 +64,6 @@ public class Stats {
         futures.add(t);
         return t;
     }
-    public void register() {
-
-
-    }
-
     public CompletableFuture<Void> start() {
         AlertManager.init();
         return TaskScheduler.allAsync(futures.stream().map(this::map).toList())
@@ -74,9 +73,7 @@ public class Stats {
 
     private CompletableFuture<Void> map(IManger manger) {
         return manger.start().whenComplete((v, e) -> {
-            if (e != null) {
-                LOGGER.error("Failed to start {}", manger.getName(), e);
-            }else {
+            if (e == null) {
                 LOGGER.info("Started {}", manger.getName());
             }
         });
@@ -109,6 +106,10 @@ public class Stats {
 
     public StaffManager getStaffManager() {
         return staffManager;
+    }
+
+    public Executor getExecutor() {
+        return executor;
     }
 
     public static String getResourceAsString(String thePath) {

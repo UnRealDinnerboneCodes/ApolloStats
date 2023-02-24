@@ -15,14 +15,16 @@ public interface StatsLauncher {
         LOGGER.info("Starting ApolloStats...");
         Stats stats = new Stats();
         Stats.INSTANCE = stats;
-        stats.register();
         stats.start().whenComplete((aVoid, throwable) -> {
             if (throwable != null) {
                 LOGGER.error("Failed to start ApolloStats", throwable.getCause() != null ? throwable.getCause() : throwable);
+                ShutdownUtils.shutdown();
             } else {
                 LOGGER.info("Started ApolloStats in {}s", stopwatch.stop().elapsed(TimeUnit.SECONDS));
             }
         });
-        ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
+        ShutdownUtils.addShutdownHook(() -> {
+            LOGGER.info("Stopping ApolloStats");
+        });
     }
 }

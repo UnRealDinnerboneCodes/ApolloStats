@@ -51,7 +51,7 @@ public record Match(int id,
     }
 
     public boolean hasHappened() {
-        return TimeUtil.utcNow().isAfter(Instant.parse(opens()));
+        return TimeUtil.utcNow().isAfter(getOpenTime());
     }
 
     public Instant getOpenTime() {
