@@ -8,6 +8,6 @@ public class Results
 
 
     public static String message(String message) {
-        return JsonUtil.DEFAULT.toJson(Message.class, new Message(message));
+        return JsonUtil.DEFAULT.toJson(new Message(message));
     }
 }

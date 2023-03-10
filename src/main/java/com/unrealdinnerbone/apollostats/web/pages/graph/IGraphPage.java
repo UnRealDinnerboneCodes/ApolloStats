@@ -24,7 +24,7 @@ public interface IGraphPage extends IStatPage {
             dataData.add(new DataData(dataSet.label(), mapData, "none", dataSet.backgroundColor()));
         }
         String page = Stats.getResourceAsString("graph.html");
-        String json = JsonUtil.DEFAULT.toFancyJson(List.class, dataData);
+        String json = JsonUtil.DEFAULT.toFancyJson(dataData);
         wrapper.html(page.replace("{\"DATA\"}", json));
     }
 
