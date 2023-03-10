@@ -12,7 +12,7 @@ version = '1.0.0'
 
 dependencies {
     shade "com.unrealdinnerbone:PostgressLib:2.0.1+build.36"
-    shade "com.unrealdinnerbone:UnRealLib:6.0.0+build.137"
+    shade "com.unrealdinnerbone:UnRealLib:7.0.0+build.144"
     shade 'com.google.guava:guava:31.0.1-jre'
     shade('io.javalin:javalin:5.3.2')
     shade 'org.apache.commons:commons-text:1.10.0'

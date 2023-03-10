@@ -68,7 +68,8 @@ public class Stats {
         AlertManager.init();
         return TaskScheduler.allAsync(futures.stream().map(this::map).toList())
                 .thenCompose((v) -> map(matchManger))
-                .thenCompose((v) -> map(pageManger));
+                .thenCompose((v) -> map(pageManger))
+                ;
     }
 
     private CompletableFuture<Void> map(IManger manger) {

@@ -1,9 +1,9 @@
 package com.unrealdinnerbone.apollostats.lib;
 
-import com.unrealdinnerbone.config.IConfigCreator;
 import com.unrealdinnerbone.config.config.BooleanConfig;
 import com.unrealdinnerbone.config.config.IntegerConfig;
 import com.unrealdinnerbone.config.config.StringConfig;
+import com.unrealdinnerbone.config.ConfigCreator;
 
 public class Config {
 
@@ -15,7 +15,7 @@ public class Config {
     private final StringConfig DEFAULT_FREE_SPACE;
     private final BooleanConfig ENABLE_MATCH_WATCHING;
 
-    public Config(IConfigCreator configCreator) {
+    public Config(ConfigCreator configCreator) {
         this.PUSH_API_KEY = configCreator.createString("PUSH_API_KEY", "");
         this.DISCORD_WEBBOT_TOKEN = configCreator.createString("DISCORD_TOKEN", "");
         this.SERVER_IP = configCreator.createString("SERVER_IP", "apollouhc.com");

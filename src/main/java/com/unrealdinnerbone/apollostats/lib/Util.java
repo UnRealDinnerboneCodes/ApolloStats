@@ -22,7 +22,7 @@ public class Util
     private static final String VAILD = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 
     public static String getMotdMessage(MCServerPingResponse result) {
-        return PlainTextComponentSerializer.plainText().serialize(GsonComponentSerializer.gson().deserialize(result.description()));
+        return PlainTextComponentSerializer.plainText().serialize(GsonComponentSerializer.gson().deserialize(result.description().json()));
     }
     public static String formalize(String s) {
         return s.toLowerCase().replace(" ", "").replace("+", "plus").replaceAll("\\p{Punct}+", "");

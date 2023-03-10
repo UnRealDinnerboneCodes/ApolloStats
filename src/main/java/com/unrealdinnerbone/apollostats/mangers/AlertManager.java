@@ -8,11 +8,11 @@ import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.discord.EmbedObject;
+import com.unrealdinnerbone.unreallib.exception.WebResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Queue;
@@ -32,7 +32,7 @@ public class AlertManager
             if(discordWebhook != null) {
                 try {
                     discordWebhook.post(Stats.INSTANCE.getStatsConfig().getDiscordWebBotToken());
-                } catch (InterruptedException | IOException e) {
+                } catch (IllegalStateException | WebResultException e) {
                     LOGGER.error("Failed to send webhook", e);
                 }
             }

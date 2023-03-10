@@ -5,9 +5,9 @@ import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
-import com.unrealdinnerbone.unreallib.apiutils.WebResultException;
+import com.unrealdinnerbone.unreallib.exception.WebResultException;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
-import com.unrealdinnerbone.unreallib.json.api.JsonParseException;
+import com.unrealdinnerbone.unreallib.json.exception.JsonParseException;
 import com.unrealdinnerbone.unreallib.minecraft.ping.MCPing;
 import com.unrealdinnerbone.unreallib.web.HttpHelper;
 import org.slf4j.Logger;
@@ -51,7 +51,7 @@ public class MatchManger implements IManger {
         return matches;
     }
 
-    public static List<Match> getUpcomingMatches() throws Exception {
+    public static List<Match> getUpcomingMatches() throws WebResultException {
         String json = HttpHelper.getOrThrow(URI.create("https://hosts.uhc.gg/api/matches/upcoming"));
         return JsonUtil.DEFAULT.parseList(Match[].class, json);
     }

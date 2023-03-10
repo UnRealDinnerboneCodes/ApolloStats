@@ -13,6 +13,7 @@ import com.unrealdinnerbone.apollostats.web.pages.graph.TotalGameGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.HostIn24HoursGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
+import com.unrealdinnerbone.apollostats.web.pages.stats.old.TimeBetweenGames;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import io.javalin.Javalin;
@@ -48,7 +49,8 @@ public class PageManger implements IManger {
                         new DifferentHostInARow(),
                         new GamesPage(),
                         new NetherGamePage(),
-                        new DaysInARowPage()
+                        new DaysInARowPage(),
+                        new TimeBetweenGames()
                 )));
 
         instances.add(

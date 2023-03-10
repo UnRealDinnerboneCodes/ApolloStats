@@ -26,6 +26,7 @@ public class StaffManager implements IManger
             while(resultSet.next()) {
                 String username = resultSet.getString("username");
                 String displayName = resultSet.getString("displayName");
+//                Date date = resultSet.getDate("start");
                 staff.add(new Staff(username, displayName));
             }
             LOGGER.info("Loaded {} staff members.", staff.size());
