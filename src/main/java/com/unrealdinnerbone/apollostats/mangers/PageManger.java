@@ -1,5 +1,6 @@
 package com.unrealdinnerbone.apollostats.mangers;
 
+import com.google.common.base.Stopwatch;
 import com.unrealdinnerbone.apollostats.api.IManger;
 import com.unrealdinnerbone.apollostats.api.WebInstance;
 import com.unrealdinnerbone.apollostats.instacnes.APIInstance;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class PageManger implements IManger {
@@ -67,7 +69,11 @@ public class PageManger implements IManger {
                 instance.getPages().forEach((key, value) -> value.forEach(iWebPage -> {
                     if (key == WebInstance.Type.GET) {
                         LOGGER.info("Registering GET page {}", iWebPage.getPath());
-                        javalin.get(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
+                        javalin.get(iWebPage.getPath(), ctx -> {
+                            Stopwatch stopwatch = Stopwatch.createStarted();
+                            iWebPage.getPage(ctx);
+                            LOGGER.info("[{}] Took {} to get page {}", stopwatch.stop(), iWebPage.getPath(), Objects.hash(ctx.ip()));
+                        }, iWebPage.getRole());
                     } else if (key == WebInstance.Type.POST) {
                         LOGGER.info("Registering POST page {}", iWebPage.getPath());
                         javalin.post(iWebPage.getPath(), iWebPage::getPage, iWebPage.getRole());
