@@ -4,12 +4,15 @@ import com.unrealdinnerbone.apollostats.Stats;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ICTXWrapper extends ICTXGetter {
     void html(String html);
 
     void error(HttpStatus status, String errorMessage);
+
 
 
     static ICTXWrapper of(Context handler) {
@@ -25,14 +28,24 @@ public interface ICTXWrapper extends ICTXGetter {
             }
 
             @Override
+            public String getRequestID() {
+                return handler.path() + handler.queryString();
+            }
+
+            @Override
             public void html(String html) {
                 handler.html(html);
             }
             @Override
             public void error(HttpStatus status, String errorMessage) {
-                handler.status(status).html(Stats.getResourceAsString("error.html")
+                handler.status(status).html(Stats.getResourceAsString("/error.html")
                         .replace("{Error_Code}", status.getMessage() + " (" + status.getMessage() + ")")
                         .replace("{Error_Message}", errorMessage));
+            }
+
+            @Override
+            public Map<String, List<String>> getQueryPerms() {
+                return handler.queryParamMap();
             }
         };
     }

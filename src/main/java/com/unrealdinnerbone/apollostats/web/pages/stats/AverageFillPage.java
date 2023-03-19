@@ -32,7 +32,7 @@ public class AverageFillPage implements IStatPage {
             }
         });
 
-        wrapper.html(WebUtils.makeHTML("Fills", "", Arrays.asList("Host", "Smallest", "Largest", "Average", "Games"), fillsList));
+        wrapper.html(WebUtils.makeHtmlTable("Fills", "", Arrays.asList("Host", "Smallest", "Largest", "Average", "Games"), fillsList));
     }
 
 

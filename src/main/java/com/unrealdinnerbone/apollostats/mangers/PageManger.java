@@ -11,9 +11,7 @@ import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenera
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
 import com.unrealdinnerbone.apollostats.web.pages.graph.TotalGameGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
-import com.unrealdinnerbone.apollostats.web.pages.stats.old.HostIn24HoursGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
-import com.unrealdinnerbone.apollostats.web.pages.stats.old.TimeBetweenGames;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import io.javalin.Javalin;
@@ -41,16 +39,15 @@ public class PageManger implements IManger {
                         new BingoPages.IDCard(),
                         new BingoPages.NewCard(),
                         new TeamSizeGames(),
-                        new HostIn24HoursGen(),
                         new GameHistory(),
                         new FunnyScenNames(),
                         new TotalGameGen(),
                         new MainPage(),
                         new DifferentHostInARow(),
                         new GamesPage(),
-                        new NetherGamePage(),
-                        new DaysInARowPage(),
-                        new TimeBetweenGames()
+                        new GameFinderPage(),
+                        new TeamsPage(),
+                        new HostPage()
                 )));
 
         instances.add(

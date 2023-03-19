@@ -26,12 +26,12 @@ public class ScenarioManager implements IManger
     private final LevenshteinDistance LEVENSHTEIN_DISTANCE = LevenshteinDistance.getDefaultInstance();
     private final Map<Type, List<Scenario>> values = new HashMap<>();
     private final Map<String, List<Scenario>> remap = new HashMap<>();
-    private final LazyHashMap<String, List<Scenario>> MAP = new LazyHashMap<>(cache -> {
+    private final LazyHashMap<Type, LazyHashMap<String, List<Scenario>>> MAP = new LazyHashMap<>(type -> new LazyHashMap<>(cache -> {
         if(remap.containsKey(cache)) {
             return remap.get(cache);
         }else {
             Map<Integer, List<Scenario>> values = new HashMap<>();
-            for(Scenario scenario : getAll()) {
+            for(Scenario scenario : this.values.get(type)) {
                 if(isSimilar(scenario.name(), cache)) {
                     return List.of(scenario);
                 }else {
@@ -53,7 +53,7 @@ public class ScenarioManager implements IManger
             AlertManager.unknownSceneFound(cache, scenarios);
             return scenarios;
         }
-    });
+    }));
 
 
 
@@ -102,11 +102,11 @@ public class ScenarioManager implements IManger
         List<Scenario> cake = values.get(type)
                 .stream()
                 .map(Scenario::name)
-                .map(this::remap)
+                .map(s -> remap(s, type))
                 .flatMap(Collection::stream)
                 .toList();
         return fixed.stream()
-                .map(this::remap)
+                .map(s -> remap(s, type))
                 .flatMap(Collection::stream)
                 .filter(scenario -> cake.stream().anyMatch(scenario1 -> scenario1.name().equalsIgnoreCase(scenario.name())))
                 .filter(scenario -> scenario.type() == type)
@@ -118,24 +118,21 @@ public class ScenarioManager implements IManger
         return values.values().stream().flatMap(Collection::stream).filter(scenario -> scenario.id() == id).findFirst();
     }
 
-    private List<Scenario> remap(String scenario) {
-        return MAP.get(scenario);
+    private List<Scenario> remap(String scenario, Type type) {
+        return MAP.get(type).get(scenario);
     }
 
     public List<Scenario> getValues(Type type) {
         return values.get(type);
     }
 
-    private List<Scenario> getAll() {
-        return values.values().stream().flatMap(List::stream).toList();
-    }
 
     public void resetCache() {
         MAP.reset();
     }
 
     public Map<String, List<Scenario>> getLazyMap() {
-        return MAP.getCurrentMap();
+        return MAP.get(Type.SCENARIO).getCurrentMap();
     }
 
     public List<Scenario> getRequiredScenarios(Scenario scenario) {

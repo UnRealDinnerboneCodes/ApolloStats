@@ -32,8 +32,12 @@ public class AlertManager
             if(discordWebhook != null) {
                 try {
                     discordWebhook.post(Stats.INSTANCE.getStatsConfig().getDiscordWebBotToken());
-                } catch (IllegalStateException | WebResultException e) {
+                } catch (IllegalStateException e) {
                     LOGGER.error("Failed to send webhook", e);
+                } catch (WebResultException e) {
+                    if(e.getCode() != 204) {
+                        LOGGER.error("Failed to send webhook", e);
+                    }
                 }
             }
         });
@@ -59,7 +63,7 @@ public class AlertManager
                 .color(Color.GREEN)
                 .title("New Game: " + match.displayName() + " #" + match.count())
                 .field("Meetup", String.valueOf(match.length()), true)
-                .field("Nether", match.isNether(), true)
+                .field("Nether", match.getNetherFormat(), true)
                 .field("PvP", String.valueOf(match.pvpEnabledAt()), true)
                 .field("Border", String.valueOf(match.mapSize()), true)
                 .field("Team", String.valueOf(match.getTeamFormat()), true)

@@ -10,6 +10,7 @@ import com.unrealdinnerbone.unreallib.web.WebUtils;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -22,26 +23,24 @@ public class DifferentHostInARow implements IStatPage {
             limit = wrapper.queryParam("limit").map(Integer::parseInt).orElse(5);
         }catch (NumberFormatException ignored) {}
         List<List<Match>> differentHosts = new ArrayList<>();
-        var ref = new Object() {
-            List<Pair<Staff, Match>> staff = new ArrayList<>();
-        };
+        AtomicReference<List<Pair<Staff, Match>>> ref = new AtomicReference<>(new ArrayList<>());
         hostMatchMap.values().stream()
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing(Match::opens))
                 .forEach(match -> {
                     match.findStaff().ifPresent(staff1 -> {
-                        for (Pair<Staff, Match> staff : ref.staff) {
+                        for (Pair<Staff, Match> staff : ref.get()) {
                             if(staff.key().equals(staff1)) {
                                 List<Match> matches = new ArrayList<>();
-                                for (Pair<Staff, Match> staffMatchPair : ref.staff) {
+                                for (Pair<Staff, Match> staffMatchPair : ref.get()) {
                                     matches.add(staffMatchPair.value());
                                 }
                                 differentHosts.add(matches);
-                                ref.staff = new ArrayList<>();
+                                ref.set(new ArrayList<>());
                             }
                         }
                         Pair<Staff, Match> staff = Pair.of(staff1, match);
-                        ref.staff.add(staff);
+                        ref.get().add(staff);
                     });
                 });
 
@@ -51,7 +50,7 @@ public class DifferentHostInARow implements IStatPage {
                 .sorted(Comparator.comparingInt(hostMatch -> hostMatch.matches().size()))
                 .filter(hostMatch -> hostMatch.matches().size() > finalLimit)
                 .toList();
-        wrapper.html(WebUtils.makeHTML("Different Host In A Row", "", List.of("Start", "End", "Count", "Matches"), hostMatches));
+        wrapper.html(WebUtils.makeHtmlTable("Different Host In A Row", "", List.of("Start", "End", "Count", "Matches"), hostMatches));
     }
 
     public record HostMatch(List<Match> matches) implements Supplier<List<String>> {

@@ -26,7 +26,7 @@ public class GameHistory implements IStatPage {
             Game game = Stats.INSTANCE.getGameManager().findGame(match.id()).orElse(UNKNOWN);
             gameStats.add(new GameStats(match.hostingName(), Instant.parse(match.opens()), Stats.INSTANCE.getScenarioManager().fix(Type.SCENARIO, match.scenarios()), game.fill()));
         }
-        wrapper.html(WebUtils.makeHTML("Match History", "", Arrays.asList("Host", "Time", "Scens", "Fill"), gameStats));
+        wrapper.html(WebUtils.makeHtmlTable("Match History", "", Arrays.asList("Host", "Time", "Scens", "Fill"), gameStats));
     }
 
     @Override

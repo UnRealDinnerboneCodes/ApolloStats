@@ -44,7 +44,7 @@ public class GamesPage implements IStatPage {
         for (Map.Entry<Staff, Integer> staffIntegerEntry : gamesHosted.entrySet()) {
             gameStats.add(new GameStats(staffIntegerEntry.getKey(), staffIntegerEntry.getValue(), gameNumbers.get(staffIntegerEntry.getKey()), matchesRemoved.get(staffIntegerEntry.getKey())));
         }
-        wrapper.html(WebUtils.makeHTML("Host Matches", "", Arrays.asList("Host", "Games", "Height Game", "Missing Games", "Duplicate Games"), gameStats));
+        wrapper.html(WebUtils.makeHtmlTable("Host Matches", "", Arrays.asList("Host", "Games", "Height Game", "Missing Games", "Duplicate Games"), gameStats));
 
     }
 

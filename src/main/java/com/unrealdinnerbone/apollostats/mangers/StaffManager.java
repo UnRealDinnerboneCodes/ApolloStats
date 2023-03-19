@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -26,8 +27,10 @@ public class StaffManager implements IManger
             while(resultSet.next()) {
                 String username = resultSet.getString("username");
                 String displayName = resultSet.getString("displayName");
-//                Date date = resultSet.getDate("start");
-                staff.add(new Staff(username, displayName));
+                Date date = resultSet.getDate("start");
+                String foundType = resultSet.getString("type");
+                Staff.Type type = Staff.Type.fromString(foundType).orElseThrow(() -> new IllegalStateException("Unknown Staff Type " + foundType));
+                staff.add(new Staff(username, displayName, type));
             }
             LOGGER.info("Loaded {} staff members.", staff.size());
         });

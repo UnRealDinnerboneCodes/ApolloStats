@@ -52,7 +52,7 @@ public class TeamTypesGames implements IStatPage {
                 return values;
             });
         }
-        wrapper.html(WebUtils.makeHTML("Team Types", "", typesList, iTableData));
+        wrapper.html(WebUtils.makeHtmlTable("Team Types", "", typesList, iTableData));
     }
 
     @Override

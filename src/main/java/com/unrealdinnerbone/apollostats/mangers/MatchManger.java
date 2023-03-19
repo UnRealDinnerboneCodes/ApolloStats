@@ -1,8 +1,10 @@
 package com.unrealdinnerbone.apollostats.mangers;
 
+import com.google.common.cache.Cache;
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.apollostats.lib.Util;
+import com.unrealdinnerbone.apollostats.web.pages.stats.HostPage;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.exception.WebResultException;
@@ -26,11 +28,13 @@ public class MatchManger implements IManger {
     private final Map<Integer, TimerTask> trackedMatches = new HashMap<>();
 
 
-    private void loadStaffMatchBacklog() {
+    private void loadStaffMatchBacklog(boolean all) {
         for(Staff staff : Stats.INSTANCE.getStaffManager().getStaff()) {
-            List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
-            LOGGER.info("Loaded {} matches for {}", matches.size(), staff.displayName());
-            matchesMap.put(staff, matches);
+            if(all || staff.type() != Staff.Type.RETIRED) {
+                List<Match> matches = getAllMatchesForHost(staff, Optional.empty());
+                LOGGER.info("Loaded {} matches for {}", matches.size(), staff.displayName());
+                matchesMap.put(staff, matches);
+            }
         }
     }
 
@@ -119,7 +123,7 @@ public class MatchManger implements IManger {
     public CompletableFuture<Void> start() {
         CompletableFuture<Void> staffTracker = new CompletableFuture<>();
         TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> {
-            loadStaffMatchBacklog();
+            loadStaffMatchBacklog(!staffTracker.isDone());
             if(!staffTracker.isDone()) {
                 staffTracker.complete(null);
             }
@@ -141,6 +145,9 @@ public class MatchManger implements IManger {
                         if (!trackedMatches.containsKey(match.id())) {
                             LOGGER.info("Scheduling match {}", match);
                             AlertManager.gameFound(match);
+                            match.findStaff().ifPresent(staff -> {
+                                HostPage.getCaches().forEach(cach -> cach.invalidate(staff));
+                            });
                             TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
                             trackedMatches.put(match.id(), timerTask);
                         }

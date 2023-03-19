@@ -1,0 +1,175 @@
+
+body {
+    background-color: #23272a;
+    padding: 20px;
+    font-family: Arial, serif;
+}
+
+.stats {
+    background: #99aab5;
+    margin: 8px;
+    text-align: center;
+    padding: 1px;
+
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(auto, auto));
+
+}
+.content {
+    color: black;
+    /*display: grid;*/
+    column-gap: 0.25ch;
+    row-gap: 0.25rem;
+    /*grid-template-columns: repeat(2, auto);*/
+    grid-template-rows: auto;
+    grid-gap: 0;
+    margin: 8px;
+    padding: 8px;
+    text-align: center;
+}
+
+.content > p:nth-child(2n-1), .content > * > p:nth-child(2n-1) {
+    font-weight: bolder;
+    margin-right: 0.5ch;
+    text-align: center;
+
+}
+
+h1 {
+    font-size: 50px;
+    word-break: break-all;
+}
+
+
+.content {
+    color:#FFFFFF;
+    background-color: #424549;
+    padding: 8px;
+}
+
+.row {
+    margin: 10px -16px;
+}
+
+ Style the buttons
+.btn {
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #ddd;
+}
+
+.btn.active {
+    background-color: #666;
+    color: white;
+}
+
+
+/*:root {*/
+/*    font-family: sans-serif;*/
+/*    padding: 0;*/
+/*    margin: 0;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    min-width: 100vw;*/
+/*    min-height: 100vh;*/
+/*}*/
+/*.boxes {*/
+/*    display: flex;*/
+/*    width: 31vw;*/
+/*}*/
+/*.box {*/
+/*    border: 3px solid black;*/
+/*    border-radius: 3px;*/
+/*    flex: 1;*/
+/*    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);*/
+/*}*/
+/*.box:not(:first-child) {*/
+/*    margin-left: 2rem;*/
+/*}*/
+/*h4 {*/
+/*    text-align: center;*/
+/*}*/
+/*.box > .header {*/
+/*    font-size: 1.25rem;*/
+/*    background: black;*/
+/*    color: white;*/
+/*    padding: 0.75rem;*/
+/*    font-weight: bolder;*/
+/*    padding-left: 1.25rem;*/
+/*}*/
+
+/*.content2 > p:nth-child(2n-1), .content2 > * > p:nth-child(2n-1) {*/
+/*    text-align: center;*/
+/*    align-self: center;*/
+/*}*/
+/*.content2 > p:nth-child(2n), .content2 > * > p:nth-child(2n) {*/
+/*    text-align: center;*/
+/*}*/
+
+.dropbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #3e8e41;
+}
+
+/* The search field */
+#myInput {
+    box-sizing: border-box;
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+
+/* The search field when it gets focus/clicked on */
+#myInput:focus {outline: 3px solid #ddd;}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 230px;
+    border: 1px solid #ddd;
+    z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/*!* Change color of dropdown links on hover *!*/
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/*!* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) *!*/
+.show {display:block;}

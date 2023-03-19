@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.apollostats.api;
 
 import com.unrealdinnerbone.apollostats.Stats;
+import com.unrealdinnerbone.unreallib.exception.WebResultException;
 import io.javalin.http.Context;
 
 import java.util.*;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
 
 public interface IStatPage extends IWebPage{
 
-    void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper);
+    void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) throws WebResultException;
 
     default boolean filterMatches(Match match) {
         return match.isGoodGame();
@@ -38,7 +39,30 @@ public interface IStatPage extends IWebPage{
             hostMap.putAll(map);
         }
 
-        generateStats(hostMap, ICTXWrapper.of(handler));
+
+
+        try {
+            String type = handler.queryParam("type");
+            if(type != null) {
+                List<Staff.Type> wantedTypes = new ArrayList<>();
+                for (String s : type.split(",")) {
+                    Staff.Type foundType = Staff.Type.fromString(s).orElseThrow(() -> new WebResultException("Invalid Type" + type, 400));
+                    wantedTypes.add(foundType);
+                }
+                Map<Staff, List<Match>> map = new HashMap<>();
+                hostMap.entrySet()
+                        .stream().filter(staffListEntry -> wantedTypes.contains(staffListEntry.getKey().type()))
+                        .forEach(staffListEntry -> map.put(staffListEntry.getKey(), staffListEntry.getValue()));
+                hostMap.clear();
+                hostMap.putAll(map);
+            }
+            generateStats(hostMap, ICTXWrapper.of(handler));
+        }catch (WebResultException e) {
+            handler.status(e.getCode()).html(Stats.getResourceAsString("error.html")
+                    .replace("{Error_Message}", e.getMessage())
+                    .replace("{Error_Code}", String.valueOf(e.getCode())));
+        }
+
     }
 
 
