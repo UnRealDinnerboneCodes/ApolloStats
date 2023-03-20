@@ -38,83 +38,15 @@ public class HostPage implements IStatPage {
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) throws WebResultException {
         List<Pair<String, List<Pair<String, String>>>> cardStats = new ArrayList<>();
         for (Map.Entry<Staff, List<Match>> staffListEntry : hostMatchMap.entrySet()) {
-            List<Pair<String, String>> stats = new ArrayList<>();
-            int gamesHosted = 0;
-            int gamesRemoved = 0;
-            int netherOn = 0;
-            int rush = 0;
-            Map<Scenario, AtomicInteger> scenarioCount = new HashMap<>();
-            Map<String, AtomicInteger> teamCount = new HashMap<>();
-
-            CachedData cachedData = getMostMatches(wrapper.getRequestID(), staffListEntry.getKey(), staffListEntry.getValue().stream().filter(Match::isGoodGame).toList());
-            List<Integer> fills = new ArrayList<>();
-            for (Match match : staffListEntry.getValue().stream().sorted(Comparator.comparing(Match::getOpenTime)).toList()) {
-                if(match.isGoodGame()) {
-                    Stats.INSTANCE.getScenarioManager().fix(Type.SCENARIO, match.scenarios())
-                            .forEach(scenario -> Maps.putIfAbsent(scenarioCount, scenario, new AtomicInteger()).incrementAndGet());
-                    Stats.INSTANCE.getScenarioManager().fix(Type.TEAM, Collections.singletonList(match.getTeamFormat()))
-                            .forEach(scenario -> {
-                                StringBuilder stringBuilder = new StringBuilder(scenario.name());
-                                int teamSize = match.getTeamSize();
-                                if(teamSize != 0) {
-                                    stringBuilder.append(" (").append(teamSize).append(")");
-                                }
-                                int teamAmount = match.getTeamAmount();
-                                if(teamAmount != 0) {
-                                    stringBuilder.append(" [").append(teamAmount).append("]");
-                                }
-                                Maps.putIfAbsent(teamCount, stringBuilder.toString(), new AtomicInteger()).incrementAndGet();
-                            });
-                    gamesHosted++;
-                    if(match.isRush()) {
-                        rush++;
-                    }
-                    if(match.isNetherEnabled()) {
-                        netherOn++;
-                    }
-                    Stats.INSTANCE.getGameManager().findGame(match.id()).ifPresent(game -> fills.add(game.fill()));
-                }
-                if(match.isApolloGame() && match.removed()) {
-                    gamesRemoved++;
-                }
-            }
-            int mostHostedScen = 0;
-            int mostHostedTeam = 0;
-            Scenario mostHostedScenario = null;
-            String mostHostedTeamType = null;
-            for (Map.Entry<Scenario, AtomicInteger> entry : scenarioCount.entrySet()) {
-                if(entry.getValue().get() > mostHostedScen && entry.getKey().type() == Type.SCENARIO) {
-                    if(!entry.getKey().meta()) {
-                        mostHostedScen = entry.getValue().get();
-                        mostHostedScenario = entry.getKey();
-                    }
-                }
-            }
-            for (Map.Entry<String, AtomicInteger> entry : teamCount.entrySet()) {
-                if(entry.getValue().get() > mostHostedTeam) {
-                    mostHostedTeam = entry.getValue().get();
-                    mostHostedTeamType = entry.getKey();
-                }
-            }
-            int maxFill = fills.stream().max(Integer::compareTo).orElse(0);
-            int minFill = fills.stream().min(Integer::compareTo).orElse(0);
-            int avgFill = fills.size() == 0 ? 0 : fills.stream().mapToInt(Integer::intValue).sum() / fills.size();
-
-            stats.add(Pair.of("Games Hosted", String.valueOf(gamesHosted)));
-            stats.add(Pair.of("Games Removed", gamesRemoved + " (" + FORMAT.format((double) gamesRemoved / (double) gamesHosted * 100) + "%)"));
-            stats.add(Pair.of("Nether On", netherOn + " (" + FORMAT.format((double) netherOn / (double) gamesHosted * 100) + "%)"));
-            stats.add(Pair.of("Rush", rush + " (" + FORMAT.format((double) rush / (double) gamesHosted * 100) + "%)"));
-            stats.add(Pair.of("Top Scenario", mostHostedScenario == null ? "None" : mostHostedScenario.name()));
-            stats.add(Pair.of("Top Team Type", mostHostedTeamType == null ? "None" : mostHostedTeamType));
-            stats.add(Pair.of("Days in a Row", String.valueOf(cachedData.daysInARow().size())));
-            stats.add(Pair.of("Hosts in 24 Hours", String.valueOf(cachedData.hostIn24Hours().size())));
-            stats.add(Pair.of("Fill (Min, Max, Avg)", minFill + " / " + maxFill + " / " + avgFill));
-            String fromDate = Util.formatData(cachedData.timeBetween().key());
-            String toDate = Util.formatData(cachedData.timeBetween().value());
-            int daysBetween = (int) ChronoUnit.DAYS.between(cachedData.timeBetween().key(), cachedData.timeBetween().value());
-            stats.add(Pair.of("Host Gap (Days)", fromDate + " -> " + toDate + " (" + daysBetween + ")"));
-            cardStats.add(Pair.of(staffListEntry.getKey().displayName(), stats));
+            cardStats.add(new Pair<>(staffListEntry.getKey().displayName(), createFor(staffListEntry.getKey(), new ArrayList<>(staffListEntry.getValue()), wrapper.getRequestID())));
         }
+        List<Match> allMatches = new ArrayList<>(hostMatchMap.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .toList());
+
+        List<Pair<String, String>> aFor = createFor(Staff.APOLLO, allMatches, wrapper.getRequestID());
+        cardStats.add(new Pair<>("Apollo", aFor));
 
         Map<String, String> sortMap = new HashMap<>();
         BiFunction<String, String, String> urlCreator = (key, value) -> {
@@ -163,6 +95,88 @@ public class HostPage implements IStatPage {
         wrapper.html(MyWebUtils.makeCardPage("Stats", "", sortMap, cardStats));
     }
 
+
+    public static List<Pair<String, String>> createFor(Staff staff, List<Match> matches, String requestID) {
+        List<Pair<String, String>> stats = new ArrayList<>();
+        int gamesHosted = 0;
+        int gamesRemoved = 0;
+        int netherOn = 0;
+        int rush = 0;
+        Map<Scenario, AtomicInteger> scenarioCount = new HashMap<>();
+        Map<String, AtomicInteger> teamCount = new HashMap<>();
+
+        Staff key = staff;
+        List<Match> value = matches;
+        CachedData cachedData = getMostMatches(requestID, key, value.stream().filter(Match::isGoodGame).toList());
+        List<Integer> fills = new ArrayList<>();
+        for (Match match : value.stream().sorted(Comparator.comparing(Match::getOpenTime)).toList()) {
+            if(match.isGoodGame()) {
+                Stats.INSTANCE.getScenarioManager().fix(Type.SCENARIO, match.scenarios())
+                        .forEach(scenario -> Maps.putIfAbsent(scenarioCount, scenario, new AtomicInteger()).incrementAndGet());
+                Stats.INSTANCE.getScenarioManager().fix(Type.TEAM, Collections.singletonList(match.getTeamFormat()))
+                        .forEach(scenario -> {
+                            StringBuilder stringBuilder = new StringBuilder(scenario.name());
+                            int teamSize = match.getTeamSize();
+                            if(teamSize != 0) {
+                                stringBuilder.append(" (").append(teamSize).append(")");
+                            }
+                            int teamAmount = match.getTeamAmount();
+                            if(teamAmount != 0) {
+                                stringBuilder.append(" [").append(teamAmount).append("]");
+                            }
+                            Maps.putIfAbsent(teamCount, stringBuilder.toString(), new AtomicInteger()).incrementAndGet();
+                        });
+                gamesHosted++;
+                if(match.isRush()) {
+                    rush++;
+                }
+                if(match.isNetherEnabled()) {
+                    netherOn++;
+                }
+                Stats.INSTANCE.getGameManager().findGame(match.id()).ifPresent(game -> fills.add(game.fill()));
+            }
+            if(match.isApolloGame() && match.removed()) {
+                gamesRemoved++;
+            }
+        }
+        int mostHostedScen = 0;
+        int mostHostedTeam = 0;
+        Scenario mostHostedScenario = null;
+        String mostHostedTeamType = null;
+        for (Map.Entry<Scenario, AtomicInteger> entry : scenarioCount.entrySet()) {
+            if(entry.getValue().get() > mostHostedScen && entry.getKey().type() == Type.SCENARIO) {
+                if(!entry.getKey().meta()) {
+                    mostHostedScen = entry.getValue().get();
+                    mostHostedScenario = entry.getKey();
+                }
+            }
+        }
+        for (Map.Entry<String, AtomicInteger> entry : teamCount.entrySet()) {
+            if(entry.getValue().get() > mostHostedTeam) {
+                mostHostedTeam = entry.getValue().get();
+                mostHostedTeamType = entry.getKey();
+            }
+        }
+        int maxFill = fills.stream().max(Integer::compareTo).orElse(0);
+        int minFill = fills.stream().min(Integer::compareTo).orElse(0);
+        int avgFill = fills.size() == 0 ? 0 : fills.stream().mapToInt(Integer::intValue).sum() / fills.size();
+
+        stats.add(Pair.of("Games Hosted", String.valueOf(gamesHosted)));
+        stats.add(Pair.of("Games Removed", gamesRemoved + " (" + FORMAT.format((double) gamesRemoved / (double) gamesHosted * 100) + "%)"));
+        stats.add(Pair.of("Nether On", netherOn + " (" + FORMAT.format((double) netherOn / (double) gamesHosted * 100) + "%)"));
+        stats.add(Pair.of("Rush", rush + " (" + FORMAT.format((double) rush / (double) gamesHosted * 100) + "%)"));
+        stats.add(Pair.of("Top Scenario", mostHostedScenario == null ? "None" : mostHostedScenario.name() + " (" + mostHostedScen + " / " + FORMAT.format((double) mostHostedScen / (double) gamesHosted * 100) + "%)"));
+        stats.add(Pair.of("Top Team Type", mostHostedTeamType == null ? "None" : mostHostedTeamType + " (" + mostHostedTeam + " / " + FORMAT.format((double) mostHostedTeam / (double) gamesHosted * 100) + "%)"));
+        stats.add(Pair.of("Days in a Row", String.valueOf(cachedData.daysInARow().size())));
+        stats.add(Pair.of("Hosts in 24 Hours", String.valueOf(cachedData.hostIn24Hours().size())));
+        stats.add(Pair.of("Fill (Min, Max, Avg)", minFill + " / " + maxFill + " / " + avgFill));
+        String fromDate = Util.formatData(cachedData.timeBetween().key());
+        String toDate = Util.formatData(cachedData.timeBetween().value());
+        int daysBetween = (int) ChronoUnit.DAYS.between(cachedData.timeBetween().key(), cachedData.timeBetween().value());
+        stats.add(Pair.of("Host Gap (Days)", fromDate + " -> " + toDate + " (" + daysBetween + ")"));
+        return stats;
+    }
+
     public <E> void sort(List<Pair<String, List<Pair<String, String>>>> map, String key, Comparator<String> stringComparator) {
         map.sort((o1, o2) -> {
             String value = null;
@@ -202,10 +216,14 @@ public class HostPage implements IStatPage {
                 for (int i = 0; i < sortedMatches.size(); i++) {
                     Match match = sortedMatches.get(i);
                     {
-                        if(i != 0) {
-                            Instant nowMatch = matches.get(i).getOpenTime();
-                            Instant lastMatch = matches.get(i - 1).getOpenTime();
-                            long between = Math.abs(ChronoUnit.DAYS.between(nowMatch, lastMatch));
+                        if(i != sortedMatches.size() - 1) {
+                            Instant nowMatch = sortedMatches.get(i).getOpenTime();
+                            Instant lastMatch = sortedMatches.get(i + 1).getOpenTime();
+                            long between1 = ChronoUnit.DAYS.between(nowMatch, lastMatch);
+                            if(between1 < 0) {
+                                LOGGER.info("Between is less than 0, adding 1");
+                            }
+                            long between = Math.abs(between1);
 
                             if(daysBetween < between) {
                                 daysBetween = (int) between;

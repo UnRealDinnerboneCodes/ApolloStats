@@ -27,35 +27,51 @@ public interface IStatPage extends IWebPage{
             hostMap.clear();
             hostMap.putAll(map);
         }
-        String year = handler.queryParam("year");
-        if(year != null) {
-            Map<Staff, List<Match>> map = new HashMap<>();
-            for (Map.Entry<Staff, List<Match>> staffListEntry : hostMap.entrySet()) {
-                List<Match> matches = new ArrayList<>(staffListEntry.getValue());
-                matches.removeIf(match -> !match.opens().split("-")[0].equals(year));
-                map.put(staffListEntry.getKey(), matches);
-            }
-            hostMap.clear();
-            hostMap.putAll(map);
-        }
+
 
 
 
         try {
-            String type = handler.queryParam("type");
-            if(type != null) {
-                List<Staff.Type> wantedTypes = new ArrayList<>();
-                for (String s : type.split(",")) {
-                    Staff.Type foundType = Staff.Type.fromString(s).orElseThrow(() -> new WebResultException("Invalid Type" + type, 400));
-                    wantedTypes.add(foundType);
+
+            {
+                String year = handler.queryParam("year");
+                if(year != null) {
+                    List<String> years = Arrays.stream(year.split(",")).toList();
+                    for (String s : years) {
+                        try {
+                            Integer.parseInt(s);
+                        }catch (NumberFormatException e) {
+                            throw new WebResultException("Invalid Year: " + s, 400);
+                        }
+                    }
+                    Map<Staff, List<Match>> map = new HashMap<>();
+                    for (Map.Entry<Staff, List<Match>> staffListEntry : hostMap.entrySet()) {
+                        List<Match> matches = new ArrayList<>(staffListEntry.getValue());
+                        matches.removeIf(match -> !years.contains(match.opens().split("-")[0]));
+                        map.put(staffListEntry.getKey(), matches);
+                    }
+                    hostMap.clear();
+                    hostMap.putAll(map);
                 }
-                Map<Staff, List<Match>> map = new HashMap<>();
-                hostMap.entrySet()
-                        .stream().filter(staffListEntry -> wantedTypes.contains(staffListEntry.getKey().type()))
-                        .forEach(staffListEntry -> map.put(staffListEntry.getKey(), staffListEntry.getValue()));
-                hostMap.clear();
-                hostMap.putAll(map);
             }
+
+            {
+                String type = handler.queryParam("type");
+                if (type != null) {
+                    List<Staff.Type> wantedTypes = new ArrayList<>();
+                    for (String s : type.split(",")) {
+                        Staff.Type foundType = Staff.Type.fromString(s).orElseThrow(() -> new WebResultException("Invalid Type" + type, 400));
+                        wantedTypes.add(foundType);
+                    }
+                    Map<Staff, List<Match>> map = new HashMap<>();
+                    hostMap.entrySet()
+                            .stream().filter(staffListEntry -> wantedTypes.contains(staffListEntry.getKey().type()))
+                            .forEach(staffListEntry -> map.put(staffListEntry.getKey(), staffListEntry.getValue()));
+                    hostMap.clear();
+                    hostMap.putAll(map);
+                }
+            }
+            hostMap.entrySet().removeIf(staffListEntry -> staffListEntry.getValue().isEmpty());
             generateStats(hostMap, ICTXWrapper.of(handler));
         }catch (WebResultException e) {
             handler.status(e.getCode()).html(Stats.getResourceAsString("error.html")

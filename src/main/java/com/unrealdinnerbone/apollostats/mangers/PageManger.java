@@ -72,7 +72,8 @@ public class PageManger implements IManger {
                         javalin.get(iWebPage.getPath(), ctx -> {
                             Stopwatch stopwatch = Stopwatch.createStarted();
                             iWebPage.getPage(ctx);
-                            LOGGER.info("[{}] Took {} to get page {}", stopwatch.stop(), iWebPage.getPath(), Objects.hash(ctx.ip()));
+                            String header = ctx.header("X-Forwarded-For");
+                            LOGGER.info("[{}] Took {} to get page {}", header ==null ? "" : Objects.hash(header), stopwatch.stop(), iWebPage.getPath() + ctx.queryString());
                         }, iWebPage.getRole());
                     } else if (key == WebInstance.Type.POST) {
                         LOGGER.info("Registering POST page {}", iWebPage.getPath());

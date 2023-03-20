@@ -1,6 +1,5 @@
 package com.unrealdinnerbone.apollostats.mangers;
 
-import com.google.common.cache.Cache;
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.*;
 import com.unrealdinnerbone.apollostats.lib.Util;
@@ -147,6 +146,7 @@ public class MatchManger implements IManger {
                             AlertManager.gameFound(match);
                             match.findStaff().ifPresent(staff -> {
                                 HostPage.getCaches().forEach(cach -> cach.invalidate(staff));
+                                HostPage.getCaches().forEach(cach -> cach.invalidate(Staff.APOLLO));
                             });
                             TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
                             trackedMatches.put(match.id(), timerTask);
