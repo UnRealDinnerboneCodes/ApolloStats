@@ -2,6 +2,7 @@ package com.unrealdinnerbone.apollostats.mangers;
 
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.IManger;
+import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Type;
 import com.unrealdinnerbone.apollostats.lib.Util;
@@ -17,6 +18,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class ScenarioManager implements IManger
@@ -142,6 +144,21 @@ public class ScenarioManager implements IManger
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+    }
+
+    public Map<Scenario, AtomicInteger> getCount(Type type, List<Match> matches) {
+        Map<Scenario, AtomicInteger> scenCount = new HashMap<>();
+        matches.stream()
+                .flatMap(match -> {
+                    List<Scenario> scenarios = switch (type) {
+                        case SCENARIO -> fix(Type.SCENARIO, match.scenarios());
+                        case TEAM -> fix(Type.TEAM, Collections.singletonList(match.getTeamFormat()));
+                        case MYSTERY_SCENARIO -> Collections.emptyList();
+                    };
+                    return scenarios.stream();
+                })
+                .forEach(scenario -> Maps.putIfAbsent(scenCount, scenario, new AtomicInteger()).incrementAndGet());
+        return scenCount;
     }
 
     @Override

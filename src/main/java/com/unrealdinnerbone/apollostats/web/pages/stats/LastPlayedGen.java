@@ -1,19 +1,14 @@
 package com.unrealdinnerbone.apollostats.web.pages.stats;
 
 import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.stats.types.LastPlayedStat;
 import com.unrealdinnerbone.unreallib.Pair;
-import com.unrealdinnerbone.unreallib.TimeUtil;
 import com.unrealdinnerbone.unreallib.list.Maps;
 import com.unrealdinnerbone.unreallib.web.WebUtils;
 
-import java.text.DecimalFormat;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 public class LastPlayedGen implements IStatPage {
 
@@ -30,7 +25,7 @@ public class LastPlayedGen implements IStatPage {
                         .toList()
                         .forEach(scenario -> Maps.putIfAbsent(plays, scenario, new ArrayList<>()).add(Pair.of(Instant.parse(match.opens()), match.displayName()))));
 
-        List<Stats> stats = new ArrayList<>();
+        List<LastPlayedStat> stats = new ArrayList<>();
 
 //        List<Pair<Instant, String>> totalGamesPlayed = plays.values().stream().flatMap(List::stream).sorted(Comparator.comparing(Pair::key)).toList();
 //        stats.add(new Stats("Total Games", totalGamesPlayed.get(0), totalGamesPlayed.get(totalGamesPlayed.size() - 1), totalGamesPlayed.size(), 1));
@@ -47,11 +42,11 @@ public class LastPlayedGen implements IStatPage {
 
         plays.forEach((key, times) -> {
             if(times.size() == 0) {
-                stats.add(new Stats(key.name(), Pair.of(Instant.ofEpochMilli(0), "None"), Pair.of(Instant.ofEpochMilli(0), "None"), 0, 0));
+                stats.add(new LastPlayedStat(key.name(), Pair.of(Instant.ofEpochMilli(0), "None"), Pair.of(Instant.ofEpochMilli(0), "None"), 0, 0));
             }else {
                 times.sort(Comparator.comparing(Pair::key));
                 double percent = times.size() / (double) totalGames.get();
-                stats.add(new Stats(key.name(), times.get(0), times.get(times.size() - 1), times.size(), percent));
+                stats.add(new LastPlayedStat(key.name(), times.get(0), times.get(times.size() - 1), times.size(), percent));
             }
         });
 
@@ -62,21 +57,5 @@ public class LastPlayedGen implements IStatPage {
     @Override
     public String getPath() {
         return "played";
-    }
-
-    public record Stats(String name, Pair<Instant, String> first, Pair<Instant, String> last, int timesPlayed, double percent) implements Supplier<List<String>> {
-
-
-        private final static DecimalFormat df = new DecimalFormat("#.##");
-
-        private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MMM dd")
-                        .withLocale(Locale.UK)
-                        .withZone(ZoneId.of("UTC"));
-
-        @Override
-        public List<String> get() {
-            long between = ChronoUnit.DAYS.between( last.key(), TimeUtil.utcNow());
-            return Arrays.asList(name, formatter.format(first.key()), formatter.format(last.key()), first.value(), last.value(), "Days: " + String.format("%03d", between), String.valueOf(timesPlayed), df.format(percent * 100) + "%");
-        }
     }
 }

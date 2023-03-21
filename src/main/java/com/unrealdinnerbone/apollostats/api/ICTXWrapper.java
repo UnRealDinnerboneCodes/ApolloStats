@@ -4,6 +4,7 @@ import com.unrealdinnerbone.apollostats.Stats;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public interface ICTXWrapper extends ICTXGetter {
 
             @Override
             public Map<String, List<String>> getQueryPerms() {
-                return handler.queryParamMap();
+                return new HashMap<>(handler.queryParamMap());
             }
         };
     }

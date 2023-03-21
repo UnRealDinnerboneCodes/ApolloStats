@@ -12,6 +12,7 @@ import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenera
 import com.unrealdinnerbone.apollostats.web.pages.graph.GameHostedGen;
 import com.unrealdinnerbone.apollostats.web.pages.graph.TotalGameGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
+import com.unrealdinnerbone.apollostats.web.pages.stats.hosts.HostsPage;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
@@ -36,7 +37,6 @@ public class PageManger implements IManger {
                         new RandomScenarioGenerator.IDPage(),
                         new TeamTypesGames(),
                         new LastPlayedGen(),
-                        new AverageFillPage(),
                         new GameHostedGen(),
                         new BingoPages.IDCard(),
                         new BingoPages.NewCard(),
@@ -49,7 +49,7 @@ public class PageManger implements IManger {
                         new GamesPage(),
                         new GameFinderPage(),
                         new TeamsPage(),
-                        new HostPage()
+                        new HostsPage()
                 )));
 
         instances.add(
@@ -65,6 +65,8 @@ public class PageManger implements IManger {
                     javalinConfig.showJavalinBanner = false;
                     instance.getConfig().accept(javalinConfig);
                 }).start(instance.getPort());
+
+
 
                 instance.getPages().forEach((key, value) -> value.forEach(iWebPage -> {
                     if (key == WebInstance.Type.GET) {

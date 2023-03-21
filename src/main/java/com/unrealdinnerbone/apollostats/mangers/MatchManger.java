@@ -2,8 +2,8 @@ package com.unrealdinnerbone.apollostats.mangers;
 
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.lib.CachedStat;
 import com.unrealdinnerbone.apollostats.lib.Util;
-import com.unrealdinnerbone.apollostats.web.pages.stats.HostPage;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.exception.WebResultException;
@@ -145,8 +145,10 @@ public class MatchManger implements IManger {
                             LOGGER.info("Scheduling match {}", match);
                             AlertManager.gameFound(match);
                             match.findStaff().ifPresent(staff -> {
-                                HostPage.getCaches().forEach(cach -> cach.invalidate(staff));
-                                HostPage.getCaches().forEach(cach -> cach.invalidate(Staff.APOLLO));
+                                CachedStat.getCachedStats().forEach(cachedStat -> {
+                                    cachedStat.clear(staff);
+                                    cachedStat.clear(Staff.APOLLO);
+                                });
                             });
                             TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
                             trackedMatches.put(match.id(), timerTask);
