@@ -58,6 +58,7 @@ public class MyWebUtils {
         stats.forEach((stat) -> stringBuilder.append(createStats(stat.key(), stat.value())));
         return """
                             <div class="content">
+                            <h4>Host</h4>
                                 <h4>{NAME}</h4>
                                 {STATS}
                             </div>

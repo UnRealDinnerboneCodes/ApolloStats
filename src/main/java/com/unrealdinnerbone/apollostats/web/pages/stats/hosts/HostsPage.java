@@ -22,7 +22,7 @@ public class HostsPage implements IStatPage {
         stats.add(new Stat<>("Games Hosted", CachedStats.GAMES_HOSTED, Comparator.comparingInt(Integer::parseInt)));
         stats.add(new Stat<>("Games Removed", CachedStats.GAMES_REMOVED, Comparator.comparingInt(value -> Integer.parseInt(value.split(" ")[0]))));
         stats.add(new Stat<>("Nether On", CachedStats.NETHER_ON, Comparator.comparingInt(value -> Integer.parseInt(value.split(" ")[0]))));
-        stats.add(new Stat<>("Rush On", CachedStats.RUSH, Comparator.comparingInt(value -> Integer.parseInt(value.split(" ")[0]))));
+        stats.add(new Stat<>("Rush", CachedStats.RUSH, Comparator.comparingInt(value -> Integer.parseInt(value.split(" ")[0]))));
         stats.add(new Stat<>("Top Scenario", CachedStats.TOP_SCENARIO, Comparator.comparing(value -> value)));
         stats.add(new Stat<>("Top Team Type", CachedStats.TOP_TEAM_FORMAT, Comparator.comparing(value -> value)));
         stats.add(new Stat<>("Days in a Row", CachedStats.DAYS_IN_A_ROW, Comparator.comparingInt(value -> Integer.parseInt(value.split(" ")[0]))));

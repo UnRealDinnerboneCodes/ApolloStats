@@ -10,25 +10,36 @@ body {
     margin: 8px;
     text-align: center;
     padding: 1px;
+    /*grid-template-columns: repeat(auto-fit, minmax(auto, auto));*/
+
 
 }
 
 .row {
     display: grid;
     grid-template-columns: repeat(3, minmax(auto, auto));
+    grid-template-rows: auto;
+
 
 }
 .content {
     color: black;
-    /*display: grid;*/
+    display: grid;
     column-gap: 0.25ch;
     row-gap: 0.25rem;
-    /*grid-template-columns: repeat(2, auto);*/
+    grid-template-columns: repeat(2, minmax(auto, auto));
     grid-template-rows: auto;
+
     grid-gap: 0;
     margin: 8px;
     padding: 8px;
     text-align: center;
+}
+
+.content > .stats {
+    /*display: table;*/
+    /*grid-template-columns: repeat(2, auto);*/
+    grid-template-rows: auto;
 }
 
 .content > p:nth-child(2n-1), .content > * > p:nth-child(2n-1) {
@@ -44,17 +55,17 @@ h1 {
 }
 
 
+
 .content {
     color:#FFFFFF;
     background-color: #424549;
-    padding: 8px;
+    padding: 2px;
 }
 
 .row {
     margin: 10px -16px;
 }
 
- Style the buttons
 .btn {
     border: none;
     outline: none;

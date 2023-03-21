@@ -27,7 +27,7 @@ public class CachedStat<T> {
 
     public T get(String name, Staff staff, List<Match> matches) {
         try {
-            return cache.get(staff).get(name, () -> function.apply(name, staff, matches));
+            return cache.get(staff).get(name, () -> function.apply(name, staff, new ArrayList<>(matches)));
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
