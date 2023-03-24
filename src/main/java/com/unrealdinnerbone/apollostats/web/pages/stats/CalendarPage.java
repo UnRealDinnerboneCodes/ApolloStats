@@ -58,6 +58,10 @@ public record CalendarPage() implements IStatPage {
                     Staff staff = staffAtomicIntegerEntry.getKey();
                     AtomicInteger integer = staffAtomicIntegerEntry.getValue();
                     if(includeStaff) {
+                        String amount = integer.toString();
+                        if(amount.equals("69")) {
+                            amount += " (Nice)";
+                        }
                         staffStats.add(Pair.of(staff.displayName(), integer.toString()));
                     }
                     total += integer.get();
