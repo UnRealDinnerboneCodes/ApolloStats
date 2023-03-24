@@ -7,11 +7,11 @@ import java.util.Map;
 
 public class MyWebUtils {
 
-    public static String makeCardPage(String title, String icon, Map<String, String> filtersMap, List<Pair<String, List<Pair<String, String>>>> stringMapMap) {
+    public static String makeCardPage(String title, String icon, String key, Map<String, String> filtersMap, List<Pair<String, List<Pair<String, String>>>> stringMapMap) {
         StringBuilder links = new StringBuilder();
         filtersMap.forEach((link, name) -> links.append(createLink(name, link)));
         StringBuilder cards = new StringBuilder();
-        stringMapMap.forEach((pair) -> cards.append(createCard(pair.key(), pair.value())));
+        stringMapMap.forEach((pair) -> cards.append(createCard(pair.key(), key, pair.value())));
         return """
                 <!DOCTYPE html>
                 <html>
@@ -53,16 +53,17 @@ public class MyWebUtils {
         return "<a href=\"{LINK}\">{NAME}</a>".replace("{LINK}", link).replace("{NAME}", name);
     }
 
-    private static String createCard(String name, List<Pair<String, String>> stats) {
+    private static String createCard(String name, String key, List<Pair<String, String>> stats) {
         StringBuilder stringBuilder = new StringBuilder();
         stats.forEach((stat) -> stringBuilder.append(createStats(stat.key(), stat.value())));
         return """
                             <div class="content">
-                            <h4>Host</h4>
+                            <h4>{KEY}</h4>
                                 <h4>{NAME}</h4>
                                 {STATS}
                             </div>
-                """.replace("{NAME}", name).replace("{STATS}", stringBuilder.toString());
+                """.replace("{NAME}", name).replace("{STATS}", stringBuilder.toString())
+                .replace("{KEY}", key);
     }
 
     private static String createStats(String stats, String value) {

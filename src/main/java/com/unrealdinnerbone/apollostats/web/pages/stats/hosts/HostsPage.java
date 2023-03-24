@@ -72,7 +72,7 @@ public class HostsPage implements IStatPage {
                         .filter(stat -> StringUtils.capitalizeFirstLetter(stat.name().replace("(", "").replace(")", "")).equalsIgnoreCase(s))
                         .forEach(stat -> sort(cardStats, stat.name(), stat.comparator())));
 
-        wrapper.html(MyWebUtils.makeCardPage("Stats", "", sortMap, cardStats));
+        wrapper.html(MyWebUtils.makeCardPage("Stats", "", "Host", sortMap, cardStats));
     }
 
 
@@ -81,7 +81,7 @@ public class HostsPage implements IStatPage {
                 .map(stat -> Pair.of(stat.name, stat.cachedStat.get(requestID, staff, matches).toString())).collect(Collectors.toList());
     }
 
-    public void sort(List<Pair<String, List<Pair<String, String>>>> map, String key, Comparator<String> stringComparator) {
+    public static void sort(List<Pair<String, List<Pair<String, String>>>> map, String key, Comparator<String> stringComparator) {
         map.sort((o1, o2) -> {
             String value = null;
             String value1 = null;
@@ -99,9 +99,7 @@ public class HostsPage implements IStatPage {
         });
     }
 
-    public record Stat<T>(String name, CachedStat<T> cachedStat, Comparator<String> comparator) {
-
-    }
+    public record Stat<T>(String name, CachedStat<T> cachedStat, Comparator<String> comparator) {}
 
     @Override
     public String getPath() {

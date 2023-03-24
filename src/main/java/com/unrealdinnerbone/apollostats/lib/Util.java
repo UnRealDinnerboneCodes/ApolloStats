@@ -12,9 +12,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Util
-{
-
+public class Util {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy MMM dd")
             .withLocale(Locale.UK)
             .withZone(ZoneId.of("UTC"));
@@ -24,6 +22,7 @@ public class Util
     public static String getMotdMessage(MCServerPingResponse result) {
         return PlainTextComponentSerializer.plainText().serialize(GsonComponentSerializer.gson().deserialize(result.description().json()));
     }
+
     public static String formalize(String s) {
         return s.toLowerCase().replace(" ", "").replace("+", "plus").replaceAll("\\p{Punct}+", "");
     }

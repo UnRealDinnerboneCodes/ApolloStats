@@ -49,7 +49,8 @@ public class PageManger implements IManger {
                         new GamesPage(),
                         new GameFinderPage(),
                         new TeamsPage(),
-                        new HostsPage()
+                        new HostsPage(),
+                        new CalendarPage()
                 )));
 
         instances.add(
