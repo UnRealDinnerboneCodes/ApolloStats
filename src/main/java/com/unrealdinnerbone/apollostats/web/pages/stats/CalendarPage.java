@@ -62,7 +62,7 @@ public record CalendarPage() implements IStatPage {
                         if(amount.equals("69")) {
                             amount += " (Nice)";
                         }
-                        staffStats.add(Pair.of(staff.displayName(), integer.toString()));
+                        staffStats.add(Pair.of(staff.displayName(), amount));
                     }
                     total += integer.get();
                 }
