@@ -14,7 +14,7 @@ dependencies {
     shade "com.unrealdinnerbone:PostgressLib:2.0.1+build.37"
     shade "com.unrealdinnerbone:UnRealLib:7.0.0+build.148"
     shade 'com.google.guava:guava:31.0.1-jre'
-    shade('io.javalin:javalin:5.3.2')
+    shade "com.unrealdinnerbone:JavalinUtils:1.0.0+build.3"
     shade 'org.apache.commons:commons-text:1.10.0'
     shade "net.kyori:adventure-text-serializer-gson:4.13.0"
     shade "net.kyori:adventure-text-serializer-plain:4.13.0"

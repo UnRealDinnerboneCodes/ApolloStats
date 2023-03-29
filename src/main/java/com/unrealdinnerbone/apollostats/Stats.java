@@ -4,6 +4,7 @@ import com.unrealdinnerbone.apollostats.api.IManger;
 import com.unrealdinnerbone.apollostats.lib.Config;
 import com.unrealdinnerbone.apollostats.mangers.*;
 import com.unrealdinnerbone.config.ConfigManager;
+import com.unrealdinnerbone.javalinutils.InfluxConfig;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
@@ -44,6 +45,7 @@ public class Stats {
     public Stats() throws IllegalStateException {
         ConfigManager configManager = ConfigManager.createSimpleEnvPropertyConfigManger();
         statsConfig = configManager.loadConfig("apollo", Config::new);
+        InfluxConfig influxConfig = configManager.loadConfig("influx", InfluxConfig::new);
         PostgresConfig postgresConfig = configManager.loadConfig("postgres", PostgresConfig::new);
         LOGGER.info("Connecting to database...");
         try {
@@ -57,7 +59,7 @@ public class Stats {
         scenarioManager = register(new ScenarioManager());
         gameManager = register(new GameManager());
         matchManger = new MatchManger();
-        pageManger = new PageManger();
+        pageManger = new PageManger(influxConfig);
     }
 
     private <T extends IManger> T register(T t) {
