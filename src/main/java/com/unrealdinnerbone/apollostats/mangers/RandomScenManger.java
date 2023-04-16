@@ -41,6 +41,7 @@ public class RandomScenManger {
         scenarios.addAll(getList(Type.SCENARIO)
                 .stream()
                 .filter(Scenario::hostable)
+                        .filter(Scenario::image)
                 .filter(Predicate.not(Scenario::meta))
                 .sorted(ArrayUtil.shuffle())
                 .limit(amount)

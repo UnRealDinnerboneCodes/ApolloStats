@@ -5,12 +5,12 @@ import com.unrealdinnerbone.apollostats.api.Game;
 import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Staff;
+import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.discord.EmbedObject;
 import com.unrealdinnerbone.unreallib.exception.WebResultException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.time.Instant;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 public class AlertManager
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AlertManager.class);
+    private static final Logger LOGGER = LogHelper.getLogger();
     private static final Queue<DiscordWebhook> WEBHOOKS = new LinkedList<>();
 
 
@@ -66,7 +66,7 @@ public class AlertManager
                 .field("Nether", match.getNetherFormat(), true)
                 .field("PvP", String.valueOf(match.pvpEnabledAt()), true)
                 .field("Border", String.valueOf(match.mapSize()), true)
-                .field("Team", String.valueOf(match.getTeamFormat()), true)
+                .field("Team", match.getTeamFormat() + "(" + match.getTeamSize() + ")", true)
                 .field("Opens", "<t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).getEpochSecond())), true)
                 .url(match.getUrl())
                 .footer(String.join(", ", match.scenarios()), null)
