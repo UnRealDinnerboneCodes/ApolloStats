@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GamesPage implements IStatPage {
+public class MatchesPage implements IStatPage {
 
     @Override
     public boolean filterMatches(Match match) {

@@ -51,11 +51,13 @@ public class PageManger implements IManger {
                         new TotalGameGen(),
                         new MainPage(),
                         new DifferentHostInARow(),
-                        new GamesPage(),
+                        new MatchesPage(),
                         new GameFinderPage(),
                         new TeamsPage(),
                         new HostsPage(),
-                        new CalendarPage()
+                        new CalendarPage(),
+                        new GamePage(),
+                        new TheEndPage()
                 )));
 
         instances.add(

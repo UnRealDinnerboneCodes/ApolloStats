@@ -34,8 +34,10 @@ public class CachedStats {
                 if (i != sortedMatches.size() - 1) {
                     Instant nowMatch = match.getOpenTime();
                     Instant lastMatch = sortedMatches.get(i + 1).getOpenTime();
+
                     long between1 = ChronoUnit.DAYS.between(nowMatch, lastMatch);
                     long between = Math.abs(between1);
+
 
                     if (daysBetween < between) {
                         daysBetween = (int) between;

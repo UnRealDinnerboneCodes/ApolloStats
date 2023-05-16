@@ -87,4 +87,12 @@ public record GamesPlayedStat(int totalPost,
             return getMostPopularTeam() + " (" + amount + " / " + FORMAT.format((double) amount / (double) hosted * 100) + "%)";
         }
     }
+
+    public int getTeamCount(String type) {
+        return teamCount.getOrDefault(type, new AtomicInteger(0)).get();
+    }
+
+    public int getScenarioCount(Scenario scenario) {
+        return this.scenario.getOrDefault(scenario, new AtomicInteger(0)).get();
+    }
 }

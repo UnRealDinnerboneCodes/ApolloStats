@@ -17,6 +17,14 @@ public class TeamsPage implements IStatPage {
 
     @Override
     public void generateStats(Map<Staff, List<Match>> hostMatchMap, ICTXWrapper wrapper) throws WebResultException {
+        Map<String, AtomicInteger> amount = getTeamMap(hostMatchMap);
+        List<Team> uniqueTeams = amount.entrySet().stream()
+                .map(entry -> new Team(entry.getKey(), entry.getValue().get()))
+                .toList();
+        wrapper.html(WebUtils.makeHtmlTable("teams", "", List.of("Type", "Amount"), uniqueTeams));
+    }
+
+    public static Map<String, AtomicInteger> getTeamMap(Map<Staff, List<Match>> hostMatchMap) {
         Map<String, AtomicInteger> amount = new HashMap<>();
         for (Match match : hostMatchMap.values().stream().flatMap(List::stream).toList()) {
             int teamSize = match.getTeamSize();
@@ -33,10 +41,7 @@ public class TeamsPage implements IStatPage {
             });
 
         }
-        List<Team> uniqueTeams = amount.entrySet().stream()
-                .map(entry -> new Team(entry.getKey(), entry.getValue().get()))
-                .toList();
-        wrapper.html(WebUtils.makeHtmlTable("teams", "", List.of("Type", "Amount"), uniqueTeams));
+        return amount;
     }
 
     public record Team(String id, int amount) implements Supplier<List<String>> {
