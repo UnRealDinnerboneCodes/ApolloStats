@@ -5,6 +5,8 @@ import com.unrealdinnerbone.apollo.core.api.event.IEvent;
 import com.unrealdinnerbone.apollo.core.api.module.IModule;
 import com.unrealdinnerbone.apollo.core.api.module.Module;
 import com.unrealdinnerbone.apollo.web.mangers.PageManger;
+import com.unrealdinnerbone.unreallib.LogHelper;
+import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,9 +14,12 @@ import java.util.concurrent.CompletableFuture;
 public class WebModule implements IModule {
 
 
+    private static final Logger LOGGER = LogHelper.getLogger();
+
 
     @Override
     public CompletableFuture<Void> start() {
+        LOGGER.info("Starting Web Module");
         return new PageManger().start();
     }
 
