@@ -6,10 +6,12 @@ import com.unrealdinnerbone.apollostats.api.Match;
 import com.unrealdinnerbone.apollostats.api.Scenario;
 import com.unrealdinnerbone.apollostats.api.Staff;
 import com.unrealdinnerbone.unreallib.LogHelper;
+import com.unrealdinnerbone.unreallib.SimpleColor;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.discord.EmbedObject;
 import com.unrealdinnerbone.unreallib.exception.WebResultException;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.awt.*;
@@ -44,7 +46,7 @@ public class AlertManager
     }
     public static void gameSaved(Match match, Game game) {
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(Color.YELLOW)
+                .color(fromColor(Color.YELLOW))
                 .author(match.findStaff().map(Staff::displayName).orElse("Unknown"), match.getUrl())
                 .footer("Fill: " + game.fill())
                 .description("Time: <t:{}:T>".replace("{}", String.valueOf(Instant.parse(match.opens()).toEpochMilli() / 1000)))
@@ -53,14 +55,14 @@ public class AlertManager
 
     public static void unknownSceneFound(String scen, List<Scenario> guessed) {
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(Color.BLUE)
+                .color(fromColor(Color.BLUE))
                 .description("Unknown Scenario Found: " + scen + " Guessed: " + Arrays.toString(guessed.toArray()))
                 .build()));
     }
 
     public static void gameFound(Match match) {
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(Color.GREEN)
+                .color(fromColor(Color.GREEN))
                 .title("New Game: " + match.displayName() + " #" + match.count())
                 .field("Meetup", String.valueOf(match.length()), true)
                 .field("Nether", match.getNetherFormat(), true)
@@ -76,7 +78,7 @@ public class AlertManager
 
     public static void gameRemoved(Match match) {
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(Color.RED)
+                .color(fromColor(Color.RED))
                 .title("Game Removed: " + match.displayName() + " #" + match.count())
                 .description("Reason: " + match.removedReason())
                 .url(match.getUrl())
@@ -87,6 +89,11 @@ public class AlertManager
         DiscordWebhook webhook = DiscordWebhook.builder();
         consumer.accept(webhook);
         WEBHOOKS.add(webhook);
+    }
+
+    @NotNull
+    static SimpleColor fromColor(java.awt.Color color) {
+        return SimpleColor.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
     }
 
 }

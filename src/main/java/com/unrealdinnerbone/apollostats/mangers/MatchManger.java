@@ -2,9 +2,11 @@ package com.unrealdinnerbone.apollostats.mangers;
 
 import com.unrealdinnerbone.apollostats.Stats;
 import com.unrealdinnerbone.apollostats.api.*;
+import com.unrealdinnerbone.apollostats.lib.CachedStat;
 import com.unrealdinnerbone.apollostats.lib.Util;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
+import com.unrealdinnerbone.unreallib.exception.ExceptionRunnable;
 import com.unrealdinnerbone.unreallib.exception.WebResultException;
 import com.unrealdinnerbone.unreallib.json.JsonUtil;
 import com.unrealdinnerbone.unreallib.json.exception.JsonParseException;
@@ -119,47 +121,46 @@ public class MatchManger implements IManger {
 
     @Override
     public CompletableFuture<Void> start() {
-        return CompletableFuture.runAsync(() -> loadStaffMatchBacklog(true));
-//        CompletableFuture<Void> staffTracker =
-//        TaskScheduler.runAsync((ExceptionRunnable<Exception>) () -> loadStaffMatchBacklog(true));
+//        return CompletableFuture.runAsync(() -> loadStaffMatchBacklog(true));
+        CompletableFuture<Void> staffTracker = TaskScheduler.runAsync((ExceptionRunnable<Exception>) () -> loadStaffMatchBacklog(true));
 
-//        CompletableFuture<Void> upcoming = new CompletableFuture<>();
+        CompletableFuture<Void> upcoming = new CompletableFuture<>();
 
-//        if(false && Stats.INSTANCE.getStatsConfig().watchMatches()) {
-//            TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.MINUTES, task -> {
-//                getUpcomingMatches().stream().filter(Match::isApolloGame).forEach(match -> {
-//                    if (match.removed()) {
-//                        if (trackedMatches.containsKey(match.id())) {
-//                            AlertManager.gameRemoved(match);
-//                            trackedMatches.get(match.id()).cancel();
-//                            trackedMatches.remove(match.id());
-//                            LOGGER.info("Removed match {}", match);
-//                        }
-//                    } else {
-//                        if (!trackedMatches.containsKey(match.id())) {
-//                            LOGGER.info("Scheduling match {}", match);
-//                            AlertManager.gameFound(match);
-//                            match.findStaff().ifPresent(staff -> {
-//                                CachedStat.getCachedStats().forEach(cachedStat -> {
-//                                    cachedStat.clear(staff);
-//                                    cachedStat.clear(Staff.APOLLO);
-//                                });
-//                            });
-//                            TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
-//                            trackedMatches.put(match.id(), timerTask);
-//                        }
-//                    }
-//                });
-//
-//                if(!upcoming.isDone()) {
-//                    upcoming.complete(null);
-//                }
-//
-//            }, upcoming::completeExceptionally);
-//        }else {
-//            upcoming.complete(null);
-//        }
-//        return TaskScheduler.allAsync(List.of(staffTracker, upcoming));
+        if(Stats.INSTANCE.getStatsConfig().watchMatches()) {
+            TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.MINUTES, task -> {
+                getUpcomingMatches().stream().filter(Match::isApolloGame).forEach(match -> {
+                    if (match.removed()) {
+                        if (trackedMatches.containsKey(match.id())) {
+                            AlertManager.gameRemoved(match);
+                            trackedMatches.get(match.id()).cancel();
+                            trackedMatches.remove(match.id());
+                            LOGGER.info("Removed match {}", match);
+                        }
+                    } else {
+                        if (!trackedMatches.containsKey(match.id())) {
+                            LOGGER.info("Scheduling match {}", match);
+                            AlertManager.gameFound(match);
+                            match.findStaff().ifPresent(staff -> {
+                                CachedStat.getCachedStats().forEach(cachedStat -> {
+                                    cachedStat.clear(staff);
+                                    cachedStat.clear(Staff.APOLLO);
+                                });
+                            });
+                            TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
+                            trackedMatches.put(match.id(), timerTask);
+                        }
+                    }
+                });
+
+                if(!upcoming.isDone()) {
+                    upcoming.complete(null);
+                }
+
+            }, upcoming::completeExceptionally);
+        }else {
+            upcoming.complete(null);
+        }
+        return TaskScheduler.allAsync(List.of(staffTracker, upcoming));
     }
 
     @Override

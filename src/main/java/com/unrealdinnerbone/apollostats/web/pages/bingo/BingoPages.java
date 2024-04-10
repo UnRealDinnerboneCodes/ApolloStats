@@ -46,46 +46,46 @@ public class BingoPages
         }
     }
 
-    public static class Add implements IWebPage {
-
-
-        @Override
-        public ApolloRole getRole() {
-            return ApolloRole.POST_API;
-        }
-
-        @Override
-        public void getPage(Context handler) {
-            try {
-                BingoValue value = JsonUtil.DEFAULT.parse(BingoValue.class, handler.body());
-                if(value == null) {
-                    handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Invalid JSON (How did you get here?)"));
-                }else {
-                    if(value.bingo() == null) {
-                        handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Bingo value is null"));
-                    }else {
-                        if(Stats.INSTANCE.getBingoManger().getBingoValues().contains(value)) {
-                            handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Bingo value already exists"));
-                        }else {
-                            Stats.INSTANCE.getBingoManger().getBingoValues().add(value);
-                            LOGGER.info("Added {}", value);
-                            Stats.INSTANCE.getPostgresHandler().executeUpdate("INSERT INTO public.bingo (bingo, auto_win, is_player) VALUES (?, ?, ?)", statement -> {
-                                statement.setString(1, value.bingo());
-                                statement.setBoolean(2, value.isBingo());
-                                statement.setBoolean(3, value.isPlayer());
-                            });
-                        }
-                    }
-                }
-            }catch(Exception e) {
-                handler.status(HttpStatus.BAD_REQUEST).result(Results.message(e.getMessage()));
-            }
-        }
-
-        @Override
-        public String getPath() {
-            return "/v1/bingo/add";
-        }
-    }
+//    public static class Add implements IWebPage {
+//
+//
+//        @Override
+//        public ApolloRole getRole() {
+//            return ApolloRole.POST_API;
+//        }
+//
+//        @Override
+//        public void getPage(Context handler) {
+//            try {
+//                BingoValue value = JsonUtil.DEFAULT.parse(BingoValue.class, handler.body());
+//                if(value == null) {
+//                    handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Invalid JSON (How did you get here?)"));
+//                }else {
+//                    if(value.bingo() == null) {
+//                        handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Bingo value is null"));
+//                    }else {
+//                        if(Stats.INSTANCE.getBingoManger().getBingoValues().contains(value)) {
+//                            handler.status(HttpStatus.BAD_REQUEST).result(Results.message("Bingo value already exists"));
+//                        }else {
+//                            Stats.INSTANCE.getBingoManger().getBingoValues().add(value);
+//                            LOGGER.info("Added {}", value);
+//                            Stats.INSTANCE.getPostgresHandler().executeUpdate("INSERT INTO public.bingo (bingo, auto_win, is_player) VALUES (?, ?, ?)", statement -> {
+//                                statement.setString(1, value.bingo());
+//                                statement.setBoolean(2, value.isBingo());
+//                                statement.setBoolean(3, value.isPlayer());
+//                            });
+//                        }
+//                    }
+//                }
+//            }catch(Exception e) {
+//                handler.status(HttpStatus.BAD_REQUEST).result(Results.message(e.getMessage()));
+//            }
+//        }
+//
+//        @Override
+//        public String getPath() {
+//            return "/v1/bingo/add";
+//        }
+//    }
 
 }

@@ -3,9 +3,7 @@ package com.unrealdinnerbone.apollostats.mangers;
 import com.google.common.base.Stopwatch;
 import com.unrealdinnerbone.apollostats.api.IManger;
 import com.unrealdinnerbone.apollostats.api.WebInstance;
-import com.unrealdinnerbone.apollostats.instacnes.APIInstance;
 import com.unrealdinnerbone.apollostats.instacnes.PublicInstance;
-import com.unrealdinnerbone.apollostats.web.WebAccessManger;
 import com.unrealdinnerbone.apollostats.web.pages.MainPage;
 import com.unrealdinnerbone.apollostats.web.pages.bingo.BingoPages;
 import com.unrealdinnerbone.apollostats.web.pages.generator.RandomScenarioGenerator;
@@ -14,8 +12,6 @@ import com.unrealdinnerbone.apollostats.web.pages.graph.TotalGameGen;
 import com.unrealdinnerbone.apollostats.web.pages.stats.*;
 import com.unrealdinnerbone.apollostats.web.pages.stats.hosts.HostsPage;
 import com.unrealdinnerbone.apollostats.web.pages.stats.old.TeamTypesGames;
-import com.unrealdinnerbone.javalinutils.InfluxConfig;
-import com.unrealdinnerbone.javalinutils.InfluxPlugin;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import io.javalin.Javalin;
@@ -32,10 +28,8 @@ public class PageManger implements IManger {
     private static final Logger LOGGER = LogHelper.getLogger();
     private final List<WebInstance<?>> instances = new ArrayList<>();
 
-    private final InfluxConfig influxConfig;
 
-    public PageManger(InfluxConfig influxConfig) {
-        this.influxConfig = influxConfig;
+    public PageManger() {
         instances.add(
                 new PublicInstance(Arrays.asList(
                         new RandomScenarioGenerator(),
@@ -60,9 +54,9 @@ public class PageManger implements IManger {
                         new TheEndPage()
                 )));
 
-        instances.add(
-                new APIInstance(Arrays.asList(new BingoPages.Add())
-                ));
+//        instances.add(
+//                new APIInstance(Arrays.asList(new BingoPages.Add())
+//                ));
     }
 
 
@@ -71,8 +65,6 @@ public class PageManger implements IManger {
         return TaskScheduler.runAsync(() -> {
             for (WebInstance<?> instance : instances) {
                 Javalin javalin = Javalin.create(javalinConfig -> {
-                    javalinConfig.plugins.register(new InfluxPlugin(influxConfig));
-                    javalinConfig.accessManager(new WebAccessManger());
                     javalinConfig.showJavalinBanner = false;
                     instance.getConfig().accept(javalinConfig);
                 }).start(instance.getPort());

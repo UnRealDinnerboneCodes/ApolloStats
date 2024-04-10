@@ -1,19 +1,18 @@
 package com.unrealdinnerbone.apollostats.lib;
 
-import com.unrealdinnerbone.config.config.BooleanConfig;
-import com.unrealdinnerbone.config.config.IntegerConfig;
-import com.unrealdinnerbone.config.config.StringConfig;
-import com.unrealdinnerbone.config.ConfigCreator;
+
+import com.unrealdinnerbone.config.api.ConfigCreator;
+import com.unrealdinnerbone.config.config.ConfigValue;
 
 public class Config {
 
-    private final StringConfig PUSH_API_KEY;
-    private final StringConfig DISCORD_WEBBOT_TOKEN;
-    private final StringConfig SERVER_IP;
-    private final IntegerConfig SERVER_PORT;
-    private final StringConfig MATCH_PAGE;
-    private final StringConfig DEFAULT_FREE_SPACE;
-    private final BooleanConfig ENABLE_MATCH_WATCHING;
+    private final ConfigValue<String> PUSH_API_KEY;
+    private final ConfigValue<String> DISCORD_WEBBOT_TOKEN;
+    private final ConfigValue<String> SERVER_IP;
+    private final ConfigValue<Integer> SERVER_PORT;
+    private final ConfigValue<String> MATCH_PAGE;
+    private final ConfigValue<String> DEFAULT_FREE_SPACE;
+    private final ConfigValue<Boolean> ENABLE_MATCH_WATCHING;
 
     public Config(ConfigCreator configCreator) {
         this.PUSH_API_KEY = configCreator.createString("PUSH_API_KEY", "");
@@ -26,30 +25,30 @@ public class Config {
     }
 
     public String getPushApiKey() {
-        return PUSH_API_KEY.getValue();
+        return PUSH_API_KEY.get();
     }
 
     public String getDiscordWebBotToken() {
-        return DISCORD_WEBBOT_TOKEN.getValue();
+        return DISCORD_WEBBOT_TOKEN.get();
     }
 
     public String getServerIp() {
-        return SERVER_IP.getValue();
+        return SERVER_IP.get();
     }
 
     public int getServerPort() {
-        return SERVER_PORT.getValue();
+        return SERVER_PORT.get();
     }
 
     public String getMatchPage() {
-        return MATCH_PAGE.getValue();
+        return MATCH_PAGE.get();
     }
 
     public String getDefaultFreeSpace() {
-        return DEFAULT_FREE_SPACE.getValue();
+        return DEFAULT_FREE_SPACE.get();
     }
 
     public boolean watchMatches() {
-        return ENABLE_MATCH_WATCHING.getValue();
+        return ENABLE_MATCH_WATCHING.get();
     }
 }
