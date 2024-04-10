@@ -47,14 +47,14 @@ public interface StatsLauncher {
                 continue;
             }
             LOGGER.info("Creating Module: {}", moduleData.value());
-            if(aClass.isAssignableFrom(IModule.class)) {
-                try {
-                    IModule iModule = (IModule) aClass.getConstructor().newInstance();
-                    iModule.registerEventHandlers(ApolloEventManager.EVENT_MANAGER);
-                    modules.add(iModule);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    LOGGER.error("Failed to create Module: {}", moduleData.value(), e);
-                }
+
+            try {
+                IModule iModule = (IModule) aClass.getConstructor().newInstance();
+                iModule.registerEventHandlers(ApolloEventManager.EVENT_MANAGER);
+                modules.add(iModule);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                LOGGER.error("Failed to create Module: {}", moduleData.value(), e);
             }
         }
 
