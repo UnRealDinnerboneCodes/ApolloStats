@@ -65,6 +65,7 @@ public class PageManger implements IManger {
 
     @Override
     public CompletableFuture<Void> start() {
+        LOGGER.info("Starting Page Manager");
         return TaskScheduler.runAsync(() -> {
             for (WebInstance<?> instance : instances) {
                 Javalin javalin = Javalin.create(javalinConfig -> {
