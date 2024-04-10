@@ -22,7 +22,7 @@ public class ApolloEventManager<T>
 
     public void post(T eClass) {
         Class<T> eventClass = (Class<T>) eClass.getClass();
-        if (interactions.containsKey(eClass)) {
+        if (interactions.containsKey(eventClass)) {
             interactions.get(eventClass).forEach(runnable -> runnable.accept(eClass));
         }
     }
