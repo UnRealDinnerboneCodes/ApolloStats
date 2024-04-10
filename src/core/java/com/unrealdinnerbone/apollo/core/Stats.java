@@ -28,14 +28,13 @@ import java.util.stream.Collectors;
 public class Stats {
     private static final Logger LOGGER = LogHelper.getLogger();
 
-    private static final List<IManger> futures = new ArrayList<>();
 
     public static Stats INSTANCE;
 
-    private final StaffManager staffManager = register(new StaffManager());
-    private final ScenarioManager scenarioManager = register(new ScenarioManager());
-    private final GameManager gameManager = register(new GameManager());
-    private final MatchManger matchManger = register(new MatchManger());
+    private final StaffManager staffManager = new StaffManager();
+    private final ScenarioManager scenarioManager = new ScenarioManager();
+    private final GameManager gameManager = new GameManager();
+    private final MatchManger matchManger = new MatchManger();
 
 
     private final Executor executor = Executors.newFixedThreadPool(5);
@@ -57,10 +56,7 @@ public class Stats {
         generalConfig = envProvider.loadConfig("general", GeneralConfig::new);
     }
 
-    private <T extends IManger> T register(T t) {
-        futures.add(t);
-        return t;
-    }
+
 
     public CompletableFuture<Void> start() {
         return CompletableFuture.runAsync(() -> {
@@ -70,7 +66,10 @@ public class Stats {
                 LOGGER.error("Failed to connect to Postgres", e);
                 throw new IllegalStateException("Failed to connect to Postgres", e);
             }
-        }, executor).thenCompose(aVoid -> TaskScheduler.allAsync(futures.stream().map(this::map).toList()));
+        }, executor).thenCompose(aVoid -> staffManager.start()
+                .thenCompose(aVoid1 -> scenarioManager.start()
+                        .thenCompose(aVoid2 -> gameManager.start()
+                                .thenCompose(aVoid3 -> matchManger.start()))));
     }
 
     private CompletableFuture<Void> map(IManger manger) {

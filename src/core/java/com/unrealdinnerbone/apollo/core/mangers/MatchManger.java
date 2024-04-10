@@ -123,7 +123,6 @@ public class MatchManger implements IManger {
 
     @Override
     public CompletableFuture<Void> start() {
-//        return CompletableFuture.runAsync(() -> loadStaffMatchBacklog(true));
         CompletableFuture<Void> staffTracker = TaskScheduler.runAsync((ExceptionRunnable<Exception>) () -> loadStaffMatchBacklog(true));
 
         CompletableFuture<Void> upcoming = new CompletableFuture<>();
