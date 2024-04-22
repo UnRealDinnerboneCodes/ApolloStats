@@ -119,7 +119,10 @@ public class ScenarioManager implements IManger
     }
 
     public Optional<Scenario> find(int id) {
-        return values.values().stream().flatMap(Collection::stream).filter(scenario -> scenario.id() == id).findFirst();
+        return values.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(scenario -> scenario.id() == id).findFirst();
     }
 
     private List<Scenario> remap(String scenario, Type type) {
@@ -164,20 +167,9 @@ public class ScenarioManager implements IManger
     }
 
     @Override
-    public CompletableFuture<Void> start() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        TaskScheduler.scheduleRepeatingTaskExpectantly(1, TimeUnit.HOURS, task -> {
-            loadScenData();
-            loadRemapData();
-            if(!future.isDone()) {
-                future.complete(null);
-            }
-        }, e -> LOGGER.error("Failed to load scenarios", e));
-        return future;
+    public void start() throws SQLException {
+        loadScenData();
+        loadRemapData();
     }
 
-    @Override
-    public String getName() {
-        return "Scenario Manager";
-    }
 }

@@ -1,29 +1,47 @@
 package com.unrealdinnerbone.apollo.core.stats;
 
-import com.unrealdinnerbone.apollo.core.Stats;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.unrealdinnerbone.apollo.core.api.Match;
 import com.unrealdinnerbone.apollo.core.api.Scenario;
 import com.unrealdinnerbone.apollo.core.api.Type;
-import com.unrealdinnerbone.apollo.core.lib.CachedStat;
 import com.unrealdinnerbone.apollo.core.lib.Util;
 import com.unrealdinnerbone.apollo.core.stats.types.GamesPlayedStat;
 import com.unrealdinnerbone.apollo.core.stats.types.TimeBetweenStat;
 import com.unrealdinnerbone.unreallib.StringUtils;
 import com.unrealdinnerbone.unreallib.TimeUtil;
+import com.unrealdinnerbone.unreallib.list.LazyHashMap;
 import com.unrealdinnerbone.unreallib.list.Maps;
 
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
-public class CachedStats {
+public class StatTypes
+{
 
-    private final static DecimalFormat FORMAT = new DecimalFormat("#.##");
+    private static final LazyHashMap<IStatType<?>, Cache<String, ?>> CACHE = new LazyHashMap<>(iStatType -> CacheBuilder.newBuilder().build());
 
-    public static final CachedStat<String> TIME_BETWEEN = new CachedStat<>((id, staff, matches) -> {
-        List<Match> sortedMatches = matches.stream()
+    public static <T> T getStat(IStatType<T> statType, String name, List<Match> matches) throws IllegalStateException {
+        Cache<String, T> stringCache = (Cache<String, T>) CACHE.get(statType);
+        try {
+            return stringCache.get(name, () -> statType.getStat(matches));
+        } catch (ExecutionException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static final IStatType<String> TIME_BETWEEN = create(matches -> {
+        List<Match> sortedMatches = matches
+                .stream()
                 .filter(Match::isGoodGame)
                 .sorted(Comparator.comparing(Match::getOpenTime)).toList();
         TimeBetweenStat timeBetween = new TimeBetweenStat(Instant.EPOCH, Instant.EPOCH);
@@ -31,7 +49,7 @@ public class CachedStats {
         for (int i = 0; i < sortedMatches.size(); i++) {
             Match match = sortedMatches.get(i);
             {
-                if (i != sortedMatches.size() - 1) {
+                if(i != sortedMatches.size() - 1) {
                     Instant nowMatch = match.getOpenTime();
                     Instant lastMatch = sortedMatches.get(i + 1).getOpenTime();
 
@@ -39,7 +57,7 @@ public class CachedStats {
                     long between = Math.abs(between1);
 
 
-                    if (daysBetween < between) {
+                    if(daysBetween < between) {
                         daysBetween = (int) between;
                         timeBetween = new TimeBetweenStat(nowMatch, lastMatch);
                     }
@@ -50,7 +68,7 @@ public class CachedStats {
         return StringUtils.replace("{0} ({1})", timeBetween.getBetween(ChronoUnit.DAYS), format);
     });
 
-    public static final CachedStat<String> DAYS_IN_A_ROW = new CachedStat<>((id, staff, matches) -> {
+    public static final IStatType<String> DAYS_IN_A_ROW = create(matches -> {
         List<Match> sortedMatches = matches.stream()
                 .filter(Match::isGoodGame)
                 .sorted(Comparator.comparing(Match::getOpenTime)).toList();
@@ -85,9 +103,10 @@ public class CachedStats {
         return daysInARow.size() + " (" + format + ")";
     });
 
-    public static final CachedStat<String> HOST_IN_24_HOURS = new CachedStat<>((id, staff, matches) -> {
+    public static final IStatType<String> HOST_IN_24_HOURS = create(matches -> {
         List<Match> hostIn24Hours = new ArrayList<>();
-        List<Match> sortedMatches = matches.stream()
+        List<Match> sortedMatches = matches
+                .stream()
                 .filter(Match::isGoodGame)
                 .sorted(Comparator.comparing(Match::getOpenTime)).toList();
 
@@ -114,7 +133,7 @@ public class CachedStats {
         return hostIn24Hours.size() + " (" + format + ")";
     });
 
-    public static final CachedStat<GamesPlayedStat> GAMES_PLAYED = new CachedStat<>((id, staff, matches) -> {
+    public static final IStatType<GamesPlayedStat> GAMES_PLAYED = create(matches -> {
         int gamesHosted = 0;
         int gamesRemoved = 0;
         int netherOn = 0;
@@ -125,9 +144,9 @@ public class CachedStats {
         List<Integer> fills = new ArrayList<>();
         for (Match match : matches) {
             if (match.isGoodGame()) {
-                Stats.INSTANCE.getScenarioManager().fix(Type.SCENARIO, match.scenarios())
+                com.unrealdinnerbone.apollo.core.Stats.INSTANCE.getScenarioManager().fix(Type.SCENARIO, match.scenarios())
                         .forEach(scenario -> Maps.putIfAbsent(scenarioCount, scenario, new AtomicInteger()).incrementAndGet());
-                Stats.INSTANCE.getScenarioManager().fix(Type.TEAM, Collections.singletonList(match.getTeamFormat()))
+                com.unrealdinnerbone.apollo.core.Stats.INSTANCE.getScenarioManager().fix(Type.TEAM, Collections.singletonList(match.getTeamFormat()))
                         .forEach(scenario -> {
                             StringBuilder stringBuilder = new StringBuilder(scenario.name());
                             int teamSize = match.getTeamSize();
@@ -147,7 +166,7 @@ public class CachedStats {
                 if (match.isNetherEnabled()) {
                     netherOn++;
                 }
-                Stats.INSTANCE.getGameManager().findGame(match.id()).ifPresent(game -> fills.add(game.fill()));
+                com.unrealdinnerbone.apollo.core.Stats.INSTANCE.getGameManager().findGame(match.id()).ifPresent(game -> fills.add(game.fill()));
             }
             if (match.isApolloGame()) {
                 totalMatches++;
@@ -159,20 +178,23 @@ public class CachedStats {
         return new GamesPlayedStat(totalMatches, gamesHosted, gamesRemoved, netherOn, rush, scenarioCount, teamCount, fills);
     });
 
-    public static CachedStat<Integer> GAMES_HOSTED = new CachedStat<>((id, staff, matches) -> (int) matches.stream().filter(Match::isGoodGame).count());
-    public static CachedStat<String> GAMES_REMOVED = new CachedStat<>((id, staff, matches) -> GAMES_PLAYED.get(id, staff, matches).getGamesRemoved());
-    public static CachedStat<String> NETHER_ON = new CachedStat<>((id, staff, matches) -> GAMES_PLAYED.get(id, staff, matches).getNetherOn());
+    public static IStatType<Integer> GAMES_HOSTED = create((matches) -> (int) matches.stream().filter(Match::isGoodGame).count());
+    public static IStatType<String> GAMES_REMOVED = create((matches) -> GAMES_PLAYED.getStat(matches).getGamesRemoved());
+    public static IStatType<String> NETHER_ON = create((matches) -> GAMES_PLAYED.getStat(matches).getNetherOn());
 
-    public static CachedStat<String> RUSH = new CachedStat<>((id, staff, matches) -> GAMES_PLAYED.get(id, staff, matches).getRush());
+    public static IStatType<String> RUSH = create((matches) -> GAMES_PLAYED.getStat(matches).getRush());
 
-    public static CachedStat<String> TOP_SCENARIO = new CachedStat<>((id, staff, matches) -> GAMES_PLAYED.get(id, staff, matches).getTopScenario());
+    public static IStatType<String> TOP_SCENARIO = create((matches) -> GAMES_PLAYED.getStat(matches).getTopScenario());
 
-    public static CachedStat<String> TOP_TEAM_FORMAT = new CachedStat<>((id, staff, matches) -> GAMES_PLAYED.get(id, staff, matches).getTopTeamType());
+    public static IStatType<String> TOP_TEAM_FORMAT = create((matches) -> GAMES_PLAYED.getStat(matches).getTopTeamType());
 
-    public static CachedStat<String> FILL = new CachedStat<>((id, staff, matches) -> {
-        GamesPlayedStat gamesPlayedStat = GAMES_PLAYED.get(id, staff, matches);
+    public static IStatType<String> FILL = create((matches) -> {
+        GamesPlayedStat gamesPlayedStat = GAMES_PLAYED.getStat(matches);
         return StringUtils.replace("{0} / {1} / {2}", gamesPlayedStat.getMinFill(), gamesPlayedStat.getMaxFill(), gamesPlayedStat.getAverageFill());
     });
 
 
+    private static <T> IStatType<T> create(Function<List<Match>, T> function) {
+        return function::apply;
+    }
 }

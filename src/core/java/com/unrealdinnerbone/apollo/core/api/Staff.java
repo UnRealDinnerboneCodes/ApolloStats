@@ -1,11 +1,12 @@
 package com.unrealdinnerbone.apollo.core.api;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public record Staff(String username, String displayName, Type type) {
+public record Staff(String username, Instant staffDate, String displayName, Type type) {
 
 
     public Staff {
@@ -19,9 +20,8 @@ public record Staff(String username, String displayName, Type type) {
             throw new IllegalArgumentException("Type can not be null");
         }
     }
+    public static final Staff APOLLO = new Staff("Apollo", Instant.parse("2016-4-4"),"Apollo", Type.OWNER);
 
-    public static final Staff UNKNOWN = new Staff("Unknown", "Unknown", Type.OTHER);
-    public static final Staff APOLLO = new Staff("Apollo", "Apollo", Type.OWNER);
     @Override
     public int hashCode() {
         return Objects.hashCode(username);
@@ -38,15 +38,11 @@ public record Staff(String username, String displayName, Type type) {
         SENIOR,
         STAFF,
         TRAIL,
-        RETIRED,
+        RETIRED;
 
-        OTHER;
-        ;
-
-        private static final List<Type> TYPES = Arrays.stream(values()).filter(type -> type != OTHER).toList();
 
         public static Optional<Type> fromString(String string) {
-            return TYPES.stream()
+            return Arrays.stream(values())
                     .filter(type -> type.name().equalsIgnoreCase(string)).findFirst();
         }
     }

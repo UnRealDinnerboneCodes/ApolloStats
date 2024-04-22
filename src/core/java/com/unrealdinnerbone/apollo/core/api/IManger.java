@@ -1,9 +1,9 @@
 package com.unrealdinnerbone.apollo.core.api;
 
-import java.util.concurrent.CompletableFuture;
+import java.sql.SQLException;
 
 public interface IManger {
-    CompletableFuture<Void> start();
 
-    String getName();
+    void start() throws SQLException;
+
 }

@@ -30,7 +30,7 @@ public record GamesPlayedStat(int totalPost,
     }
 
     public int getAverageFill() {
-        return fills.size() == 0 ? 0 : fills.stream().mapToInt(Integer::intValue).sum() / fills.size();
+        return fills.isEmpty() ? 0 : fills.stream().mapToInt(Integer::intValue).sum() / fills.size();
     }
 
     public Scenario getMostPopularScenario() {

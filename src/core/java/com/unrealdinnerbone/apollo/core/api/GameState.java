@@ -3,7 +3,7 @@ package com.unrealdinnerbone.apollo.core.api;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-public enum GameState implements Predicate<String> {
+public enum GameState {
     IDLE(s -> s.equalsIgnoreCase("Apollo » No game is running.\nWhitelist is on.")),
     LOBBY(s -> s.startsWith("Apollo » No game is running.") && s.contains("Arena is")),
     PRE_PVP(s -> s.startsWith("Apollo » PvP is in: ")),
@@ -23,11 +23,7 @@ public enum GameState implements Predicate<String> {
 
 
     public static GameState getState(String name) {
-        return Arrays.stream(VALUES).filter(state -> state.test(name)).findFirst().orElse(UNKNOWN);
+        return Arrays.stream(VALUES).filter(state -> state.matches.test(name)).findFirst().orElse(UNKNOWN);
     }
 
-    @Override
-    public boolean test(String s) {
-        return matches.test(s);
-    }
 }

@@ -19,7 +19,7 @@ public class Util {
 
     private static final String VAILD = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 
-    public static String getMotdMessage(MCServerPingResponse result) {
+    public static String getMotdAsString(MCServerPingResponse result) {
         return PlainTextComponentSerializer.plainText().serialize(GsonComponentSerializer.gson().deserialize(result.description().json()));
     }
 
