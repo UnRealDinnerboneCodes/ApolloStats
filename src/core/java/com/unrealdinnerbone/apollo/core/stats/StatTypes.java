@@ -39,6 +39,10 @@ public class StatTypes
         }
     }
 
+    public static void clearCache() {
+        CACHE.reset();
+    }
+
     public static final IStatType<String> TIME_BETWEEN = create(matches -> {
         List<Match> sortedMatches = matches
                 .stream()

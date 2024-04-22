@@ -6,6 +6,7 @@ import com.unrealdinnerbone.apollo.core.api.*;
 import com.unrealdinnerbone.apollo.core.api.event.MatchEvents;
 import com.unrealdinnerbone.apollo.core.lib.CachedStat;
 import com.unrealdinnerbone.apollo.core.lib.Util;
+import com.unrealdinnerbone.apollo.core.stats.StatTypes;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import com.unrealdinnerbone.unreallib.apiutils.APIUtils;
@@ -147,12 +148,7 @@ public class MatchManger implements IManger {
                                 if(!trackedMatches.containsKey(match.id())) {
                                     LOGGER.info("Scheduling match {}", match);
                                     ApolloEventManager.EVENT_MANAGER.post(new MatchEvents.GameFound(match));
-                                    match.findStaff().ifPresent(staff -> {
-                                        CachedStat.getCachedStats().forEach(cachedStat -> {
-                                            cachedStat.clear(staff);
-                                            cachedStat.clear(Staff.APOLLO);
-                                        });
-                                    });
+                                    StatTypes.clearCache();
                                     TimerTask timerTask = TaskScheduler.scheduleTask(Instant.parse(match.opens()), theTask -> watchForFill(match));
                                     trackedMatches.put(match.id(), timerTask);
                                 }
