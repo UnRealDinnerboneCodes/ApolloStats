@@ -64,37 +64,30 @@ public class PageManger implements IManger {
 
 
     @Override
-    public CompletableFuture<Void> start() {
+    public void start() {
         LOGGER.info("Starting Page Manager");
-        return TaskScheduler.runAsync(() -> {
-            for (WebInstance<?> instance : instances) {
-                Javalin javalin = Javalin.create(javalinConfig -> {
-                    javalinConfig.showJavalinBanner = false;
-                    instance.getConfig().accept(javalinConfig);
-                }).start(instance.getPort());
+        for (WebInstance<?> instance : instances) {
+            Javalin javalin = Javalin.create(javalinConfig -> {
+                javalinConfig.showJavalinBanner = false;
+                instance.getConfig().accept(javalinConfig);
+            }).start(instance.getPort());
 
 
 
-                instance.getPages().forEach((key, value) -> value.forEach(iWebPage -> {
-                    if (key == WebInstance.Type.GET) {
-                        LOGGER.info("Registering GET page {}", iWebPage.getPath());
-                        javalin.get(iWebPage.getPath(), ctx -> {
-                            Stopwatch stopwatch = Stopwatch.createStarted();
-                            iWebPage.getPage(ctx);
-                            String header = ctx.header("X-Forwarded-For");
-                            LOGGER.info("[{}] Took {} to get page {}", header ==null ? "" : Objects.hash(header), stopwatch.stop(), iWebPage.getPath() + ctx.queryString());
-                        });
-                    } else if (key == WebInstance.Type.POST) {
-                        LOGGER.info("Registering POST page {}", iWebPage.getPath());
-                        javalin.post(iWebPage.getPath(), iWebPage::getPage);
-                    }
-                }));
-            }
-        });
-    }
-
-    @Override
-    public String getName() {
-        return "Page Manager";
+            instance.getPages().forEach((key, value) -> value.forEach(iWebPage -> {
+                if (key == WebInstance.Type.GET) {
+                    LOGGER.info("Registering GET page {}", iWebPage.getPath());
+                    javalin.get(iWebPage.getPath(), ctx -> {
+                        Stopwatch stopwatch = Stopwatch.createStarted();
+                        iWebPage.getPage(ctx);
+                        String header = ctx.header("X-Forwarded-For");
+                        LOGGER.info("[{}] Took {} to get page {}", header ==null ? "" : Objects.hash(header), stopwatch.stop(), iWebPage.getPath() + ctx.queryString());
+                    });
+                } else if (key == WebInstance.Type.POST) {
+                    LOGGER.info("Registering POST page {}", iWebPage.getPath());
+                    javalin.post(iWebPage.getPath(), iWebPage::getPage);
+                }
+            }));
+        }
     }
 }

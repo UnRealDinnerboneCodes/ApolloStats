@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ public class StaffManager implements IManger
             Date date = resultSet.getDate("start");
             String foundType = resultSet.getString("type");
             Staff.Type type = Staff.Type.fromString(foundType).orElseThrow(() -> new IllegalStateException("Unknown Staff Type " + foundType));
-            staff.add(new Staff(username, date.toInstant(), displayName, type));
+            staff.add(new Staff(username, null, displayName, type));
         }
         LOGGER.info("Loaded {} staff members.", staff.size());
     }

@@ -17,6 +17,7 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -67,25 +68,25 @@ public interface StatsLauncher {
             LOGGER.error("Failed to read Config", e);
             ShutdownUtils.shutdown();
         }
-        stats.start().whenComplete((aVoid, throwable) -> {
-            if (throwable != null) {
-                LOGGER.error("Failed to start ApolloStats", throwable.getCause() != null ? throwable.getCause() : throwable);
+        try {
+            stats.start();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to start Stats", e);
+            ShutdownUtils.shutdown();
+        }
+
+
+        for (IModule module : modules) {
+            Stopwatch moduleStopwatch = Stopwatch.createStarted();
+            LOGGER.info("Starting Module: {}", module.getClass().getSimpleName());
+            try {
+                module.start();
+            }catch (Exception e) {
+                LOGGER.error("Failed to start Module: {}", module.getClass().getSimpleName(), e);
                 ShutdownUtils.shutdown();
-            } else {
-                LOGGER.info("Started ApolloStats in {}s", stopwatch.stop().elapsed(TimeUnit.SECONDS));
             }
-        });
-
-
-
-        TaskScheduler.allAsync(modules.stream().map(IModule::start).toList()).whenComplete((aVoid, throwable) -> {
-            if (throwable != null) {
-                LOGGER.error("Failed to start Modules", throwable.getCause() != null ? throwable.getCause() : throwable);
-                ShutdownUtils.shutdown();
-            }else {
-                LOGGER.info("Started Modules in {}s", stopwatch.stop().elapsed(TimeUnit.SECONDS));
-            }
-        });
+            LOGGER.info("Started Module: {} in {}s", module.getClass().getSimpleName(), moduleStopwatch.stop().elapsed(TimeUnit.SECONDS));
+        }
 
         ShutdownUtils.addShutdownHook(() -> LOGGER.info("Stopping ApolloStats"));
     }

@@ -1,14 +1,40 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
     id "maven-publish"
     id 'java-library'
 }
 
-apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/base.gradle'
-apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+
+def ENV = System.getenv()
 version = '1.0.0'
+
+
+configurations {
+    api
+    implementation.extendsFrom api
+    apiElements.extendsFrom api
+
+    shade
+    implementation.extendsFrom shade
+    shadow.extendsFrom shade
+
+    commonLib
+    coreImplementation.extendsFrom commonLib
+    webImplementation.extendsFrom commonLib
+    discordImplementation.extendsFrom commonLib
+    shade.extendsFrom commonLib
+
+    webLib
+    webImplementation.extendsFrom webLib
+    shade.extendsFrom webLib
+
+    discordLib
+    discordImplementation.extendsFrom discordLib
+    shade.extendsFrom discordLib
+}
 
 sourceSets {
     web
@@ -16,58 +42,71 @@ sourceSets {
     discord
 }
 
+repositories {
+    mavenCentral()
+    maven { url "https://maven.unreal.codes/releases"}
+}
+
 
 dependencies {
 
-    // Core
-    coreImplementation("com.unrealdinnerbone:PostgressLib:2.1.5")
-    coreImplementation("com.unrealdinnerbone:UnRealConfig2:1.2.4")
-    coreImplementation("com.unrealdinnerbone:UnRealLib:8.2.5")
-    coreImplementation("org.apache.commons:commons-text:1.10.0")
-    coreImplementation("net.kyori:adventure-text-serializer-gson:4.16.0")
-    coreImplementation("net.kyori:adventure-text-serializer-plain:4.16.0")
-    coreImplementation('com.google.guava:guava:33.0.0-jre')
+    commonLib("com.unrealdinnerbone:PostgressLib:2.2.0")
+    commonLib("com.unrealdinnerbone:UnRealConfig2:1.3.0")
+    commonLib("com.unrealdinnerbone:UnRealLib:9.0.0")
+    commonLib("org.apache.commons:commons-text:1.10.0")
+    commonLib("net.kyori:adventure-text-serializer-gson:4.16.0")
+    commonLib("net.kyori:adventure-text-serializer-plain:4.16.0")
+    commonLib("com.google.guava:guava:33.0.0-jre")
 
-
-    //Web
-    webImplementation("com.unrealdinnerbone:PostgressLib:2.1.5")
-    webImplementation("com.unrealdinnerbone:UnRealConfig2:1.2.4")
-    webImplementation("com.unrealdinnerbone:UnRealLib:8.2.5")
-    webImplementation("org.apache.commons:commons-text:1.10.0")
-    webImplementation("net.kyori:adventure-text-serializer-gson:4.16.0")
-    webImplementation("net.kyori:adventure-text-serializer-plain:4.16.0")
-    webImplementation('com.google.guava:guava:33.0.0-jre')
-    webImplementation("io.javalin:javalin:6.1.3")
+    webLib("io.javalin:javalin:6.1.3")
     webImplementation sourceSets.core.output
 
-    //Discord
-    discordImplementation("com.unrealdinnerbone:PostgressLib:2.1.5")
-    discordImplementation("com.unrealdinnerbone:UnRealConfig2:1.2.4")
-    discordImplementation("com.unrealdinnerbone:UnRealLib:8.2.5")
-    discordImplementation("org.apache.commons:commons-text:1.10.0")
-    discordImplementation("net.kyori:adventure-text-serializer-gson:4.16.0")
-    discordImplementation("net.kyori:adventure-text-serializer-plain:4.16.0")
-    discordImplementation('com.google.guava:guava:33.0.0-jre')
-    discordImplementation("io.javalin:javalin:6.1.3")
     discordImplementation sourceSets.core.output
 
-
-    //Main
     shade("org.fusesource.jansi:jansi:2.4.0")
     shade("ch.qos.logback:logback-classic:1.4.14")
-    shade("com.unrealdinnerbone:PostgressLib:2.1.5")
-    shade("com.unrealdinnerbone:UnRealConfig2:1.2.4")
-    shade("com.unrealdinnerbone:UnRealLib:8.2.5")
-    shade("org.apache.commons:commons-text:1.10.0")
-    shade("net.kyori:adventure-text-serializer-gson:4.16.0")
-    shade("net.kyori:adventure-text-serializer-plain:4.16.0")
-    shade("io.javalin:javalin:6.1.3")
-    shade("com.google.guava:guava:33.0.0-jre")
     shade("org.reflections:reflections:0.9.11")
 
     shade sourceSets.core.output
     shade sourceSets.web.output
     shade sourceSets.discord.output
 
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 
+}
+
+shadowJar {
+    manifest {
+        inheritFrom project.tasks.jar.manifest
+    }
+}
+
+jar {
+    setArchiveBaseName(project.property("name"))
+    manifest {
+        attributes(
+                'Main-Class': "com.unrealdinnerbone.apollostats.StatsLauncher",
+                "Implementation-Version": version
+        )
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication).from(components.java)
+    }
+    repositories {
+        maven {
+            url "https://maven.unreal.codes/releases"
+            credentials {
+                username ENV.MAVEN_USERNAME
+                password ENV.MAVEN_PASSWORD
+            }
+        }
+    }
 }

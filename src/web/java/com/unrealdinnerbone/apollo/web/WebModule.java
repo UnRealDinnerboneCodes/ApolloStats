@@ -18,9 +18,9 @@ public class WebModule implements IModule {
 
 
     @Override
-    public CompletableFuture<Void> start() {
+    public void start() {
         LOGGER.info("Starting Web Module");
-        return new PageManger().start();
+        new PageManger().start();
     }
 
     @Override

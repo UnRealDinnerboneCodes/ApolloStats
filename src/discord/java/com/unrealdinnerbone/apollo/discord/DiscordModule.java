@@ -13,9 +13,8 @@ import java.util.concurrent.CompletableFuture;
 public class DiscordModule implements IModule {
 
     @Override
-    public CompletableFuture<Void> start() {
+    public void start() {
         AlertManager.init();
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override

@@ -1,12 +1,14 @@
 package com.unrealdinnerbone.apollo.core.api;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public record Staff(String username, Instant staffDate, String displayName, Type type) {
+public record Staff(String username, @Nullable Instant staffDate, String displayName, Type type) {
 
 
     public Staff {
@@ -20,8 +22,8 @@ public record Staff(String username, Instant staffDate, String displayName, Type
             throw new IllegalArgumentException("Type can not be null");
         }
     }
-    public static final Staff APOLLO = new Staff("Apollo", Instant.parse("2016-4-4"),"Apollo", Type.OWNER);
-
+    public static final Staff APOLLO = new Staff("Apollo", null,"Apollo", Type.OWNER);
+\
     @Override
     public int hashCode() {
         return Objects.hashCode(username);

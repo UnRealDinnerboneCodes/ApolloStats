@@ -1,4 +1,4 @@
-FROM gradle:8.0.0-jdk19 as builder
+FROM gradle:8.7.0-jdk21 as builder
 
 WORKDIR /build
 
@@ -9,7 +9,7 @@ COPY src /build/src
 RUN gradle shadowJar
 RUN ls -l /build/build/libs/
 
-FROM openjdk:19-alpine
+FROM alpine/java:21
 COPY --from=builder "/build/build/libs/build-1.0.0-all.jar" "ApolloStats-1.0.0-all.jar"
 
 
