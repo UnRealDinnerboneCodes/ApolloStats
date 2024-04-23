@@ -23,7 +23,7 @@ public record Staff(String username, @Nullable Instant staffDate, String display
         }
     }
     public static final Staff APOLLO = new Staff("Apollo", null,"Apollo", Type.OWNER);
-\
+
     @Override
     public int hashCode() {
         return Objects.hashCode(username);
