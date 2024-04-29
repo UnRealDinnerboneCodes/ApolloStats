@@ -78,7 +78,7 @@ public class HostsPage implements IStatPage {
 
     public static List<Pair<String, String>> createFor(Staff staff, List<Match> matches, String requestID) {
         return HostsPage.stats.stream()
-                .map(stat -> Pair.of(stat.name, StatTypes.getStat(stat.cachedStat, requestID, matches).toString())).collect(Collectors.toList());
+                .map(stat -> Pair.of(stat.name, StatTypes.getStat(stat.cachedStat, staff.username() + "-" + requestID, matches).toString())).collect(Collectors.toList());
     }
 
     public static void sort(List<Pair<String, List<Pair<String, String>>>> map, String key, Comparator<String> stringComparator) {
