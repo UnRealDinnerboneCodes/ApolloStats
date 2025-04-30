@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.unrealdinnerbone.apollo.core.api.IManger;
 import com.unrealdinnerbone.apollo.web.api.WebInstance;
 import com.unrealdinnerbone.apollo.web.instacnes.PublicInstance;
+import com.unrealdinnerbone.apollo.web.instacnes.SharkbobInstance;
 import com.unrealdinnerbone.apollo.web.pages.MainPage;
 import com.unrealdinnerbone.apollo.web.pages.generator.RandomScenarioGenerator;
 import com.unrealdinnerbone.apollo.web.pages.graph.GameHostedGen;
@@ -37,7 +38,6 @@ public class PageManger implements IManger {
     private static final Logger LOGGER = LogHelper.getLogger();
     private final List<WebInstance<?>> instances = new ArrayList<>();
 
-
     public PageManger() {
         instances.add(
                 new PublicInstance(Arrays.asList(
@@ -60,8 +60,8 @@ public class PageManger implements IManger {
                         new GamePage(),
                         new TheEndPage()
                 )));
+        instances.add(new SharkbobInstance());
     }
-
 
     @Override
     public void start() {
@@ -81,7 +81,7 @@ public class PageManger implements IManger {
                         Stopwatch stopwatch = Stopwatch.createStarted();
                         iWebPage.getPage(ctx);
                         String header = ctx.header("X-Forwarded-For");
-                        LOGGER.info("[{}] Took {} to get page {}", header ==null ? "" : Objects.hash(header), stopwatch.stop(), iWebPage.getPath() + ctx.queryString());
+                        LOGGER.info("[{}] Took {} to get page {}", header == null ? "" : Objects.hash(header), stopwatch.stop(), iWebPage.getPath() + (ctx.queryString() == null ? "" : ctx.queryString()));
                     });
                 } else if (key == WebInstance.Type.POST) {
                     LOGGER.info("Registering POST page {}", iWebPage.getPath());

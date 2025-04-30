@@ -23,22 +23,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class ScenarioManager implements IManger
-{
+public class ScenarioManager implements IManger {
     private static final Logger LOGGER = LogHelper.getLogger();
 
     private final LevenshteinDistance LEVENSHTEIN_DISTANCE = LevenshteinDistance.getDefaultInstance();
     private final Map<Type, List<Scenario>> values = new HashMap<>();
     private final Map<String, List<Scenario>> remap = new HashMap<>();
     private final LazyHashMap<Type, LazyHashMap<String, List<Scenario>>> MAP = new LazyHashMap<>(type -> new LazyHashMap<>(cache -> {
-        if(remap.containsKey(cache)) {
+        if (remap.containsKey(cache)) {
             return remap.get(cache);
-        }else {
+        } else {
             Map<Integer, List<Scenario>> values = new HashMap<>();
-            for(Scenario scenario : this.values.get(type)) {
-                if(isSimilar(scenario.name(), cache)) {
+            for (Scenario scenario : this.values.get(type)) {
+                if (isSimilar(scenario.name(), cache)) {
                     return List.of(scenario);
-                }else {
+                } else {
                     Maps.putIfAbsent(values, LEVENSHTEIN_DISTANCE.apply(Util.formalize(scenario.name()), Util.formalize(cache)), new ArrayList<>()).add(scenario);
                 }
             }
@@ -49,16 +48,15 @@ public class ScenarioManager implements IManger
                     .stream()
                     .flatMap(Collection::stream)
                     .toList();
-            if(!scenarios.isEmpty()) {
+            if (!scenarios.isEmpty()) {
                 LOGGER.info("Using Levenshtein Distance for {} -> {} [{}]", cache, scenarios, scenarios.stream().map(Scenario::id).collect(Collectors.toList()));
-            }else {
+            } else {
                 LOGGER.info("No Scenario found for {}", cache);
             }
             ApolloEventManager.EVENT_MANAGER.post(new UnknownScenarioEvent(cache, scenarios));
             return scenarios;
         }
     }));
-
 
 
     public boolean isSimilar(String name, String other) {
@@ -70,7 +68,7 @@ public class ScenarioManager implements IManger
         values.clear();
         Arrays.stream(Type.values()).forEach(value -> values.put(value, new ArrayList<>()));
         ResultSet resultSet = Stats.INSTANCE.getPostgresHandler().getSet("SELECT * FROM public.scenario");
-        while(resultSet.next()) {
+        while (resultSet.next()) {
             String name = resultSet.getString("name");
             Type type = Type.fromString(resultSet.getString("type"));
             int id = resultSet.getInt("id");

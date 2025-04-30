@@ -33,6 +33,8 @@ public interface IStatPage extends IWebPage{
 
 
 
+
+
         try {
 
             {
@@ -72,6 +74,14 @@ public interface IStatPage extends IWebPage{
                     hostMap.clear();
                     hostMap.putAll(map);
                 }
+            }
+
+            {
+                String season = handler.queryParam("season");
+                if (season != null) {
+                    List<String> seasons = Arrays.stream(season.split(",")).toList();
+                }
+
             }
             hostMap.entrySet().removeIf(staffListEntry -> staffListEntry.getValue().isEmpty());
             generateStats(hostMap, ICTXWrapper.of(handler));

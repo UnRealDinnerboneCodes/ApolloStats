@@ -5,6 +5,7 @@ import com.unrealdinnerbone.apollo.core.lib.GeneralConfig;
 import com.unrealdinnerbone.apollo.core.mangers.GameManager;
 import com.unrealdinnerbone.apollo.core.mangers.MatchManger;
 import com.unrealdinnerbone.apollo.core.mangers.ScenarioManager;
+import com.unrealdinnerbone.apollo.core.mangers.SharkbobTimerManger;
 import com.unrealdinnerbone.apollo.core.mangers.StaffManager;
 import com.unrealdinnerbone.config.impl.provider.EnvProvider;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
@@ -24,6 +25,7 @@ public class Stats {
     private final ScenarioManager scenarioManager = new ScenarioManager();
     private final GameManager gameManager = new GameManager();
     private final MatchManger matchManger = new MatchManger();
+    private final SharkbobTimerManger sharkbobTimerManger = new SharkbobTimerManger();
 
     private PostgresHandler postgressHandler;
 
@@ -75,6 +77,10 @@ public class Stats {
 
     public StaffManager getStaffManager() {
         return staffManager;
+    }
+
+    public SharkbobTimerManger getSharkbobTimerManger() {
+        return sharkbobTimerManger;
     }
 
     public static String getResourceAsString(String thePath) {

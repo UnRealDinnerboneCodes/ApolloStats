@@ -8,6 +8,9 @@ public enum Type {
     MYSTERY_SCENARIO;
 
     public static Type fromString(String s) {
-        return Arrays.stream(values()).filter(type -> type.name().equalsIgnoreCase(s)).findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown type: " + s));
+        return Arrays.stream(values())
+                .filter(type -> type.name().equalsIgnoreCase(s))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown type: " + s));
     }
 }

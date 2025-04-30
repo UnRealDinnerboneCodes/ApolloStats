@@ -45,7 +45,7 @@ public class AlertManager
     }
     public static void gameSaved(MatchEvents.GameSaved event) {
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(fromColor(Color.YELLOW))
+                .color(SimpleColor.YELLOW)
                 .author(event.match().findStaff().map(Staff::displayName).orElse("Unknown"), event.match().getUrl())
                 .footer("Fill: " + event.game().fill())
                 .description("Time: <t:{}:T>".replace("{}", String.valueOf(Instant.parse(event.match().opens()).toEpochMilli() / 1000)))
@@ -54,7 +54,7 @@ public class AlertManager
 
     public static void unknownSceneFound(UnknownScenarioEvent event) {
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(fromColor(Color.BLUE))
+                .color(SimpleColor.BLUE)
                 .description("Unknown Scenario Found: " + event.unknownScen() + " Guessed: " + Arrays.toString(event.guessed().toArray()))
                 .build()));
     }
@@ -62,7 +62,7 @@ public class AlertManager
     public static void gameFound(MatchEvents.GameFound event) {
         Match match = event.match();
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(fromColor(Color.GREEN))
+                .color(SimpleColor.RED)
                 .title("New Game: " + match.displayName() + " #" + match.count())
                 .field("Meetup", String.valueOf(match.length()), true)
                 .field("Nether", match.getNetherFormat(), true)
@@ -79,7 +79,7 @@ public class AlertManager
     public static void gameRemoved(MatchEvents.GameRemoved events) {
         Match match = events.match();
         addWebhook(hook -> hook.addEmbed(EmbedObject.builder()
-                .color(fromColor(Color.RED))
+                .color(SimpleColor.RED)
                 .title("Game Removed: " + match.displayName() + " #" + match.count())
                 .description("Reason: " + match.removedReason())
                 .url(match.getUrl())
@@ -92,9 +92,5 @@ public class AlertManager
         WEBHOOKS.add(webhook);
     }
 
-    @NotNull
-    static SimpleColor fromColor(java.awt.Color color) {
-        return SimpleColor.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
-    }
 
 }
